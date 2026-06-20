@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Admin {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  slug      String    @unique
+  emoji     String    @default("🧶")
+  sortOrder Int       @default(0)
+  products  Product[]
+  createdAt DateTime  @default(now())
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  slug        String   @unique
+  description String
+  price       Float
+  images      String   @default("[]")
+  categoryId  Int
+  category    Category @relation(fields: [categoryId], references: [id])
+  colors      String   @default("[]")
+  sizes       String   @default("[]")
+  inStock     Boolean  @default(true)
+  featured    Boolean  @default(false)
+  metaTitle   String?
+  metaDesc    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  orders      Order[]
+}
+
+model Order {
+  id        Int      @id @default(autoincrement())
+  name      String
+  phone     String
+  message   String?
+  productId Int?
+  product   Product? @relation(fields: [productId], references: [id])
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+}
+
+model SiteSettings {
+  key   String @id
+  value String
+}

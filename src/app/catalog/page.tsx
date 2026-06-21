@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
@@ -72,7 +72,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
                       <div className="card">
                         <div style={{ height: 260, background: img ? 'transparent' : 'linear-gradient(135deg,var(--pink-light),var(--cream-dark))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 72, overflow: 'hidden', position: 'relative' }}>
                           {img
-                            ? <img src={img} alt={p.name} className="img-zoom" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ? <img src={img} alt={p.name} loading="lazy" decoding="async" className="img-zoom" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             : p.category?.emoji || '🧶'
                           }
                           {p.featured && <div style={{ position: 'absolute', top: 12, left: 12 }}><span className="badge badge-rose">⭐ Хит</span></div>}

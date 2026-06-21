@@ -9,7 +9,9 @@ import { OrderModal } from '@/components/OrderModal'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { ArrowRight } from 'lucide-react'
 
-export const dynamic = 'force-dynamic'
+// Кэшируем страницу: посетители получают её мгновенно (без обращения к базе),
+// а при изменении товаров/настроек в админке кэш обновляется автоматически.
+export const revalidate = 3600
 
 async function getSettings(): Promise<Record<string, string>> {
   const rows = await prisma.siteSettings.findMany().catch(() => [])
@@ -162,7 +164,7 @@ export default async function HomePage() {
                         <div className="card">
                           <div style={{ height: 248, background: img ? 'transparent' : 'linear-gradient(135deg,var(--pink-light),var(--cream-dark))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 72, overflow: 'hidden', position: 'relative' }}>
                             {img
-                              ? <img src={img} alt={p.name} className="img-zoom" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              ? <img src={img} alt={p.name} loading="lazy" decoding="async" className="img-zoom" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                               : p.category?.emoji || '🧶'
                             }
                             {p.featured && <div style={{ position: 'absolute', top: 12, left: 12 }}><span className="badge badge-rose">⭐ Хит</span></div>}

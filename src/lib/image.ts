@@ -3,8 +3,8 @@
 // чтобы фото красиво отображалось и не перегружало базу.
 export async function resizeImageFile(
   file: File,
-  maxSize = 1400,
-  quality = 0.82
+  maxSize = 1200,
+  quality = 0.78
 ): Promise<string> {
   // SVG — векторный, не растрируем, сохраняем как есть
   if (file.type === 'image/svg+xml') {

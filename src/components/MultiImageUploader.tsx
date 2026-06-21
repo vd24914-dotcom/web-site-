@@ -1,7 +1,7 @@
 'use client'
 import { useState, useRef } from 'react'
 import { Upload, X, Loader2, Plus, GripVertical } from 'lucide-react'
-import { resizeImageFile } from '@/lib/image'
+import { resizeImageToBlob } from '@/lib/image'
 
 interface Props {
   images: string[]
@@ -20,9 +20,14 @@ export function MultiImageUploader({ images, onChange }: Props) {
       try {
         if (!file.type.startsWith('image/')) { setError('Это не изображение: ' + file.name); continue }
         if (file.size > 25 * 1024 * 1024) { setError('Слишком большой файл: ' + file.name); continue }
-        const url = await resizeImageFile(file)
-        newUrls.push(url)
-      } catch { setError('Не удалось обработать: ' + file.name) }
+        const blob = await resizeImageToBlob(file)
+        const fd = new FormData()
+        fd.append('file', blob, 'photo.webp')
+        const res = await fetch('/api/upload', { method: 'POST', body: fd })
+        const data = await res.json()
+        if (res.ok) newUrls.push(data.url)
+        else setError(data.error || 'Ошибка загрузки')
+      } catch { setError('Не удалось загрузить: ' + file.name) }
     }
     onChange([...images, ...newUrls])
     setUploading(false)

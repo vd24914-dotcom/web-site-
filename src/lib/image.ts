@@ -38,6 +38,36 @@ export async function resizeImageFile(
   return out
 }
 
+// Сжимает изображение и возвращает компактный файл (Blob) для загрузки в облако.
+export async function resizeImageToBlob(
+  file: File,
+  maxSize = 1200,
+  quality = 0.8
+): Promise<Blob> {
+  // SVG не растрируем — отдаём как есть
+  if (file.type === 'image/svg+xml') return file
+
+  const dataUrl = await fileToDataURL(file)
+  const img = await loadImage(dataUrl)
+
+  let width = img.naturalWidth || img.width
+  let height = img.naturalHeight || img.height
+  const scale = Math.min(1, maxSize / Math.max(width, height))
+  width = Math.round(width * scale)
+  height = Math.round(height * scale)
+
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return file
+  ctx.drawImage(img, 0, 0, width, height)
+
+  return await new Promise<Blob>((resolve) => {
+    canvas.toBlob((b) => resolve(b || file), 'image/webp', quality)
+  })
+}
+
 function fileToDataURL(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()

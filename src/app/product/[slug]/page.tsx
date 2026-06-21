@@ -15,8 +15,9 @@ async function getSettings(): Promise<Record<string,string>> {
   return Object.fromEntries((rows as any[]).map((r:any)=>[r.key,r.value]))
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const p = await prisma.product.findUnique({ where: { slug: params.slug } }).catch(()=>null)
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const p = await prisma.product.findUnique({ where: { slug } }).catch(()=>null)
   if (!p) return { title: 'Товар не найден' }
   const imgs = parseJSON((p as any).images||'[]')
   return {
@@ -26,9 +27,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
-export default async function ProductPage({ params }: { params: { slug: string } }) {
+export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
   const [product, settings] = await Promise.all([
-    prisma.product.findUnique({ where:{ slug: params.slug }, include:{ category: true } }).catch(()=>null),
+    prisma.product.findUnique({ where:{ slug }, include:{ category: true } }).catch(()=>null),
     getSettings(),
   ])
   if (!product) notFound()
@@ -97,6 +99,12 @@ export default async function ProductPage({ params }: { params: { slug: string }
                   🧶 Заказать это изделие
                 </button>
               }/>
+              {(product as any).videoUrl && (
+                <a href={(product as any).videoUrl} target="_blank" rel="noopener noreferrer"
+                  style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8, marginTop:12, padding:'.95rem', borderRadius:14, background:'var(--pink-light)', color:'var(--pink-dark)', fontWeight:600, textDecoration:'none', border:'1px solid var(--border)', fontSize:'.95rem' }}>
+                  🎬 Смотреть видео
+                </a>
+              )}
               <div style={{ marginTop:16, padding:'14px 18px', background:'var(--pink-mist)', borderRadius:14, fontSize:'.85rem', color:'var(--text-sub)', lineHeight:1.65, border:'1px solid var(--border)' }}>
                 💬 После заявки свяжусь с вами и обсудим все детали.
               </div>

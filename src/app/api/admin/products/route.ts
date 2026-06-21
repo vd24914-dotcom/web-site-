@@ -32,6 +32,7 @@ export async function POST(req: NextRequest) {
       featured: data.featured ?? false,
       metaTitle: data.metaTitle || null,
       metaDesc: data.metaDesc || null,
+      videoUrl: data.videoUrl || null,
     }
   })
   revalidatePath('/')
@@ -56,6 +57,7 @@ export async function PUT(req: NextRequest) {
       featured: data.featured ?? false,
       metaTitle: data.metaTitle || null,
       metaDesc: data.metaDesc || null,
+      videoUrl: data.videoUrl || null,
     }
   })
   revalidatePath('/')

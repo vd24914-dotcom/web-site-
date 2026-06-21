@@ -18,8 +18,8 @@ async function getSettings(): Promise<Record<string, string>> {
   return Object.fromEntries((rows as any[]).map((r: any) => [r.key, r.value]))
 }
 
-export default async function CatalogPage({ searchParams }: { searchParams: { category?: string } }) {
-  const cat = searchParams.category
+export default async function CatalogPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
+  const cat = (await searchParams).category
   const [settings, products, categories] = await Promise.all([
     getSettings(),
     prisma.product.findMany({

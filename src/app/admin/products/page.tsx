@@ -22,7 +22,7 @@ export default function ProductsPage() {
   }
   useEffect(() => { load() }, [])
 
-  const blank = () => ({ id: null, name: '', description: '', price: '', categoryId: '', inStock: true, featured: false, metaTitle: '', metaDesc: '', images: [] })
+  const blank = () => ({ id: null, name: '', description: '', price: '', categoryId: '', inStock: true, featured: false, metaTitle: '', metaDesc: '', videoUrl: '', images: [] })
 
   const openEdit = (p: any) => {
     let imgs: string[] = []
@@ -173,6 +173,12 @@ export default function ProductsPage() {
               <div>
                 <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 6, fontSize: '.875rem' }}>Описание *</label>
                 <textarea className="input" rows={3} placeholder="Подробное описание изделия..." value={editing.description || ''} onChange={e => setEditing({ ...editing, description: e.target.value })} />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 6, fontSize: '.875rem' }}>🎬 Ссылка на видео (Reels / YouTube / TikTok)</label>
+                <input className="input" type="url" placeholder="https://www.instagram.com/reel/..." value={editing.videoUrl || ''} onChange={e => setEditing({ ...editing, videoUrl: e.target.value })} />
+                <p style={{ color: 'var(--text-sub)', fontSize: '.75rem', marginTop: 4 }}>Необязательно. На странице товара появится кнопка «Смотреть видео».</p>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>

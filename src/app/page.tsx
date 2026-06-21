@@ -75,15 +75,15 @@ export default async function HomePage() {
 
             <ScrollReveal direction="right" style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
               {settings.hero_image ? (
-                <div className="animate-float" style={{ width: 380, height: 420, borderRadius: '60% 40% 50% 50% / 50% 50% 40% 60%', overflow: 'hidden', boxShadow: '0 24px 64px rgba(250,135,161,.28)' }}>
+                <div className="animate-float hero-art" style={{ width: 380, height: 420, borderRadius: '60% 40% 50% 50% / 50% 50% 40% 60%', overflow: 'hidden', boxShadow: '0 24px 64px rgba(250,135,161,.28)' }}>
                   <img src={settings.hero_image} alt={s('site_name')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
               ) : (
-                <div className="animate-float" style={{ width: 340, height: 380, background: 'linear-gradient(135deg, var(--pink-light), var(--cream-dark))', borderRadius: '60% 40% 50% 50% / 50% 50% 40% 60%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 108, boxShadow: '0 24px 64px rgba(250,135,161,.25)' }}>
+                <div className="animate-float hero-art" style={{ width: 340, height: 380, background: 'linear-gradient(135deg, var(--pink-light), var(--cream-dark))', borderRadius: '60% 40% 50% 50% / 50% 50% 40% 60%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 108, boxShadow: '0 24px 64px rgba(250,135,161,.25)' }}>
                   {s('hero_icon')}
                 </div>
               )}
-              <div style={{ position: 'absolute', top: 24, right: 0, background: 'var(--white)', borderRadius: 16, padding: '12px 18px', boxShadow: '0 8px 28px rgba(250,135,161,.18)', border: '1px solid var(--border)' }}>
+              <div className="hero-badge-float" style={{ position: 'absolute', top: 24, right: 0, background: 'var(--white)', borderRadius: 16, padding: '12px 18px', boxShadow: '0 8px 28px rgba(250,135,161,.18)', border: '1px solid var(--border)' }}>
                 <div style={{ fontWeight: 700, color: 'var(--text)', fontSize: '.85rem' }}>{s('hero_badge2')}</div>
                 <div style={{ color: 'var(--text-sub)', fontSize: '.75rem', marginTop: 2 }}>{s('hero_badge2_sub')}</div>
               </div>
@@ -191,11 +191,11 @@ export default async function HomePage() {
             <ScrollReveal direction="left">
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 {settings.about_image ? (
-                  <div style={{ width: 360, height: 400, borderRadius: '40% 60% 60% 40% / 50% 40% 60% 50%', overflow: 'hidden', boxShadow: '0 24px 64px rgba(250,135,161,.22)' }}>
+                  <div className="about-art" style={{ width: 360, height: 400, borderRadius: '40% 60% 60% 40% / 50% 40% 60% 50%', overflow: 'hidden', boxShadow: '0 24px 64px rgba(250,135,161,.22)' }}>
                     <img src={settings.about_image} alt="О мастере" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                 ) : (
-                  <div style={{ width: 320, height: 360, background: 'linear-gradient(135deg,var(--pink-light),var(--cream-dark))', borderRadius: '40% 60% 60% 40% / 50% 40% 60% 50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 88, boxShadow: '0 24px 64px rgba(250,135,161,.2)' }}>
+                  <div className="about-art" style={{ width: 320, height: 360, background: 'linear-gradient(135deg,var(--pink-light),var(--cream-dark))', borderRadius: '40% 60% 60% 40% / 50% 40% 60% 50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 88, boxShadow: '0 24px 64px rgba(250,135,161,.2)' }}>
                     {s('about_icon')}
                   </div>
                 )}

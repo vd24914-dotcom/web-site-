@@ -3,6 +3,10 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Никогда не допускаем горизонтальную прокрутку и вылет картинок за экран */
+html, body { max-width: 100%; overflow-x: hidden; }
+img, svg, video { max-width: 100%; }
+
 :root {
   --pink:        #FA87A1;
   --pink-dark:   #e06080;
@@ -129,10 +133,46 @@ select.input { cursor:pointer; }
 /* ── Smooth anchor offset ── */
 [id] { scroll-margin-top:80px; }
 
+/* ── Tablet ── */
+@media(max-width:1024px) {
+  .container { padding:0 20px; }
+}
+
 /* ── Mobile ── */
 @media(max-width:768px) {
   .container { padding:0 16px; }
   .hide-mobile { display:none!important; }
+
+  /* Любые двухколоночные сетки на телефоне — в одну колонку */
+  [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns:1fr!important; }
+
+  /* Уменьшаем большие вертикальные отступы секций — компактнее и легче */
+  section { padding-top:52px!important; padding-bottom:52px!important; }
+
+  /* Декоративные «капли»-картинки подгоняем под ширину экрана */
+  .hero-art  { width:74vw!important; height:82vw!important; max-width:330px!important; max-height:360px!important; }
+  .about-art { width:74vw!important; height:82vw!important; max-width:320px!important; max-height:350px!important; }
+
+  /* Плавающий бейдж на телефоне мешает — прячем */
+  .hero-badge-float { display:none!important; }
+
+  /* Заголовки чуть компактнее */
+  h1.font-display { line-height:1.18; }
+}
+
+/* ── Маленькие телефоны ── */
+@media(max-width:420px) {
+  .btn-primary, .btn-outline { font-size:.82rem; padding:.65rem 1.3rem; }
+}
+
+/* ── Уважаем настройку «меньше движения» (плавность на слабых устройствах) ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+    scroll-behavior:auto!important;
+  }
 }
 
 /* ── Hover helpers (replaces inline onMouseEnter/onMouseLeave) ── */

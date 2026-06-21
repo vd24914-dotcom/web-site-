@@ -38,7 +38,7 @@ export function OrderModal({ productId, productName, trigger, settings = {} }: P
       <div onClick={() => setOpen(true)}>{trigger || <button className="btn-primary">Оставить заявку</button>}</div>
 
       {open && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(74, 45, 58, 0.28)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
           onClick={e => { if (e.target === e.currentTarget) close() }}>
           <div style={{ background: 'white', borderRadius: 20, padding: 36, width: '100%', maxWidth: 460, position: 'relative' }}>
             <button onClick={close} style={{ position: 'absolute', top: 16, right: 16, background: 'var(--cream-dark)', border: 'none', cursor: 'pointer', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

@@ -7,6 +7,7 @@ import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { OrderModal } from '@/components/OrderModal'
 import { ScrollReveal } from '@/components/ScrollReveal'
+import { ProductGallery } from '@/components/ProductGallery'
 import { ArrowLeft, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 
@@ -50,21 +51,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:64, alignItems:'start' }}>
             <ScrollReveal direction="left">
-              <div style={{ height:420, background:images[0]?'transparent':'linear-gradient(135deg,var(--pink-light),var(--cream-dark))', borderRadius:22, overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center', fontSize:108, marginBottom:14, boxShadow:'0 12px 40px rgba(250,135,161,.15)' }}>
-                {images[0]
-                  ? <img src={images[0]} alt={product.name} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
-                  : (product as any).category?.emoji||'🧶'
-                }
-              </div>
-              {images.length > 1 && (
-                <div style={{ display:'flex', gap:10, overflowX:'auto', paddingBottom:4 }}>
-                  {images.map((img:string, i:number)=>(
-                    <div key={i} className={`thumb ${i===0?'thumb-active':''}`} style={{ width:80, height:80, flexShrink:0 }}>
-                      <img src={img} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <ProductGallery images={images} emoji={(product as any).category?.emoji} name={product.name} />
             </ScrollReveal>
 
             <ScrollReveal direction="right">

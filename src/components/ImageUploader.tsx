@@ -1,6 +1,7 @@
 'use client'
 import { useState, useRef } from 'react'
 import { Upload, X, Loader2, Image as ImageIcon, CheckCircle } from 'lucide-react'
+import { resizeImageFile } from '@/lib/image'
 
 interface Props {
   value?: string
@@ -17,17 +18,15 @@ export function ImageUploader({ value, onChange, label, hint }: Props) {
 
   const upload = async (file: File) => {
     setUploading(true); setError(''); setSuccess(false)
-    const fd = new FormData()
-    fd.append('file', file)
     try {
-      const res = await fetch('/api/upload', { method: 'POST', body: fd })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Ошибка загрузки')
-      onChange(data.url)
+      if (!file.type.startsWith('image/')) throw new Error('Это не изображение')
+      if (file.size > 25 * 1024 * 1024) throw new Error('Файл слишком большой (макс. 25MB)')
+      const url = await resizeImageFile(file)
+      onChange(url)
       setSuccess(true)
       setTimeout(() => setSuccess(false), 2000)
     } catch (e: any) {
-      setError(e.message)
+      setError(e.message || 'Ошибка обработки изображения')
     }
     setUploading(false)
   }
@@ -72,7 +71,7 @@ export function ImageUploader({ value, onChange, label, hint }: Props) {
           <>
             <Upload size={24} style={{ color: 'var(--text-sub)', margin: '0 auto 8px' }} />
             <p style={{ color: 'var(--text)', fontSize: '.875rem', fontWeight: 500, marginBottom: 4 }}>Нажмите или перетащите файл</p>
-            <p style={{ color: 'var(--text-sub)', fontSize: '.78rem' }}>JPG, PNG, WebP, SVG — до 5MB</p>
+            <p style={{ color: 'var(--text-sub)', fontSize: '.78rem' }}>JPG, PNG, WebP, SVG — любой размер</p>
           </>
         )}
       </div>

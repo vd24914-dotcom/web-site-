@@ -1,6 +1,7 @@
 'use client'
 import { useState, useRef } from 'react'
 import { Upload, X, Loader2, Plus, GripVertical } from 'lucide-react'
+import { resizeImageFile } from '@/lib/image'
 
 interface Props {
   images: string[]
@@ -16,14 +17,12 @@ export function MultiImageUploader({ images, onChange }: Props) {
     setUploading(true); setError('')
     const newUrls: string[] = []
     for (const file of Array.from(files)) {
-      const fd = new FormData()
-      fd.append('file', file)
       try {
-        const res = await fetch('/api/upload', { method: 'POST', body: fd })
-        const data = await res.json()
-        if (res.ok) newUrls.push(data.url)
-        else setError(data.error)
-      } catch { setError('Ошибка загрузки') }
+        if (!file.type.startsWith('image/')) { setError('Это не изображение: ' + file.name); continue }
+        if (file.size > 25 * 1024 * 1024) { setError('Слишком большой файл: ' + file.name); continue }
+        const url = await resizeImageFile(file)
+        newUrls.push(url)
+      } catch { setError('Не удалось обработать: ' + file.name) }
     }
     onChange([...images, ...newUrls])
     setUploading(false)
@@ -62,7 +61,7 @@ export function MultiImageUploader({ images, onChange }: Props) {
       </div>
 
       {error && <p style={{ color: '#ef4444', fontSize: '.8rem', marginTop: 6 }}>⚠️ {error}</p>}
-      <p style={{ color: 'var(--text-sub)', fontSize: '.75rem', marginTop: 4 }}>Первое фото — главное. JPG, PNG, WebP до 5MB</p>
+      <p style={{ color: 'var(--text-sub)', fontSize: '.75rem', marginTop: 4 }}>Первое фото — главное. JPG, PNG, WebP — любой размер</p>
     </div>
   )
 }

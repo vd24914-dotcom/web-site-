@@ -5,32 +5,36 @@ function creds() {
   return { token, chatId }
 }
 
-// Обычное текстовое сообщение
-export async function sendTelegram(message: string) {
+async function tg(method: string, payload: any): Promise<any> {
   const c = creds()
-  if (!c) return
+  if (!c) return null
   try {
-    await fetch(`https://api.telegram.org/bot${c.token}/sendMessage`, {
+    const res = await fetch(`https://api.telegram.org/bot${c.token}/${method}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: c.chatId, text: message, parse_mode: 'HTML' }),
+      body: JSON.stringify({ chat_id: c.chatId, ...payload }),
     })
-  } catch {}
+    return await res.json().catch(() => ({ ok: res.ok }))
+  } catch {
+    return null
+  }
 }
 
-// Сообщение с фотографией товара (caption — подпись под фото)
+const stripTags = (s: string) => s.replace(/<\/?[^>]+>/g, '')
+
+// Текстовое сообщение. Если HTML-разметка по какой-то причине отклонена —
+// повторяем обычным текстом, чтобы заявка точно дошла.
+export async function sendTelegram(message: string) {
+  const r = await tg('sendMessage', { text: message, parse_mode: 'HTML' })
+  if (!r || r.ok === false) {
+    await tg('sendMessage', { text: stripTags(message) })
+  }
+}
+
+// Сообщение с фото. Если фото/подпись не прошли — отправляем текстом (с тем же запасным вариантом).
 export async function sendTelegramPhoto(photoUrl: string, caption: string) {
-  const c = creds()
-  if (!c) return
-  try {
-    const res = await fetch(`https://api.telegram.org/bot${c.token}/sendPhoto`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: c.chatId, photo: photoUrl, caption, parse_mode: 'HTML' }),
-    })
-    // Если фото не отправилось (например, ссылка недоступна) — шлём текстом
-    if (!res.ok) await sendTelegram(caption)
-  } catch {
+  const r = await tg('sendPhoto', { photo: photoUrl, caption, parse_mode: 'HTML' })
+  if (!r || r.ok === false) {
     await sendTelegram(caption)
   }
 }

@@ -23,14 +23,30 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ...info, sent: false, reason: 'Нет TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID в окружении' })
   }
 
-  try {
-    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+  const send = async (method: string, payload: any) => {
+    const res = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, text: '✅ Тест с сайта: бот подключён' }),
+      body: JSON.stringify({ chat_id: chatId, ...payload }),
     })
-    const data = await res.json()
-    return NextResponse.json({ ...info, telegram: data })
+    return res.json().catch(() => ({ ok: false }))
+  }
+
+  try {
+    // 1) Обычный текст
+    const plain = await send('sendMessage', { text: '✅ Тест 1: обычный текст' })
+    // 2) Текст с HTML-разметкой (как в заявке)
+    const html = await send('sendMessage', {
+      text: '🧶 <b>Тест 2: разметка</b>\n👤 <b>Имя:</b> Проверка',
+      parse_mode: 'HTML',
+    })
+    // 3) Сообщение с фото по ссылке
+    const photo = await send('sendPhoto', {
+      photo: 'https://picsum.photos/seed/uyutnit/600/600',
+      caption: '🖼 Тест 3: фото с подписью',
+      parse_mode: 'HTML',
+    })
+    return NextResponse.json({ ...info, plain, html, photo })
   } catch (e: any) {
     return NextResponse.json({ ...info, error: e?.message || 'fetch error' })
   }

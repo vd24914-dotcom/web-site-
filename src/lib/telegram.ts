@@ -33,10 +33,17 @@ async function sendPhoto(chatId: string | undefined, photoUrl: string, caption: 
   if (!r || r.ok === false) await send(chatId, caption)
 }
 
-// ── Заявки → личный чат владельца ──
-export const sendTelegram = (text: string) => send(process.env.TELEGRAM_CHAT_ID, text)
-export const sendTelegramPhoto = (photoUrl: string, caption: string) =>
-  sendPhoto(process.env.TELEGRAM_CHAT_ID, photoUrl, caption)
+// ── Заявки → один или несколько получателей ──
+// В TELEGRAM_CHAT_ID можно указать несколько ID через запятую: "12345,67890"
+function recipients(): string[] {
+  return (process.env.TELEGRAM_CHAT_ID || '').split(',').map(s => s.trim()).filter(Boolean)
+}
+export async function sendTelegram(text: string) {
+  for (const id of recipients()) await send(id, text)
+}
+export async function sendTelegramPhoto(photoUrl: string, caption: string) {
+  for (const id of recipients()) await sendPhoto(id, photoUrl, caption)
+}
 
 // ── Новости → Telegram-канал ──
 export const sendChannel = (text: string) => send(process.env.TELEGRAM_CHANNEL_ID, text)

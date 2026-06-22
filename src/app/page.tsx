@@ -202,11 +202,11 @@ export default async function HomePage() {
             <ScrollReveal direction="left">
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 {settings.about_image ? (
-                  <div className="about-art" style={{ width: 360, height: 400, borderRadius: '40% 60% 60% 40% / 50% 40% 60% 50%', overflow: 'hidden', boxShadow: '0 24px 64px rgba(250,135,161,.22)' }}>
+                  <div className="about-art" style={{ width: 460, height: 500, borderRadius: '40% 60% 60% 40% / 50% 40% 60% 50%', overflow: 'hidden', boxShadow: '0 24px 64px rgba(250,135,161,.22)' }}>
                     <img src={settings.about_image} alt="О мастере" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                 ) : (
-                  <div className="about-art gradient-flow" style={{ width: 320, height: 360, background: 'linear-gradient(135deg,var(--pink-light) 0%,var(--cream-dark) 50%,var(--pink-light) 100%)', borderRadius: '40% 60% 60% 40% / 50% 40% 60% 50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 88, boxShadow: '0 24px 64px rgba(250,135,161,.2)' }}>
+                  <div className="about-art gradient-flow" style={{ width: 420, height: 460, background: 'linear-gradient(135deg,var(--pink-light) 0%,var(--cream-dark) 50%,var(--pink-light) 100%)', borderRadius: '40% 60% 60% 40% / 50% 40% 60% 50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 120, boxShadow: '0 24px 64px rgba(250,135,161,.2)' }}>
                     {s('about_icon')}
                   </div>
                 )}

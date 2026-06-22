@@ -163,7 +163,7 @@ select.input { cursor:pointer; }
 @media(max-width:1024px) {
   .container { padding:0 20px; }
   .hero-art  { width:42vw !important; height:46vw !important; max-width:400px !important; max-height:440px !important; }
-  .about-art { width:42vw !important; height:46vw !important; max-width:360px !important; max-height:400px !important; }
+  .about-art { width:44vw !important; height:48vw !important; max-width:420px !important; max-height:460px !important; }
 }
 
 /* ── Mobile ── */

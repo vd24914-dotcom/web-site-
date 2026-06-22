@@ -22,7 +22,7 @@ export default function ProductsPage() {
   }
   useEffect(() => { load() }, [])
 
-  const blank = () => ({ id: null, name: '', description: '', price: '', categoryId: '', inStock: true, featured: false, metaTitle: '', metaDesc: '', videoUrl: '', images: [] })
+  const blank = () => ({ id: null, name: '', description: '', price: '', onSale: false, salePrice: '', categoryId: '', inStock: true, featured: false, metaTitle: '', metaDesc: '', videoUrl: '', images: [] })
 
   const openEdit = (p: any) => {
     let imgs: string[] = []
@@ -111,7 +111,16 @@ export default function ProductsPage() {
                         <div style={{ fontSize: '.75rem', color: 'var(--text-sub)', marginTop: 2 }}>{imgs.length} фото</div>
                       </td>
                       <td style={{ padding: '10px 16px', color: 'var(--text-sub)', fontSize: '.85rem' }}>{p.category?.emoji} {p.category?.name}</td>
-                      <td style={{ padding: '10px 16px', color: 'var(--pink)', fontWeight: 600, fontSize: '.9rem', whiteSpace: 'nowrap' }}>{formatPrice(p.price)}</td>
+                      <td style={{ padding: '10px 16px', fontWeight: 600, fontSize: '.9rem', whiteSpace: 'nowrap' }}>
+                        {p.onSale && p.salePrice ? (
+                          <span style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.3 }}>
+                            <span style={{ color: 'var(--text-sub)', textDecoration: 'line-through', fontSize: '.78rem', fontWeight: 500 }}>{formatPrice(p.price)}</span>
+                            <span style={{ color: 'var(--pink)' }}>🏷 {formatPrice(p.salePrice)}</span>
+                          </span>
+                        ) : (
+                          <span style={{ color: 'var(--pink)' }}>{formatPrice(p.price)}</span>
+                        )}
+                      </td>
                       <td style={{ padding: '10px 16px' }}>
                         <span style={{ fontSize: '.8rem', color: p.inStock ? 'var(--green)' : '#ef4444', fontWeight: 600 }}>
                           {p.inStock ? '✓ Да' : '✗ Нет'}
@@ -160,6 +169,21 @@ export default function ProductsPage() {
                   <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 6, fontSize: '.875rem' }}>Цена (сум) *</label>
                   <input className="input" type="number" placeholder="450000" value={editing.price || ''} onChange={e => setEditing({ ...editing, price: e.target.value })} />
                 </div>
+              </div>
+
+              {/* Скидка */}
+              <div style={{ background: 'var(--pink-mist)', borderRadius: 12, padding: '14px 16px', border: '1px solid var(--border)' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '.9rem', fontWeight: 600, color: 'var(--text)' }}>
+                  <input type="checkbox" checked={!!editing.onSale} onChange={e => setEditing({ ...editing, onSale: e.target.checked })} style={{ width: 16, height: 16 }} />
+                  🏷 Товар на скидке
+                </label>
+                {editing.onSale && (
+                  <div style={{ marginTop: 12 }}>
+                    <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 6, fontSize: '.875rem' }}>Цена со скидкой (сум) *</label>
+                    <input className="input" type="number" placeholder="например, 290000" value={editing.salePrice || ''} onChange={e => setEditing({ ...editing, salePrice: e.target.value })} />
+                    <p style={{ color: 'var(--text-sub)', fontSize: '.75rem', marginTop: 4 }}>Обычная цена ({editing.price || '—'}) будет зачёркнута, а рядом покажется эта.</p>
+                  </div>
+                )}
               </div>
 
               <div>

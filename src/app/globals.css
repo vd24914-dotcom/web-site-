@@ -84,6 +84,9 @@ h1,h2,h3,.font-display { font-family:'Playfair Display',Georgia,serif; }
 
 /* Бейдж «Хит» — всегда в верхнем левом углу карточки */
 .hit-badge { position:absolute !important; top:10px; left:10px; z-index:2; }
+/* Бейдж «Скидка» — в верхнем правом углу карточки */
+.sale-badge { position:absolute !important; top:10px; right:10px; z-index:2; }
+.badge-sale { background:#e0382e; color:#fff; }
 .badge-rose  { background:var(--pink-light); color:var(--pink-deep); }
 .badge-green { background:#e8f5eb; color:#2e7d45; }
 .badge-gray  { background:var(--cream-dark); color:var(--text-sub); }

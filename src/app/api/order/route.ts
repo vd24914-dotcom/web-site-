@@ -23,7 +23,15 @@ export async function POST(req: NextRequest) {
   // Описание товара (укорачиваем, чтобы подпись под фото не была слишком длинной)
   const descRaw = product ? String(product.description || '') : ''
   const desc = descRaw.length > 400 ? descRaw.slice(0, 400) + '…' : descRaw
-  const price = product?.price ? Number(product.price).toLocaleString('ru-RU') + ' сум' : ''
+  const fmt = (n: number) => Number(n).toLocaleString('ru-RU') + ' сум'
+  let price = ''
+  if (product) {
+    if (product.onSale && product.salePrice) {
+      price = `${fmt(product.salePrice)} (по скидке, было ${fmt(product.price)})`
+    } else {
+      price = fmt(product.price)
+    }
+  }
 
   const caption = [
     '🧶 <b>Новая заявка — УютНить!</b>', '',

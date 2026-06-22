@@ -7,6 +7,7 @@ import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { OrderModal } from '@/components/OrderModal'
 import { ScrollReveal } from '@/components/ScrollReveal'
+import { PriceTag } from '@/components/PriceTag'
 import { ArrowRight } from 'lucide-react'
 
 // Кэшируем страницу: посетители получают её мгновенно (без обращения к базе),
@@ -168,12 +169,13 @@ export default async function HomePage() {
                               : p.category?.emoji || '🧶'
                             }
                             {p.featured && <div className="hit-badge"><span className="badge badge-rose">⭐ Хит</span></div>}
+                            {p.onSale && p.salePrice && <div className="sale-badge"><span className="badge badge-sale">🏷 Скидка</span></div>}
                           </div>
                           <div style={{ padding: '16px 18px 20px' }}>
                             <div style={{ fontSize: '.75rem', color: 'var(--text-sub)', marginBottom: 5 }}>{p.category?.name}</div>
                             <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 10, fontSize: '1rem', lineHeight: 1.4 }}>{p.name}</h3>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <span className="font-display" style={{ fontSize: '1.15rem', color: 'var(--pink)', fontWeight: 700 }}>{formatPrice(p.price)}</span>
+                              <PriceTag price={p.price} onSale={p.onSale} salePrice={p.salePrice} />
                               <span style={{ fontSize: '.78rem', color: p.inStock ? '#2e7d45' : '#e53e3e', fontWeight: 600 }}>{p.inStock ? '✓ В наличии' : 'Под заказ'}</span>
                             </div>
                           </div>

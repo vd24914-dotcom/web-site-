@@ -7,6 +7,7 @@ import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { OrderModal } from '@/components/OrderModal'
 import { ScrollReveal } from '@/components/ScrollReveal'
+import { PriceTag } from '@/components/PriceTag'
 
 export const metadata: Metadata = {
   title: 'Каталог вязаных изделий',
@@ -76,13 +77,14 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
                             : p.category?.emoji || '🧶'
                           }
                           {p.featured && <div className="hit-badge"><span className="badge badge-rose">⭐ Хит</span></div>}
+                          {p.onSale && p.salePrice && <div className="sale-badge"><span className="badge badge-sale">🏷 Скидка</span></div>}
                         </div>
                         <div style={{ padding: '16px 18px 20px' }}>
                           <div style={{ fontSize: '.75rem', color: 'var(--text-sub)', marginBottom: 5 }}>{p.category?.name}</div>
                           <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8, fontSize: '1rem', lineHeight: 1.4 }}>{p.name}</h3>
                           <p style={{ fontSize: '.84rem', color: 'var(--text-sub)', marginBottom: 14, lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.description}</p>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span className="font-display" style={{ fontSize: '1.15rem', color: 'var(--pink)', fontWeight: 700 }}>{formatPrice(p.price)}</span>
+                            <PriceTag price={p.price} onSale={p.onSale} salePrice={p.salePrice} />
                             <span style={{ fontSize: '.78rem', padding: '.25rem .7rem', background: 'var(--pink-light)', color: 'var(--pink-deep)', borderRadius: 20, fontWeight: 600 }}>Заказать</span>
                           </div>
                         </div>

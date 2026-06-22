@@ -31,6 +31,8 @@ model Product {
   slug        String   @unique
   description String
   price       Float
+  onSale      Boolean  @default(false)
+  salePrice   Float?
   images      String   @default("[]")
   categoryId  Int
   category    Category @relation(fields: [categoryId], references: [id])

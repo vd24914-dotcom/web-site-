@@ -20,6 +20,7 @@ export function Header({ settings = {} }: Props) {
   const siteName = settings.site_name || 'УютНить'
   const links = [
     { href: '/catalog', label: 'Каталог' },
+    { href: '/sale',    label: '🏷 Скидки' },
     { href: '/#about',  label: 'О нас'   },
     { href: '/#contact',label: 'Контакты'},
   ]

@@ -8,6 +8,7 @@ import { Footer } from '@/components/Footer'
 import { OrderModal } from '@/components/OrderModal'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { ProductGallery } from '@/components/ProductGallery'
+import { PriceTag } from '@/components/PriceTag'
 import { ArrowLeft, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 
@@ -57,7 +58,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <ScrollReveal direction="right">
               <span className="badge badge-rose" style={{ marginBottom:14 }}>{(product as any).category?.emoji} {(product as any).category?.name}</span>
               <h1 className="font-display" style={{ fontSize:'2rem', color:'var(--text)', marginBottom:14, lineHeight:1.28 }}>{product.name}</h1>
-              <div className="font-display" style={{ fontSize:'2rem', color:'var(--pink)', fontWeight:700, marginBottom:18 }}>{formatPrice(product.price)}</div>
+              <div style={{ marginBottom:18 }}>
+                <PriceTag price={product.price} onSale={(product as any).onSale} salePrice={(product as any).salePrice} size="lg" />
+              </div>
               <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:22, color:product.inStock?'#2e7d45':'#e53e3e' }}>
                 <CheckCircle size={18}/>
                 <span style={{ fontWeight:600 }}>{product.inStock?'В наличии':'Под заказ (7-14 дней)'}</span>

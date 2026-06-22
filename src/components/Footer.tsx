@@ -10,8 +10,8 @@ export function Footer({ settings = {} }: Props) {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
               {settings.logo_image
-                ? <img src={settings.logo_image} alt={siteName} style={{ height: 36, width: 36, objectFit: 'contain', borderRadius: 8 }} />
-                : <span style={{ fontSize: 26 }}>{settings.logo_emoji || '🧶'}</span>
+                ? <img src={settings.logo_image} alt={siteName} style={{ height: showText ? 36 : 50, width: 'auto', maxWidth: showText ? 140 : 210, objectFit: 'contain', borderRadius: 8 }} />
+                : <span style={{ fontSize: showText ? 26 : 38 }}>{settings.logo_emoji || '🧶'}</span>
               }
               {showText && <span className="font-display" style={{ fontSize: '1.25rem', color: 'var(--white)', fontWeight: 700 }}>{siteName}</span>}
             </div>

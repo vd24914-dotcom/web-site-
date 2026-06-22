@@ -44,8 +44,8 @@ export function Header({ settings = {} }: Props) {
       <div className="container" style={{ height: 68, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
           {logo
-            ? <img src={logo} alt={siteName} style={{ height: 38, width: 38, objectFit: 'contain', borderRadius: 8 }} />
-            : <span className="icon-bounce" style={{ fontSize: 28, cursor: 'pointer' }}>{logoEmoji}</span>
+            ? <img src={logo} alt={siteName} style={{ height: showText ? 40 : 56, width: 'auto', maxWidth: showText ? 150 : 230, objectFit: 'contain', borderRadius: 8, transition: 'height .2s' }} />
+            : <span className="icon-bounce" style={{ fontSize: showText ? 28 : 40, cursor: 'pointer' }}>{logoEmoji}</span>
           }
           {showText && <span className="font-display" style={{ fontSize: '1.35rem', color: 'var(--text)', fontWeight: 700 }}>{siteName}</span>}
         </Link>

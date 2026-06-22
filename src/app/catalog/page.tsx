@@ -75,7 +75,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
                             ? <img src={img} alt={p.name} loading="lazy" decoding="async" className="img-zoom" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             : p.category?.emoji || '🧶'
                           }
-                          {p.featured && <div style={{ position: 'absolute', top: 12, left: 12 }}><span className="badge badge-rose">⭐ Хит</span></div>}
+                          {p.featured && <div className="hit-badge"><span className="badge badge-rose">⭐ Хит</span></div>}
                         </div>
                         <div style={{ padding: '16px 18px 20px' }}>
                           <div style={{ fontSize: '.75rem', color: 'var(--text-sub)', marginBottom: 5 }}>{p.category?.name}</div>

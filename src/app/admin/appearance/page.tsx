@@ -15,7 +15,7 @@ const TEXT_SECTIONS = [
     label: '🦸 Главный баннер',
     fields: [
       { key: 'hero_badge', label: 'Значок над заголовком', placeholder: 'Ручная работа с душой' },
-      { key: 'hero_title', label: 'Главный заголовок', placeholder: 'Тепло, которое чувствуется...', textarea: true },
+      { key: 'hero_title', label: '✨ Главный заголовок (2-я строка — анимированная)', placeholder: 'Тепло, которое чувствуется\nв каждой петельке', textarea: true, note: 'Пишите заголовок в ДВЕ строки — нажмите Enter для переноса. Первая строка обычная, а вторая (после переноса) будет печататься с анимацией, розовым курсивом — как «в каждой петельке».' },
       { key: 'hero_subtitle', label: 'Подзаголовок', placeholder: 'Описание...', textarea: true },
       { key: 'hero_btn', label: 'Кнопка 1', placeholder: 'Смотреть каталог' },
       { key: 'hero_btn2', label: 'Кнопка 2', placeholder: 'О мастере' },
@@ -228,7 +228,7 @@ export default function AppearancePage() {
             </h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               {TEXT_SECTIONS[activeSection].fields.map(field => (
-                <div key={field.key}>
+                <div key={field.key} style={(field as any).note ? { background: 'var(--pink-mist)', border: '1px solid var(--pink-light)', borderRadius: 12, padding: 14 } : undefined}>
                   <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 8, fontSize: '.875rem' }}>{field.label}</label>
                   {field.textarea ? (
                     <textarea className="input" rows={3} placeholder={field.placeholder}
@@ -236,6 +236,9 @@ export default function AppearancePage() {
                   ) : (
                     <input className="input" placeholder={field.placeholder}
                       value={values[field.key] || ''} onChange={e => setValues({ ...values, [field.key]: e.target.value })} />
+                  )}
+                  {(field as any).note && (
+                    <p style={{ color: 'var(--pink-dark)', fontSize: '.78rem', marginTop: 8, lineHeight: 1.5 }}>💡 {(field as any).note}</p>
                   )}
                 </div>
               ))}

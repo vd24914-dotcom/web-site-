@@ -143,6 +143,8 @@ select.input { cursor:pointer; }
 @keyframes float   { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
 @keyframes pulse-ring { 0%{box-shadow:0 0 0 0 rgba(250,135,161,.5);} 100%{box-shadow:0 0 0 16px rgba(250,135,161,0);} }
 @keyframes gradient-flow { 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
+@keyframes caret-blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+.type-caret { display:inline-block; margin-left:1px; font-weight:400; color:var(--pink); animation:caret-blink 1s step-end infinite; }
 
 /* Переливающийся градиент */
 .gradient-flow { background-size:220% 220% !important; animation:gradient-flow 9s ease infinite; }

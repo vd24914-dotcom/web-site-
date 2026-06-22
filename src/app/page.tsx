@@ -8,6 +8,7 @@ import { Footer } from '@/components/Footer'
 import { OrderModal } from '@/components/OrderModal'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { PriceTag } from '@/components/PriceTag'
+import { Typewriter } from '@/components/Typewriter'
 import { ArrowRight } from 'lucide-react'
 
 // Кэшируем страницу: посетители получают её мгновенно (без обращения к базе),
@@ -51,7 +52,12 @@ export default async function HomePage() {
               <ScrollReveal delay={80}>
                 <h1 className="font-display" style={{ fontSize: 'clamp(2.1rem,5vw,3.4rem)', lineHeight: 1.12, color: 'var(--text)', marginBottom: 22 }}>
                   {s('hero_title').split('\n').map((l, i) => (
-                    <span key={i}>{i === 1 ? <em style={{ color: 'var(--pink)', fontStyle: 'italic' }}>{l}</em> : l}<br /></span>
+                    <span key={i}>
+                      {i === 1
+                        ? <Typewriter text={l} style={{ color: 'var(--pink)', fontStyle: 'italic' }} />
+                        : l}
+                      <br />
+                    </span>
                   ))}
                 </h1>
               </ScrollReveal>

@@ -220,8 +220,8 @@ select.input { cursor:pointer; }
 .cta-btn { background:var(--white); color:var(--pink); padding:.9rem 2.4rem; border-radius:50px; font-weight:700; cursor:pointer; border:none; font-size:1rem; display:inline-flex; align-items:center; gap:10px; box-shadow:0 8px 28px rgba(0,0,0,.15); transition:transform .2s, box-shadow .2s; }
 .cta-btn:hover { transform:translateY(-2px); box-shadow:0 12px 36px rgba(0,0,0,.22); }
 
-.footer-link { color:rgba(255,255,255,.78); text-decoration:none; font-size:.875rem; transition:color .2s; }
-.footer-link:hover { color:var(--white); }
+.footer-link { color:var(--text-sub); text-decoration:none; font-size:.875rem; transition:color .2s; }
+.footer-link:hover { color:var(--pink); }
 
 .back-link { display:inline-flex; align-items:center; gap:6px; color:var(--text-sub); text-decoration:none; margin-bottom:36px; font-size:.9rem; font-weight:500; transition:color .2s; }
 .back-link:hover { color:var(--pink); }

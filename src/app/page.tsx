@@ -78,11 +78,11 @@ export default async function HomePage() {
 
             <ScrollReveal direction="right" style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
               {settings.hero_image ? (
-                <div className="animate-float hero-art" style={{ width: 380, height: 420, borderRadius: '60% 40% 50% 50% / 50% 50% 40% 60%', overflow: 'hidden', boxShadow: '0 24px 64px rgba(250,135,161,.28)' }}>
+                <div className="animate-float hero-art" style={{ width: 450, height: 490, borderRadius: '60% 40% 50% 50% / 50% 50% 40% 60%', overflow: 'hidden', boxShadow: '0 24px 64px rgba(250,135,161,.28)' }}>
                   <img src={settings.hero_image} alt={s('site_name')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
               ) : (
-                <div className="animate-float hero-art" style={{ width: 340, height: 380, background: 'linear-gradient(135deg, var(--pink-light), var(--cream-dark))', borderRadius: '60% 40% 50% 50% / 50% 50% 40% 60%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 108, boxShadow: '0 24px 64px rgba(250,135,161,.25)' }}>
+                <div className="animate-float hero-art" style={{ width: 420, height: 460, background: 'linear-gradient(135deg, var(--pink-light), var(--cream-dark))', borderRadius: '60% 40% 50% 50% / 50% 50% 40% 60%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 140, boxShadow: '0 24px 64px rgba(250,135,161,.25)' }}>
                   {s('hero_icon')}
                 </div>
               )}

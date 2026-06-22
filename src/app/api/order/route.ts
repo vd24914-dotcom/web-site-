@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   }
 
   const caption = [
-    '🧶 <b>Новая заявка — УютНить!</b>', '',
+    '🧶 <b>Новая заявка — Fimush.kin!</b>', '',
     product ? `🛍 <b>Товар:</b> ${esc(product.name)}` : '🛍 <b>Заявка:</b> Общая',
     product && desc ? `📝 ${esc(desc)}` : '',
     price ? `💰 <b>Цена:</b> ${esc(price)}` : '',
@@ -50,11 +50,4 @@ export async function POST(req: NextRequest) {
   let photo: string | null = null
   if (product) {
     const imgs = parseJSON(product.images || '[]')
-    if (imgs[0] && typeof imgs[0] === 'string' && imgs[0].startsWith('http')) photo = imgs[0]
-  }
-
-  if (photo) await sendTelegramPhoto(photo, caption)
-  else await sendTelegram(caption)
-
-  return NextResponse.json({ success: true })
-}
+    if (imgs[0] && typeof 

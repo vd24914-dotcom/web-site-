@@ -8,7 +8,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div style={{ padding:'8px 6px 22px', borderBottom:'1px solid var(--border)', marginBottom:16 }}>
           <div style={{ display:'flex', alignItems:'center', gap:8 }}>
             <span style={{ fontSize:24 }}>🧶</span>
-            <span className="font-display" style={{ fontSize:'1.1rem', color:'var(--text)', fontWeight:700 }}>УютНить</span>
+            <span className="font-display" style={{ fontSize:'1.1rem', color:'var(--text)', fontWeight:700 }}>Fimush.kin</span>
           </div>
           <div style={{ fontSize:'.72rem', color:'var(--text-sub)', marginTop:4, paddingLeft:34 }}>Панель управления</div>
         </div>
@@ -33,9 +33,4 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </form>
         </div>
       </aside>
-      <main style={{ flex:1, marginLeft:234, overflow:'auto', minHeight:'100vh', background:'var(--cream)' }}>
-        {children}
-      </main>
-    </div>
-  )
-}
+      <main sty

@@ -6,7 +6,7 @@ export const revalidate = 3600
 export default async function manifest(): Promise<MetadataRoute.Manifest> {
   const rows = await prisma.siteSettings.findMany().catch(() => [])
   const s = Object.fromEntries((rows as any[]).map((r: any) => [r.key, r.value]))
-  const name = s.site_name || 'УютНить'
+  const name = s.site_name || 'Fimush.kin'
 
   return {
     name: `${name} — вязаные изделия ручной работы`,

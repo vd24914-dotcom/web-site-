@@ -6,8 +6,8 @@ import { Footer } from '@/components/Footer'
 import { ScrollReveal } from '@/components/ScrollReveal'
 
 export const metadata: Metadata = {
-  title: 'Новости — УютНить',
-  description: 'Новости, новинки и обновления мастерской УютНить.',
+  title: 'Новости — Fimush.kin',
+  description: 'Новости, новинки и обновления мастерской Fimush.kin.',
 }
 
 async function getSettings(): Promise<Record<string, string>> {

@@ -23,7 +23,7 @@ export default function AdminLogin() {
       <div style={{ background:'var(--white)', borderRadius:22, padding:44, width:'100%', maxWidth:400, boxShadow:'0 12px 48px rgba(250,135,161,.2)', border:'1px solid var(--border)' }}>
         <div style={{ textAlign:'center', marginBottom:34 }}>
           <div style={{ fontSize:52, marginBottom:10 }}>🧶</div>
-          <h1 className="font-display" style={{ fontSize:'1.8rem', color:'var(--text)', marginBottom:4 }}>УютНить</h1>
+          <h1 className="font-display" style={{ fontSize:'1.8rem', color:'var(--text)', marginBottom:4 }}>Fimush.kin</h1>
           <p style={{ color:'var(--text-sub)', fontSize:'.9rem' }}>Панель управления</p>
         </div>
         <form onSubmit={submit} style={{ display:'flex', flexDirection:'column', gap:14 }}>

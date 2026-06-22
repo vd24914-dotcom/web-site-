@@ -20,7 +20,7 @@ export default async function AdminDashboard() {
   return (
     <div style={{ padding: 32 }}>
       <h1 className="font-display" style={{ fontSize: '1.8rem', color: 'var(--text)', marginBottom: 6 }}>Главная</h1>
-      <p style={{ color: 'var(--text-sub)', marginBottom: 32, fontSize: '.9rem' }}>Обзор магазина УютНить</p>
+      <p style={{ color: 'var(--text-sub)', marginBottom: 32, fontSize: '.9rem' }}>Обзор магазина Fimush.kin</p>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 20, marginBottom: 40 }}>
         {[

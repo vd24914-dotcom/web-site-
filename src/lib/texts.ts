@@ -4,7 +4,7 @@
 
 export const TEXTS = {
   // Сайт
-  site_name: 'УютНить',
+  site_name: 'Fimush.kin',
   logo_emoji: '🧶',
 
   // Главная страница

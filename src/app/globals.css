@@ -201,15 +201,15 @@ select.input { cursor:pointer; }
   .container { padding:0 16px; }
   .hide-mobile { display:none!important; }
 
-  /* Любые двухколоночные сетки на телефоне — в одну колонку */
-  [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns:1fr!important; }
+  /* Любые двухколоночные сетки на телефоне — в одну колонку, по центру */
+  [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns:1fr!important; gap:30px!important; }
 
   /* Уменьшаем большие вертикальные отступы секций — компактнее и легче */
-  section { padding-top:52px!important; padding-bottom:52px!important; }
+  section { padding-top:48px!important; padding-bottom:48px!important; }
 
-  /* Декоративные «капли»-картинки подгоняем под ширину экрана */
-  .hero-art  { width:74vw!important; height:82vw!important; max-width:330px!important; max-height:360px!important; }
-  .about-art { width:74vw!important; height:82vw!important; max-width:320px!important; max-height:350px!important; }
+  /* Декоративные «капли»-картинки подгоняем под ширину экрана и центрируем */
+  .hero-art  { width:64vw!important; height:70vw!important; max-width:300px!important; max-height:330px!important; font-size:82px!important; margin:0 auto!important; }
+  .about-art { width:64vw!important; height:70vw!important; max-width:300px!important; max-height:330px!important; font-size:78px!important; margin:0 auto!important; }
 
   /* Плавающий бейдж на телефоне мешает — прячем */
   .hero-badge-float { display:none!important; }

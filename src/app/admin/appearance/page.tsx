@@ -150,6 +150,13 @@ export default function AppearancePage() {
               <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 6, fontSize: '.875rem' }}>Или эмодзи (если нет логотипа)</label>
               <input className="input" placeholder="🧶" value={values.logo_emoji || ''} onChange={e => setValues({ ...values, logo_emoji: e.target.value })} style={{ fontSize: '1.5rem', textAlign: 'center' }} />
             </div>
+            <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--border)' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '.875rem', fontWeight: 500, color: 'var(--text)' }}>
+                <input type="checkbox" checked={values.logo_show_text !== '0'} onChange={e => setValues({ ...values, logo_show_text: e.target.checked ? '1' : '0' })} style={{ width: 16, height: 16 }} />
+                Показывать название рядом с логотипом
+              </label>
+              <p style={{ color: 'var(--text-sub)', fontSize: '.75rem', marginTop: 4 }}>Отключите, если у вас логотип-картинка (PNG) и текст не нужен.</p>
+            </div>
           </div>
 
           {/* Hero image */}

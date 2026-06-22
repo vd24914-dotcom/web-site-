@@ -18,6 +18,7 @@ export function Header({ settings = {} }: Props) {
   const logo = settings.logo_image
   const logoEmoji = settings.logo_emoji || '🧶'
   const siteName = settings.site_name || 'УютНить'
+  const showText = settings.logo_show_text !== '0'
   const links = [
     { href: '/catalog', label: 'Каталог' },
     { href: '/sale',    label: '🏷 Скидки' },
@@ -40,7 +41,7 @@ export function Header({ settings = {} }: Props) {
             ? <img src={logo} alt={siteName} style={{ height: 38, width: 38, objectFit: 'contain', borderRadius: 8 }} />
             : <span className="icon-bounce" style={{ fontSize: 28, cursor: 'pointer' }}>{logoEmoji}</span>
           }
-          <span className="font-display" style={{ fontSize: '1.35rem', color: 'var(--text)', fontWeight: 700 }}>{siteName}</span>
+          {showText && <span className="font-display" style={{ fontSize: '1.35rem', color: 'var(--text)', fontWeight: 700 }}>{siteName}</span>}
         </Link>
 
         <nav style={{ display: 'flex', gap: 32, alignItems: 'center' }} className="hide-mobile">

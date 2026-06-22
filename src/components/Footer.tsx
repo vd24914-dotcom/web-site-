@@ -2,6 +2,7 @@ import Link from 'next/link'
 interface Props { settings?: Record<string, string> }
 export function Footer({ settings = {} }: Props) {
   const siteName = settings.site_name || 'УютНить'
+  const showText = settings.logo_show_text !== '0'
   return (
     <footer style={{ background: 'linear-gradient(135deg,#FA87A1 0%,#e06080 100%)', color: 'rgba(255,255,255,.9)', padding: '56px 0 28px' }}>
       <div className="container">
@@ -12,7 +13,7 @@ export function Footer({ settings = {} }: Props) {
                 ? <img src={settings.logo_image} alt={siteName} style={{ height: 36, width: 36, objectFit: 'contain', borderRadius: 8 }} />
                 : <span style={{ fontSize: 26 }}>{settings.logo_emoji || '🧶'}</span>
               }
-              <span className="font-display" style={{ fontSize: '1.25rem', color: 'var(--white)', fontWeight: 700 }}>{siteName}</span>
+              {showText && <span className="font-display" style={{ fontSize: '1.25rem', color: 'var(--white)', fontWeight: 700 }}>{siteName}</span>}
             </div>
             <p style={{ fontSize: '.85rem', lineHeight: 1.65, opacity: .85 }}>{settings.footer_text || 'Вязаные изделия ручной работы с любовью'}</p>
           </div>

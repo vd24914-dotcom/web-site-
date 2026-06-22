@@ -168,10 +168,14 @@ export default async function HomePage() {
                               ? <img src={img} alt={p.name} loading="lazy" decoding="async" className="img-zoom" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                               : p.category?.emoji || '🧶'
                             }
-                            {p.featured && <div className="hit-badge"><span className="badge badge-hit">⭐ Хит</span></div>}
-                            {p.onSale && p.salePrice && <div className="sale-badge"><span className="badge badge-sale">🏷 Скидка</span></div>}
                           </div>
                           <div style={{ padding: '16px 18px 20px' }}>
+                            {(p.featured || (p.onSale && p.salePrice)) && (
+                              <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
+                                {p.featured && <span className="badge badge-hit">⭐ Хит</span>}
+                                {p.onSale && p.salePrice && <span className="badge badge-sale">🏷 Скидка</span>}
+                              </div>
+                            )}
                             <div style={{ fontSize: '.75rem', color: 'var(--text-sub)', marginBottom: 5 }}>{p.category?.name}</div>
                             <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 10, fontSize: '1rem', lineHeight: 1.4 }}>{p.name}</h3>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

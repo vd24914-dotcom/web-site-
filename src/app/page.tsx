@@ -46,9 +46,6 @@ export default async function HomePage() {
         <section className="gradient-flow" style={{ background: 'linear-gradient(150deg, var(--cream) 0%, var(--pink-mist) 50%, var(--pink-light) 100%)', padding: '90px 0 110px', overflow: 'hidden' }}>
           <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
             <div>
-              <ScrollReveal>
-                <span className="badge badge-rose" style={{ marginBottom: 22 }}>✨ {s('hero_badge')}</span>
-              </ScrollReveal>
               <ScrollReveal delay={80}>
                 <h1 className="font-display" style={{ fontSize: 'clamp(2.1rem,5vw,3.4rem)', lineHeight: 1.12, color: 'var(--text)', marginBottom: 22 }}>
                   {s('hero_title').split('\n').map((l, i) => (
@@ -92,7 +89,7 @@ export default async function HomePage() {
                   {s('hero_icon')}
                 </div>
               )}
-              <div className="hero-badge-float" style={{ position: 'absolute', top: 24, right: 0, background: 'var(--white)', borderRadius: 16, padding: '12px 18px', boxShadow: '0 8px 28px rgba(250,135,161,.18)', border: '1px solid var(--border)' }}>
+              <div className="hero-badge-float" style={{ position: 'absolute', top: 24, right: 0, background: 'var(--white)', borderRadius: 16, padding: '12px 18px', boxShadow: '0 8px 28px rgba(250,135,161,.18)', border: '1px solid var(--border)', animation: 'float 3.5s ease-in-out infinite' }}>
                 <div style={{ fontWeight: 700, color: 'var(--text)', fontSize: '.85rem' }}>{s('hero_badge2')}</div>
                 <div style={{ color: 'var(--text-sub)', fontSize: '.75rem', marginTop: 2 }}>{s('hero_badge2_sub')}</div>
               </div>

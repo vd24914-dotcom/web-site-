@@ -11,7 +11,7 @@ interface Props {
 
 export function OrderModal({ productId, productName, trigger, settings = {} }: Props) {
   const [open, setOpen] = useState(false)
-  const [form, setForm] = useState({ name: '', phone: '+998 ', message: '' })
+  const [form, setForm] = useState({ name: '', phone: '+998 ', email: '', message: '' })
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
 
   const submit = async (e: React.FormEvent) => {
@@ -25,7 +25,7 @@ export function OrderModal({ productId, productName, trigger, settings = {} }: P
       })
       if (!res.ok) throw new Error()
       setStatus('done')
-      setForm({ name: '', phone: '+998 ', message: '' })
+      setForm({ name: '', phone: '+998 ', email: '', message: '' })
     } catch {
       setStatus('error')
     }
@@ -70,6 +70,10 @@ export function OrderModal({ productId, productName, trigger, settings = {} }: P
                   <div>
                     <label style={{ display: 'block', fontSize: '.85rem', fontWeight: 500, color: 'var(--text)', marginBottom: 6 }}>Телефон или Telegram *</label>
                     <input className="input" required placeholder="+998 90 000-00-00 или @username" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '.85rem', fontWeight: 500, color: 'var(--text)', marginBottom: 6 }}>Почта <span style={{ color: 'var(--text-sub)', fontWeight: 400 }}>(по желанию)</span></label>
+                    <input className="input" type="email" placeholder="email@example.com" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
                   </div>
                   <div>
                     <label style={{ display: 'block', fontSize: '.85rem', fontWeight: 500, color: 'var(--text)', marginBottom: 6 }}>Пожелания</label>

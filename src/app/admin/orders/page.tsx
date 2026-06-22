@@ -44,6 +44,7 @@ export default function OrdersPage() {
                   </div>
                   <div style={{display:'flex',gap:20,flexWrap:'wrap',marginBottom:8}}>
                     <div style={{display:'flex',alignItems:'center',gap:6,color:'var(--text-sub)',fontSize:'.85rem'}}><Phone size={14}/> {order.phone}</div>
+                    {order.email&&<div style={{color:'var(--text-sub)',fontSize:'.85rem'}}>✉️ {order.email}</div>}
                     {order.product&&<div style={{color:'var(--pink)',fontSize:'.85rem',fontWeight:500}}>🧶 {order.product.name}</div>}
                   </div>
                   {order.message&&(

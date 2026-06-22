@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { parseJSON } from '@/lib/utils'
 
-// Диагностика Telegram: показывает, какой токен/chat_id видит сайт,
-// и что отвечает Telegram при отправке. Защищено секретом (?secret=JWT_SECRET).
+// Диагностика Telegram: проверяет реальный сценарий заявки
+// (текст с разметкой + фото товара). Защищено ?secret=JWT_SECRET.
 export async function GET(req: NextRequest) {
   const secret = req.nextUrl.searchParams.get('secret')
   if (secret !== process.env.JWT_SECRET) {
@@ -13,15 +15,17 @@ export async function GET(req: NextRequest) {
 
   const info: any = {
     hasToken: !!token,
-    tokenPreview: token ? token.slice(0, 10) + '…' + token.slice(-4) : null,
-    tokenLength: token ? token.length : 0,
     hasChatId: !!chatId,
     chatId: chatId || null,
   }
-
   if (!token || !chatId) {
-    return NextResponse.json({ ...info, sent: false, reason: 'Нет TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID в окружении' })
+    return NextResponse.json({ ...info, reason: 'Нет TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID' })
   }
+
+  // Берём первый товар с фото, чтобы проверить реальную ссылку
+  const product: any = await prisma.product.findFirst({ orderBy: { id: 'desc' } }).catch(() => null)
+  const imgs = product ? parseJSON(product.images || '[]') : []
+  const photoUrl = imgs[0] && typeof imgs[0] === 'string' ? imgs[0] : null
 
   const send = async (method: string, payload: any) => {
     const res = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
@@ -29,24 +33,32 @@ export async function GET(req: NextRequest) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: chatId, ...payload }),
     })
-    return res.json().catch(() => ({ ok: false }))
+    return res.json().catch(() => ({ ok: false, status: res.status }))
   }
 
   try {
-    // 1) Обычный текст
-    const plain = await send('sendMessage', { text: '✅ Тест 1: обычный текст' })
-    // 2) Текст с HTML-разметкой (как в заявке)
     const html = await send('sendMessage', {
-      text: '🧶 <b>Тест 2: разметка</b>\n👤 <b>Имя:</b> Проверка',
+      text: '🧶 <b>Тест заявки</b>\n👤 <b>Имя:</b> Проверка\n📱 <b>Телефон:</b> +998',
       parse_mode: 'HTML',
     })
-    // 3) Сообщение с фото по ссылке
-    const photo = await send('sendPhoto', {
-      photo: 'https://picsum.photos/seed/uyutnit/600/600',
-      caption: '🖼 Тест 3: фото с подписью',
-      parse_mode: 'HTML',
+
+    let photo: any = { skipped: 'у товара нет фото или нет товара' }
+    if (photoUrl) {
+      photo = await send('sendPhoto', {
+        photo: photoUrl,
+        caption: '🖼 Тест фото товара',
+        parse_mode: 'HTML',
+      })
+    }
+
+    return NextResponse.json({
+      ...info,
+      productName: product?.name || null,
+      photoUrlType: photoUrl ? (photoUrl.startsWith('http') ? 'http-ссылка' : 'base64/иное') : 'нет',
+      photoUrlStart: photoUrl ? String(photoUrl).slice(0, 60) : null,
+      html,
+      photo,
     })
-    return NextResponse.json({ ...info, plain, html, photo })
   } catch (e: any) {
     return NextResponse.json({ ...info, error: e?.message || 'fetch error' })
   }

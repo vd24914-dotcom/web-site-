@@ -74,4 +74,17 @@ export default async function SalePage() {
                               <span style={{ fontSize: '.78rem', padding: '.25rem .7rem', background: 'var(--pink-light)', color: 'var(--pink-deep)', borderRadius: 20, fontWeight: 600 }}>Заказать</span>
                             </div>
                           </div>
-                   
+                        </div>
+                      </Link>
+                    </ScrollReveal>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        </section>
+      </main>
+      <Footer settings={settings} />
+    </>
+  )
+}

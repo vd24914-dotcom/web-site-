@@ -33,4 +33,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </form>
         </div>
       </aside>
-      <main sty
+      <main style={{ flex:1, marginLeft:234, overflow:'auto', minHeight:'100vh', background:'var(--cream)' }}>
+        {children}
+      </main>
+    </div>
+  )
+}

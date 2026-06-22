@@ -66,4 +66,25 @@ export function Header({ settings = {} }: Props) {
               <ChevronLeft size={22} color="var(--text)" />
             </button>
           )}
-          <button onClick={() => setOpen(!open)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }} 
+          <button onClick={() => setOpen(!open)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }} className="show-mobile" aria-label="Menu">
+            {open ? <X size={22} color="var(--pink)" /> : <Menu size={22} color="var(--text)" />}
+          </button>
+        </div>
+      </div>
+
+      {open && (
+        <div style={{ background: 'var(--cream)', borderTop: '1px solid var(--border)', padding: '16px 24px 20px' }}>
+          {links.map((l, i) => (
+            <Link key={l.href} href={l.href} onClick={() => setOpen(false)}
+              style={{ display: 'block', padding: '12px 0', color: 'var(--text)', textDecoration: 'none', borderBottom: i < links.length - 1 ? '1px solid var(--border)' : 'none', fontSize: '1rem', fontWeight: 500 }}>
+              {l.label}
+            </Link>
+          ))}
+          <Link href="/catalog" className="btn-primary" style={{ marginTop: 16, width: '100%', justifyContent: 'center' }}>Заказать</Link>
+        </div>
+      )}
+
+      <style>{`.show-mobile{display:none}@media(max-width:768px){.show-mobile{display:flex!important}.hide-mobile{display:none!important}}`}</style>
+    </header>
+  )
+}

@@ -223,4 +223,32 @@ export default function AppearancePage() {
           </div>
 
           <div style={{ background: 'white', borderRadius: 16, padding: 28, border: '1px solid var(--border)' }}>
-            <h2 style={{ fontWeight: 600, color: 'var(--text)'
+            <h2 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 24, fontSize: '1.1rem' }}>
+              {TEXT_SECTIONS[activeSection].label}
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {TEXT_SECTIONS[activeSection].fields.map(field => (
+                <div key={field.key} style={(field as any).note ? { background: 'var(--pink-mist)', border: '1px solid var(--pink-light)', borderRadius: 12, padding: 14 } : undefined}>
+                  <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 8, fontSize: '.875rem' }}>{field.label}</label>
+                  {field.textarea ? (
+                    <textarea className="input" rows={3} placeholder={field.placeholder}
+                      value={values[field.key] || ''} onChange={e => setValues({ ...values, [field.key]: e.target.value })} />
+                  ) : (
+                    <input className="input" placeholder={field.placeholder}
+                      value={values[field.key] || ''} onChange={e => setValues({ ...values, [field.key]: e.target.value })} />
+                  )}
+                  {(field as any).note && (
+                    <p style={{ color: 'var(--pink-dark)', fontSize: '.78rem', marginTop: 8, lineHeight: 1.5 }}>💡 {(field as any).note}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid var(--border)' }}>
+              <SaveBtn />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

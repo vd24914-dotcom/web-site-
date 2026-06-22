@@ -50,4 +50,11 @@ export async function POST(req: NextRequest) {
   let photo: string | null = null
   if (product) {
     const imgs = parseJSON(product.images || '[]')
-    if (imgs[0] && typeof 
+    if (imgs[0] && typeof imgs[0] === 'string' && imgs[0].startsWith('http')) photo = imgs[0]
+  }
+
+  if (photo) await sendTelegramPhoto(photo, caption)
+  else await sendTelegram(caption)
+
+  return NextResponse.json({ success: true })
+}

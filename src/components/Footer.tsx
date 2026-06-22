@@ -32,10 +32,6 @@ export function Footer({ settings = {} }: Props) {
             <p style={{ fontSize: '.875rem', opacity: .85 }}>📍 {settings.contact_address || 'Ташкент, Узбекистан'}</p>
           </div>
         </div>
-        <div style={{ borderTop: '1px solid var(--border)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-          <p style={{ fontSize: '.8rem', opacity: .65 }}>© 2024 {siteName}. Все права защищены.</p>
-          <p style={{ fontSize: '.8rem', opacity: .65 }}>Изделия ручной работы 🧶 Узбекистан</p>
-        </div>
       </div>
     </footer>
   )

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { LayoutDashboard, Package, ShoppingBag, Tag, Settings, LogOut, Palette } from 'lucide-react'
+import { LayoutDashboard, Package, ShoppingBag, Tag, Settings, LogOut, Palette, Newspaper } from 'lucide-react'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,6 +18,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             { href:'/admin/orders',      icon:<ShoppingBag    size={17}/>, label:'Заявки'            },
             { href:'/admin/products',    icon:<Package        size={17}/>, label:'Товары'            },
             { href:'/admin/categories',  icon:<Tag            size={17}/>, label:'Категории'         },
+            { href:'/admin/news',        icon:<Newspaper      size={17}/>, label:'Новости'           },
             { href:'/admin/appearance',  icon:<Palette        size={17}/>, label:'Дизайн и контент'  },
             { href:'/admin/settings',    icon:<Settings       size={17}/>, label:'Настройки'         },
           ].map(item => (

@@ -1,13 +1,18 @@
 'use client'
 import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, ChevronLeft } from 'lucide-react'
 
 interface Props { settings?: Record<string, string> }
 
 export function Header({ settings = {} }: Props) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const pathname = usePathname()
+  const router = useRouter()
+  const isHome = pathname === '/'
+  const goBack = () => { if (typeof window !== 'undefined' && window.history.length > 1) router.back(); else router.push('/') }
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 20)
@@ -22,6 +27,7 @@ export function Header({ settings = {} }: Props) {
   const links = [
     { href: '/catalog', label: 'Каталог' },
     { href: '/sale',    label: '🏷 Скидки' },
+    { href: '/news',    label: '📰 Новости' },
     { href: '/#about',  label: 'О нас'   },
     { href: '/#contact',label: 'Контакты'},
   ]
@@ -50,8 +56,14 @@ export function Header({ settings = {} }: Props) {
           ))}
         </nav>
 
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <Link href="/catalog" className="btn-primary hide-mobile" style={{ padding: '.55rem 1.25rem', fontSize: '.85rem' }}>Заказать</Link>
+          {!isHome && (
+            <button onClick={goBack} className="show-mobile" aria-label="Назад"
+              style={{ background: 'var(--cream-dark)', border: 'none', cursor: 'pointer', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <ChevronLeft size={22} color="var(--text)" />
+            </button>
+          )}
           <button onClick={() => setOpen(!open)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }} className="show-mobile" aria-label="Menu">
             {open ? <X size={22} color="var(--pink)" /> : <Menu size={22} color="var(--text)" />}
           </button>

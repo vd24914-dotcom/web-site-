@@ -64,3 +64,12 @@ model SiteSettings {
   key   String @id
   value String
 }
+
+model News {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  image     String?
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+}

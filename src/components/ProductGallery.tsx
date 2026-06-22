@@ -30,7 +30,7 @@ export function ProductGallery({ images, emoji, name }: Props) {
         onMouseLeave={() => { setZoom(false); setOrigin('center') }}
         onMouseMove={onMove}
         style={{
-          height: 420,
+          aspectRatio: '1',
           background: hasImages ? 'transparent' : 'linear-gradient(135deg,var(--pink-light),var(--cream-dark))',
           borderRadius: 22,
           overflow: 'hidden',

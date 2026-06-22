@@ -1,7 +1,7 @@
 'use client'
 import { useState, useRef } from 'react'
-import { Upload, X, Loader2, Plus, GripVertical } from 'lucide-react'
-import { resizeImageToBlob } from '@/lib/image'
+import { X, Loader2, Plus } from 'lucide-react'
+import { ImageCropEditor } from '@/components/ImageCropEditor'
 
 interface Props {
   images: string[]
@@ -9,29 +9,39 @@ interface Props {
 }
 
 export function MultiImageUploader({ images, onChange }: Props) {
+  const [queue, setQueue] = useState<File[]>([])
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const upload = async (files: FileList) => {
-    setUploading(true); setError('')
-    const newUrls: string[] = []
-    for (const file of Array.from(files)) {
-      try {
-        if (!file.type.startsWith('image/')) { setError('Это не изображение: ' + file.name); continue }
-        if (file.size > 25 * 1024 * 1024) { setError('Слишком большой файл: ' + file.name); continue }
-        const blob = await resizeImageToBlob(file)
-        const fd = new FormData()
-        fd.append('file', blob, 'photo.webp')
-        const res = await fetch('/api/upload', { method: 'POST', body: fd })
-        const data = await res.json()
-        if (res.ok) newUrls.push(data.url)
-        else setError(data.error || 'Ошибка загрузки')
-      } catch { setError('Не удалось загрузить: ' + file.name) }
-    }
-    onChange([...images, ...newUrls])
-    setUploading(false)
+  const onSelect = (files: FileList) => {
+    setError('')
+    const imgs = Array.from(files).filter(f => {
+      if (!f.type.startsWith('image/')) { setError('Можно загружать только изображения'); return false }
+      if (f.size > 25 * 1024 * 1024) { setError('Слишком большой файл: ' + f.name); return false }
+      return true
+    })
+    if (imgs.length) setQueue(imgs)
+    if (inputRef.current) inputRef.current.value = ''
   }
+
+  const handleConfirm = async (blob: Blob) => {
+    setUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append('file', blob, 'photo.webp')
+      const res = await fetch('/api/upload', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (res.ok) onChange([...images, data.url])
+      else setError(data.error || 'Ошибка загрузки')
+    } catch {
+      setError('Не удалось загрузить фото')
+    }
+    setUploading(false)
+    setQueue(q => q.slice(1))
+  }
+
+  const handleCancel = () => setQueue(q => q.slice(1))
 
   const remove = (idx: number) => onChange(images.filter((_, i) => i !== idx))
 
@@ -53,20 +63,23 @@ export function MultiImageUploader({ images, onChange }: Props) {
           </div>
         ))}
 
-        {/* Add button */}
         <div onClick={() => !uploading && inputRef.current?.click()}
           style={{ width: 90, height: 90, border: '2px dashed var(--border)', borderRadius: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: uploading ? 'wait' : 'pointer', transition: 'all .2s', gap: 4 }}
           onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--pink)')}
           onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}>
           <input ref={inputRef} type="file" accept="image/*" multiple style={{ display: 'none' }}
-            onChange={e => e.target.files && upload(e.target.files)} />
+            onChange={e => e.target.files && onSelect(e.target.files)} />
           {uploading ? <Loader2 size={20} className="animate-spin" style={{ color: 'var(--pink)' }} /> : <Plus size={20} style={{ color: 'var(--text-sub)' }} />}
           <span style={{ fontSize: '.7rem', color: 'var(--text-sub)' }}>{uploading ? 'Загрузка' : 'Добавить'}</span>
         </div>
       </div>
 
       {error && <p style={{ color: '#ef4444', fontSize: '.8rem', marginTop: 6 }}>⚠️ {error}</p>}
-      <p style={{ color: 'var(--text-sub)', fontSize: '.75rem', marginTop: 4 }}>Первое фото — главное. JPG, PNG, WebP — любой размер</p>
+      <p style={{ color: 'var(--text-sub)', fontSize: '.75rem', marginTop: 4 }}>Первое фото — главное. При добавлении откроется редактор кадрирования.</p>
+
+      {queue[0] && (
+        <ImageCropEditor file={queue[0]} onConfirm={handleConfirm} onCancel={handleCancel} />
+      )}
     </div>
   )
 }

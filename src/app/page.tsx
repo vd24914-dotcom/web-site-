@@ -166,7 +166,7 @@ export default async function HomePage() {
                     <ScrollReveal key={p.id} delay={(i % 3) * 80}>
                       <Link href={`/product/${p.slug}`} style={{ textDecoration: 'none' }}>
                         <div className="card">
-                          <div style={{ height: 248, background: img ? 'transparent' : 'linear-gradient(135deg,var(--pink-light),var(--cream-dark))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 72, overflow: 'hidden', position: 'relative' }}>
+                          <div style={{ aspectRatio: '1', background: img ? 'transparent' : 'linear-gradient(135deg,var(--pink-light),var(--cream-dark))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 72, overflow: 'hidden', position: 'relative' }}>
                             {img
                               ? <img src={img} alt={p.name} loading="lazy" decoding="async" className="img-zoom" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                               : p.category?.emoji || '🧶'

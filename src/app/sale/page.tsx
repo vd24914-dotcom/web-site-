@@ -32,7 +32,7 @@ export default async function SalePage() {
     <>
       <Header settings={settings} />
       <main>
-        <section style={{ background: 'linear-gradient(150deg, var(--cream) 0%, var(--pink-mist) 100%)', padding: '56px 0 36px' }}>
+        <section className="gradient-flow" style={{ background: 'linear-gradient(150deg, var(--cream) 0%, var(--pink-mist) 50%, var(--pink-light) 100%)', padding: '56px 0 36px' }}>
           <div className="container" style={{ textAlign: 'center' }}>
             <span className="badge badge-sale" style={{ marginBottom: 14 }}>🏷 Акция</span>
             <h1 className="font-display" style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', color: 'var(--text)', marginBottom: 10 }}>Скидки</h1>

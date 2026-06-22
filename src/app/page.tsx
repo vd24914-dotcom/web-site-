@@ -42,7 +42,7 @@ export default async function HomePage() {
       <main>
 
         {/* HERO */}
-        <section style={{ background: 'linear-gradient(150deg, var(--cream) 0%, var(--pink-mist) 60%, var(--pink-light) 100%)', padding: '90px 0 110px', overflow: 'hidden' }}>
+        <section className="gradient-flow" style={{ background: 'linear-gradient(150deg, var(--cream) 0%, var(--pink-mist) 50%, var(--pink-light) 100%)', padding: '90px 0 110px', overflow: 'hidden' }}>
           <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
             <div>
               <ScrollReveal>
@@ -82,7 +82,7 @@ export default async function HomePage() {
                   <img src={settings.hero_image} alt={s('site_name')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
               ) : (
-                <div className="animate-float hero-art" style={{ width: 420, height: 460, background: 'linear-gradient(135deg, var(--pink-light), var(--cream-dark))', borderRadius: '60% 40% 50% 50% / 50% 50% 40% 60%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 140, boxShadow: '0 24px 64px rgba(250,135,161,.25)' }}>
+                <div className="animate-float hero-art gradient-flow" style={{ width: 420, height: 460, background: 'linear-gradient(135deg, var(--pink-light) 0%, var(--cream-dark) 50%, var(--pink-light) 100%)', borderRadius: '60% 40% 50% 50% / 50% 50% 40% 60%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 140, boxShadow: '0 24px 64px rgba(250,135,161,.25)' }}>
                   {s('hero_icon')}
                 </div>
               )}
@@ -203,7 +203,7 @@ export default async function HomePage() {
                     <img src={settings.about_image} alt="О мастере" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                 ) : (
-                  <div className="about-art" style={{ width: 320, height: 360, background: 'linear-gradient(135deg,var(--pink-light),var(--cream-dark))', borderRadius: '40% 60% 60% 40% / 50% 40% 60% 50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 88, boxShadow: '0 24px 64px rgba(250,135,161,.2)' }}>
+                  <div className="about-art gradient-flow" style={{ width: 320, height: 360, background: 'linear-gradient(135deg,var(--pink-light) 0%,var(--cream-dark) 50%,var(--pink-light) 100%)', borderRadius: '40% 60% 60% 40% / 50% 40% 60% 50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 88, boxShadow: '0 24px 64px rgba(250,135,161,.2)' }}>
                     {s('about_icon')}
                   </div>
                 )}
@@ -219,7 +219,7 @@ export default async function HomePage() {
         </section>
 
         {/* CTA */}
-        <section id="contact" style={{ background: 'linear-gradient(135deg,#FA87A1 0%,#e06080 100%)', padding: '88px 0' }}>
+        <section id="contact" className="gradient-flow" style={{ background: 'linear-gradient(135deg,#FA87A1 0%,#e06080 50%,#c84060 100%)', padding: '88px 0' }}>
           <div className="container" style={{ textAlign: 'center' }}>
             <ScrollReveal>
               <h2 className="font-display" style={{ fontSize: '2.3rem', color: 'var(--white)', marginBottom: 16 }}>{s('cta_title')}</h2>

@@ -157,6 +157,26 @@ select.input { cursor:pointer; }
 .admin-link:hover { background:var(--pink-mist); color:var(--pink-dark); }
 .admin-link.active { background:linear-gradient(135deg,#FA87A1,#e06080); color:var(--white); box-shadow:0 4px 14px rgba(250,135,161,.35); }
 
+/* ── Адаптивная админка ── */
+.admin-sidebar { width:234px; background:var(--white); border-right:1px solid var(--border); padding:24px 14px; display:flex; flex-direction:column; position:fixed; top:0; bottom:0; left:0; overflow-y:auto; z-index:60; }
+.admin-main { margin-left:234px; min-height:100vh; background:var(--cream); }
+.admin-topbar { display:none; }
+.admin-overlay { display:none; }
+.admin-close { display:none; }
+
+@media(max-width:900px) {
+  .admin-topbar { display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:50; background:var(--white); border-bottom:1px solid var(--border); padding:10px 16px; height:54px; }
+  .admin-sidebar { transform:translateX(-100%); transition:transform .3s ease; box-shadow:0 0 50px rgba(0,0,0,.25); z-index:70; }
+  .admin-sidebar.open { transform:translateX(0); }
+  .admin-overlay { display:block; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:65; }
+  .admin-close { display:block; }
+  .admin-main { margin-left:0; }
+  .admin-main > div { padding-left:16px!important; padding-right:16px!important; padding-top:20px!important; }
+  .admin-main table { display:block; overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch; }
+  .admin-main [style*="grid-template-columns:220px"],
+  .admin-main [style*="grid-template-columns: 220px"] { grid-template-columns:1fr!important; }
+}
+
 /* ── Order status ── */
 .status-new        { background:#fff8e0; color:#92600a; }
 .status-processing { background:#e0f0ff; color:#1a50a0; }

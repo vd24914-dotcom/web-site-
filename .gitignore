@@ -36,6 +36,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# исходные картинки логотипов в корне (не нужны в репозитории)
+/*.jpg
+/*.jpeg
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

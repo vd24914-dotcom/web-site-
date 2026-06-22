@@ -30,21 +30,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <button onClick={() => setOpen(true)} aria-label="Меню" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, display: 'flex' }}>
           <Menu size={22} color="var(--text)" />
         </button>
-        <span className="font-display" style={{ fontSize: '1.05rem', color: 'var(--text)', fontWeight: 700 }}>🧶 Fimush.kin</span>
+        <img src="/admin-logo.png" alt="Fimush.kin Админ" style={{ height: 36, width: 'auto' }} />
       </div>
 
       {open && <div className="admin-overlay" onClick={() => setOpen(false)} />}
 
       <aside className={`admin-sidebar${open ? ' open' : ''}`}>
-        <div style={{ padding: '8px 6px 22px', borderBottom: '1px solid var(--border)', marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 24 }}>🧶</span>
-              <span className="font-display" style={{ fontSize: '1.1rem', color: 'var(--text)', fontWeight: 700 }}>Fimush.kin</span>
-            </div>
-            <div style={{ fontSize: '.72rem', color: 'var(--text-sub)', marginTop: 4, paddingLeft: 34 }}>Панель управления</div>
-          </div>
-          <button onClick={() => setOpen(false)} className="admin-close" aria-label="Закрыть" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+        <div style={{ padding: '4px 6px 18px', borderBottom: '1px solid var(--border)', marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+          <img src="/admin-logo.png" alt="Fimush.kin Админ" style={{ width: 150, maxWidth: '100%', display: 'block' }} />
+          <button onClick={() => setOpen(false)} className="admin-close" aria-label="Закрыть" style={{ background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}>
             <X size={20} color="var(--text-sub)" />
           </button>
         </div>

@@ -202,6 +202,7 @@ select.input { cursor:pointer; }
   .hide-mobile { display:none!important; }
 
   /* Любые двухколоночные сетки на телефоне — в одну колонку, по центру */
+  [style*="grid-template-columns:1fr 1fr"],
   [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns:1fr!important; gap:30px!important; }
 
   /* Уменьшаем большие вертикальные отступы секций — компактнее и легче */

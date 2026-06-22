@@ -80,7 +80,7 @@ h1,h2,h3,.font-display { font-family:'Playfair Display',Georgia,serif; }
 .card:hover { transform:translateY(-6px) scale(1.01); box-shadow:0 14px 42px rgba(250,135,161,.2); }
 
 /* ── Badges ── */
-.badge { display:inline-flex; align-items:center; gap:.35rem; padding:.28rem .8rem; border-radius:50px; font-size:.78rem; font-weight:600; }
+.badge { display:inline-flex; align-items:center; gap:.35rem; padding:.3rem .8rem; border-radius:50px; font-size:.78rem; font-weight:600; line-height:1; white-space:nowrap; }
 .badge-rose  { background:var(--pink-light); color:var(--pink-deep); }
 .badge-green { background:#e8f5eb; color:#2e7d45; }
 .badge-gray  { background:var(--cream-dark); color:var(--text-sub); }

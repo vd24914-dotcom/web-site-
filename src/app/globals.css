@@ -83,10 +83,14 @@ h1,h2,h3,.font-display { font-family:'Playfair Display',Georgia,serif; }
 .badge { display:inline-flex; align-items:center; gap:.35rem; padding:.3rem .8rem; border-radius:50px; font-size:.78rem; font-weight:600; line-height:1; white-space:nowrap; }
 
 /* Бейдж «Хит» — всегда в верхнем левом углу карточки */
-.hit-badge { position:absolute !important; top:10px !important; left:10px !important; right:auto !important; bottom:auto !important; margin:0 !important; z-index:3; }
+.hit-badge { position:absolute !important; top:12px !important; left:12px !important; right:auto !important; bottom:auto !important; margin:0 !important; z-index:3; filter:drop-shadow(0 2px 6px rgba(0,0,0,.4)); }
 /* Бейдж «Скидка» — в верхнем правом углу карточки */
-.sale-badge { position:absolute !important; top:10px !important; right:10px !important; left:auto !important; bottom:auto !important; margin:0 !important; z-index:3; }
-.badge-sale { background:#e0382e; color:#fff; }
+.sale-badge { position:absolute !important; top:12px !important; right:12px !important; left:auto !important; bottom:auto !important; margin:0 !important; z-index:3; filter:drop-shadow(0 2px 6px rgba(0,0,0,.4)); }
+
+/* Контрастные плашки на фото товара */
+.hit-badge .badge, .sale-badge .badge { font-size:.82rem; padding:.34rem .85rem; box-shadow:0 1px 2px rgba(0,0,0,.12); }
+.badge-hit  { background:linear-gradient(135deg,#FA87A1,#e06080); color:#fff; }
+.badge-sale { background:linear-gradient(135deg,#ff5a5f,#e0382e); color:#fff; }
 .badge-rose  { background:var(--pink-light); color:var(--pink-deep); }
 .badge-green { background:#e8f5eb; color:#2e7d45; }
 .badge-gray  { background:var(--cream-dark); color:var(--text-sub); }

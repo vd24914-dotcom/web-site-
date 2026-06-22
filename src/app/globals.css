@@ -27,7 +27,37 @@ img, svg, video { max-width: 100%; }
   --text-sub:    #8a5068;
   --border:      #f5c8d8;
   --white:       #ffffff;
+  --header-bg:   rgba(255,255,255,.98);
+  --header-bg-scrolled: rgba(255,243,230,.96);
 }
+
+/* ── Тёмная тема ── */
+[data-theme="dark"] {
+  --pink:        #ff95ad;
+  --pink-dark:   #ff7a9c;
+  --pink-deep:   #ffa9bd;
+  --pink-light:  #4a2733;
+  --pink-mist:   #2a1a22;
+  --cream:       #161016;
+  --cream-dark:  #241823;
+  --cream-mid:   #2e1d29;
+  --text:        #f3e7ee;
+  --text-sub:    #c5a6b6;
+  --border:      #3a2531;
+  --white:       #211722;
+  --header-bg:   rgba(33,23,34,.92);
+  --header-bg-scrolled: rgba(33,23,34,.96);
+}
+
+/* Принудительно светлая тема (для админки) */
+.force-light {
+  --pink:#FA87A1; --pink-dark:#e06080; --pink-deep:#c84060; --pink-light:#ffd6e3; --pink-mist:#fff0f5;
+  --cream:#FFF3E6; --cream-dark:#FFE5CC; --cream-mid:#FFD6B0;
+  --text:#3a1528; --text-sub:#8a5068; --border:#f5c8d8; --white:#ffffff;
+}
+
+html { transition: background .3s; }
+body, .card, .input, header, footer, section { transition: background-color .3s, color .3s, border-color .3s; }
 
 /* ── Base ── */
 html { scroll-behavior: smooth; }

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { Menu, X, ChevronLeft } from 'lucide-react'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 interface Props { settings?: Record<string, string> }
 
@@ -34,7 +35,7 @@ export function Header({ settings = {} }: Props) {
 
   return (
     <header style={{
-      background: scrolled ? 'rgba(255,243,230,.96)' : 'rgba(255,255,255,.98)',
+      background: scrolled ? 'var(--header-bg-scrolled)' : 'var(--header-bg)',
       borderBottom: '1px solid var(--border)',
       position: 'sticky', top: 0, zIndex: 100,
       backdropFilter: 'blur(12px)',
@@ -56,7 +57,8 @@ export function Header({ settings = {} }: Props) {
           ))}
         </nav>
 
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <ThemeToggle />
           <Link href="/catalog" className="btn-primary hide-mobile" style={{ padding: '.55rem 1.25rem', fontSize: '.85rem' }}>Заказать</Link>
           {!isHome && (
             <button onClick={goBack} className="show-mobile" aria-label="Назад"

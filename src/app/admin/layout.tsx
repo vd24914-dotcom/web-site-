@@ -3,7 +3,7 @@ import { LayoutDashboard, Package, ShoppingBag, Tag, Settings, LogOut, Palette, 
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ display:'flex', minHeight:'100vh', background:'var(--cream)' }}>
+    <div className="force-light" style={{ display:'flex', minHeight:'100vh', background:'var(--cream)' }}>
       <aside style={{ width:234, background:'var(--white)', borderRight:'1px solid var(--border)', padding:'24px 14px', display:'flex', flexDirection:'column', position:'fixed', top:0, bottom:0, left:0, overflowY:'auto' }}>
         <div style={{ padding:'8px 6px 22px', borderBottom:'1px solid var(--border)', marginBottom:16 }}>
           <div style={{ display:'flex', alignItems:'center', gap:8 }}>

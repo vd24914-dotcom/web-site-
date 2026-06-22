@@ -10,5 +10,12 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return <html lang="ru"><body>{children}<ScrollToTop /></body></html>
+  return (
+    <html lang="ru" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem('theme');if(t==='dark'){document.documentElement.setAttribute('data-theme','dark')}}catch(e){}` }} />
+      </head>
+      <body>{children}<ScrollToTop /></body>
+    </html>
+  )
 }

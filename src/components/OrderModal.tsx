@@ -2,6 +2,21 @@
 import { useState } from 'react'
 import { X, Send, CheckCircle, Loader2 } from 'lucide-react'
 
+// Узбекский номер: +998 XX XXX XX XX (9 цифр после кода 998)
+function formatUzPhone(input: string): string {
+  let d = input.replace(/\D/g, '')
+  if (d.startsWith('998')) d = d.slice(3)
+  d = d.slice(0, 9)
+  let out = '+998'
+  if (d.length) out += ' ' + d.slice(0, 2)
+  if (d.length > 2) out += ' ' + d.slice(2, 5)
+  if (d.length > 5) out += ' ' + d.slice(5, 7)
+  if (d.length > 7) out += ' ' + d.slice(7, 9)
+  return out
+}
+const uzDigits = (p: string) => p.replace(/\D/g, '')
+const isUzComplete = (p: string) => uzDigits(p).length === 12
+
 interface Props {
   productId?: number
   productName?: string
@@ -13,9 +28,11 @@ export function OrderModal({ productId, productName, trigger, settings = {} }: P
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState({ name: '', phone: '+998 ', email: '', message: '' })
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
+  const [phoneErr, setPhoneErr] = useState(false)
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!isUzComplete(form.phone)) { setPhoneErr(true); return }
     setStatus('loading')
     try {
       const res = await fetch('/api/order', {
@@ -68,8 +85,20 @@ export function OrderModal({ productId, productName, trigger, settings = {} }: P
                     <input className="input" required placeholder="Как вас зовут?" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: '.85rem', fontWeight: 500, color: 'var(--text)', marginBottom: 6 }}>Телефон или Telegram *</label>
-                    <input className="input" required placeholder="+998 90 000-00-00 или @username" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
+                    <label style={{ display: 'block', fontSize: '.85rem', fontWeight: 500, color: 'var(--text)', marginBottom: 6 }}>Телефон *</label>
+                    <input
+                      className="input"
+                      required
+                      inputMode="tel"
+                      maxLength={17}
+                      placeholder="+998 99 864 81 91"
+                      value={form.phone}
+                      onChange={e => { setForm({ ...form, phone: formatUzPhone(e.target.value) }); setPhoneErr(false) }}
+                      style={(phoneErr || (uzDigits(form.phone).length > 3 && !isUzComplete(form.phone))) ? { borderColor: '#ef4444', boxShadow: '0 0 0 3px rgba(239,68,68,.12)' } : undefined}
+                    />
+                    {(phoneErr || (uzDigits(form.phone).length > 3 && !isUzComplete(form.phone))) && (
+                      <p style={{ color: '#ef4444', fontSize: '.78rem', marginTop: 5 }}>Введите номер полностью: +998 XX XXX XX XX</p>
+                    )}
                   </div>
                   <div>
                     <label style={{ display: 'block', fontSize: '.85rem', fontWeight: 500, color: 'var(--text)', marginBottom: 6 }}>Почта <span style={{ color: 'var(--text-sub)', fontWeight: 400 }}>(по желанию)</span></label>

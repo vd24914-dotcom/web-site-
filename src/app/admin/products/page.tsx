@@ -84,7 +84,7 @@ export default function ProductsPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--border)', background: 'var(--cream-dark)' }}>
-                  {['Фото', 'Товар', 'Категория', 'Цена', 'В наличии', 'Хит', 'Действия'].map(h => (
+                  {['Фото', 'Товар', 'Категория', 'Цена', 'В наличии', 'Новинка', 'Действия'].map(h => (
                     <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: '.8rem', color: 'var(--text-sub)', fontWeight: 600, textTransform: 'uppercase' }}>{h}</th>
                   ))}
                 </tr>
@@ -227,7 +227,7 @@ export default function ProductsPage() {
                 </label>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '.9rem', fontWeight: 500, color: 'var(--text)' }}>
                   <input type="checkbox" checked={editing.featured} onChange={e => setEditing({ ...editing, featured: e.target.checked })} style={{ width: 16, height: 16 }} />
-                  ⭐ Показать на главной
+                  ✨ Новинка (показать на главной)
                 </label>
               </div>
 

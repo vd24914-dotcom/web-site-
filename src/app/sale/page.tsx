@@ -64,7 +64,7 @@ export default async function SalePage() {
                           </div>
                           <div style={{ padding: '16px 18px 20px' }}>
                             <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
-                              {p.featured && <span className="badge badge-hit">⭐ Хит</span>}
+                              {p.featured && <span className="badge badge-hit">✨ Новинка</span>}
                               <span className="badge badge-sale">🏷 Скидка</span>
                             </div>
                             <div style={{ fontSize: '.75rem', color: 'var(--text-sub)', marginBottom: 5 }}>{p.category?.name}</div>

@@ -178,7 +178,7 @@ export default async function HomePage() {
                           <div style={{ padding: '16px 18px 20px' }}>
                             {(p.featured || (p.onSale && p.salePrice)) && (
                               <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
-                                {p.featured && <span className="badge badge-hit">⭐ Хит</span>}
+                                {p.featured && <span className="badge badge-hit">✨ Новинка</span>}
                                 {p.onSale && p.salePrice && <span className="badge badge-sale">🏷 Скидка</span>}
                               </div>
                             )}

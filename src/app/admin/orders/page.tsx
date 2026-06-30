@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { RefreshCw, Phone, MessageSquare } from 'lucide-react'
+import { RefreshCw, Phone, MessageSquare, Trash2 } from 'lucide-react'
 
 const STATUS: Record<string,string> = { new:'Новая', processing:'В работе', done:'Выполнена', cancelled:'Отменена' }
 const SC: Record<string,string> = { new:'status-new', processing:'status-processing', done:'status-done', cancelled:'status-cancelled' }
@@ -15,6 +15,12 @@ export default function OrdersPage() {
   const changeStatus = async (id:number, status:string) => {
     await fetch('/api/admin/orders',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,status})})
     setOrders(prev=>prev.map(o=>o.id===id?{...o,status}:o))
+  }
+
+  const del = async (id:number) => {
+    if (!confirm('Удалить заявку безвозвратно?')) return
+    await fetch(`/api/admin/orders?id=${id}`, { method:'DELETE' })
+    setOrders(prev=>prev.filter(o=>o.id!==id))
   }
 
   return (
@@ -65,6 +71,10 @@ export default function OrdersPage() {
                       {label}
                     </button>
                   ))}
+                  <button onClick={()=>del(order.id)}
+                    style={{marginTop:8,padding:'6px 12px',borderRadius:8,border:'1px solid #fecaca',background:'#fee2e2',color:'#991b1b',fontSize:'.8rem',cursor:'pointer',fontWeight:600,display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
+                    <Trash2 size={13}/> Удалить заявку
+                  </button>
                 </div>
               </div>
             </div>

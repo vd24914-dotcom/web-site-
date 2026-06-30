@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { SocialLinks } from './SocialLinks'
 interface Props { settings?: Record<string, string> }
 export function Footer({ settings = {} }: Props) {
   const siteName = settings.site_name || 'Fimush.kin'
@@ -15,7 +16,8 @@ export function Footer({ settings = {} }: Props) {
               }
               {showText && <span className="font-display" style={{ fontSize: '1.25rem', color: 'var(--text)', fontWeight: 700 }}>{siteName}</span>}
             </div>
-            <p style={{ fontSize: '.85rem', lineHeight: 1.65, opacity: .85 }}>{settings.footer_text || 'Вязаные изделия ручной работы с любовью'}</p>
+            <p style={{ fontSize: '.85rem', lineHeight: 1.65, opacity: .85, marginBottom: 16 }}>{settings.footer_text || 'Вязаные изделия ручной работы с любовью'}</p>
+            <SocialLinks settings={settings} />
           </div>
           <div>
             <h4 style={{ color: 'var(--text)', marginBottom: 16, fontWeight: 600 }}>Каталог</h4>

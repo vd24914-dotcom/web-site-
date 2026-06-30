@@ -9,6 +9,7 @@ import { OrderModal } from '@/components/OrderModal'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { PriceTag } from '@/components/PriceTag'
 import { Typewriter } from '@/components/Typewriter'
+import { SocialLinks } from '@/components/SocialLinks'
 import { ArrowRight } from 'lucide-react'
 
 // Кэшируем страницу: посетители получают её мгновенно (без обращения к базе),
@@ -135,7 +136,9 @@ export default async function HomePage() {
                   <ScrollReveal key={cat.id} delay={i * 60}>
                     <Link href={`/catalog?category=${cat.slug}`} style={{ textDecoration: 'none' }}>
                       <div className="card" style={{ padding: '26px 16px', textAlign: 'center', cursor: 'pointer' }}>
-                        <span className="icon-bounce" style={{ fontSize: 42, marginBottom: 10, display: 'block' }}>{cat.emoji}</span>
+                        {cat.icon
+                          ? <img src={cat.icon} alt={cat.name} className="icon-bounce" style={{ width: 50, height: 50, objectFit: 'contain', margin: '0 auto 10px', display: 'block' }} />
+                          : <span className="icon-bounce" style={{ fontSize: 42, marginBottom: 10, display: 'block' }}>{cat.emoji}</span>}
                         <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: '.9rem' }}>{cat.name}</div>
                       </div>
                     </Link>
@@ -230,6 +233,9 @@ export default async function HomePage() {
               <OrderModal settings={settings} trigger={
                 <button className="cta-btn">{s('cta_btn')} <ArrowRight size={18} /></button>
               } />
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: 28 }}>
+                <SocialLinks settings={settings} size={20} />
+              </div>
             </ScrollReveal>
           </div>
         </section>

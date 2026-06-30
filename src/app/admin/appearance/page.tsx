@@ -63,11 +63,16 @@ const TEXT_SECTIONS = [
     ]
   },
   {
-    label: '📞 Контакты',
+    label: '📞 Контакты и соцсети',
     fields: [
-      { key: 'contact_phone', label: 'Телефон', placeholder: '+998 90 000-00-00' },
-      { key: 'contact_telegram', label: 'Telegram', placeholder: '@uyutnit' },
-      { key: 'contact_address', label: 'Адрес', placeholder: 'Ташкент, Узбекистан' },
+      { key: 'contact_phone', label: '📱 Телефон', placeholder: '+998 90 000-00-00' },
+      { key: 'contact_telegram', label: '✈️ Telegram (@имя или ссылка)', placeholder: '@fimushkin' },
+      { key: 'social_instagram', label: '📸 Instagram (@имя или ссылка)', placeholder: '@fimushkin' },
+      { key: 'social_whatsapp', label: '💬 WhatsApp (номер с кодом страны)', placeholder: '998901234567' },
+      { key: 'social_facebook', label: '👍 Facebook (ссылка)', placeholder: 'https://facebook.com/...' },
+      { key: 'social_youtube', label: '▶️ YouTube (ссылка)', placeholder: 'https://youtube.com/@...' },
+      { key: 'contact_email', label: '✉️ Email', placeholder: 'mail@example.com' },
+      { key: 'contact_address', label: '📍 Адрес', placeholder: 'Ташкент, Узбекистан' },
     ]
   },
 ]

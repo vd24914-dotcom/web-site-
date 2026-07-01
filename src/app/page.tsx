@@ -10,6 +10,7 @@ import { ScrollReveal } from '@/components/ScrollReveal'
 import { PriceTag } from '@/components/PriceTag'
 import { Typewriter } from '@/components/Typewriter'
 import { SocialLinks } from '@/components/SocialLinks'
+import { PromoBanner } from '@/components/PromoBanner'
 import { ArrowRight } from 'lucide-react'
 
 // Кэшируем страницу: посетители получают её мгновенно (без обращения к базе),
@@ -41,6 +42,7 @@ export default async function HomePage() {
   return (
     <>
       <Header settings={settings} />
+      <PromoBanner end={settings.sale_end} title={settings.sale_title} />
       <main>
 
         {/* HERO */}

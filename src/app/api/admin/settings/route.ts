@@ -28,6 +28,8 @@ export async function POST(req: NextRequest) {
   // Revalidate all public pages so changes appear immediately
   revalidatePath('/')
   revalidatePath('/catalog')
+  revalidatePath('/sale')
+  revalidatePath('/news')
   revalidatePath('/product/[slug]', 'page')
 
   return NextResponse.json({ success: true })

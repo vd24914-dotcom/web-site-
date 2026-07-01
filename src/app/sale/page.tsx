@@ -7,6 +7,7 @@ import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { PriceTag } from '@/components/PriceTag'
+import { PromoBanner } from '@/components/PromoBanner'
 
 export const metadata: Metadata = {
   title: 'Скидки — Fimush.kin',
@@ -31,6 +32,7 @@ export default async function SalePage() {
   return (
     <>
       <Header settings={settings} />
+      <PromoBanner end={settings.sale_end} title={settings.sale_title} />
       <main>
         <section className="gradient-flow" style={{ background: 'linear-gradient(150deg, var(--cream) 0%, var(--pink-mist) 50%, var(--pink-light) 100%)', padding: '56px 0 36px' }}>
           <div className="container" style={{ textAlign: 'center' }}>

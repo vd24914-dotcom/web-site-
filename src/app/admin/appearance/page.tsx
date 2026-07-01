@@ -63,6 +63,13 @@ const TEXT_SECTIONS = [
     ]
   },
   {
+    label: '🏷 Акция и таймер',
+    fields: [
+      { key: 'sale_title', label: 'Текст акции (в баннере)', placeholder: 'Скидки недели! Успейте' },
+      { key: 'sale_end', label: '🏁 Акция активна до', type: 'datetime-local', note: 'Выбери дату и время окончания акции. На сайте появится баннер с обратным отсчётом; когда время выйдет — баннер сам исчезнет. Оставь пустым, чтобы отключить.' },
+    ]
+  },
+  {
     label: '📞 Контакты и соцсети',
     fields: [
       { key: 'contact_phone', label: '📱 Телефон', placeholder: '+998 90 000-00-00' },
@@ -250,7 +257,7 @@ export default function AppearancePage() {
                     <textarea className="input" rows={3} placeholder={field.placeholder}
                       value={values[field.key] || ''} onChange={e => setValues({ ...values, [field.key]: e.target.value })} />
                   ) : (
-                    <input className="input" placeholder={field.placeholder}
+                    <input className="input" type={(field as any).type || 'text'} placeholder={field.placeholder}
                       value={values[field.key] || ''} onChange={e => setValues({ ...values, [field.key]: e.target.value })} />
                   )}
                   {(field as any).note && (

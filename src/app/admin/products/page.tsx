@@ -22,7 +22,7 @@ export default function ProductsPage() {
   }
   useEffect(() => { load() }, [])
 
-  const blank = () => ({ id: null, name: '', description: '', price: '', onSale: false, salePrice: '', categoryId: '', inStock: true, featured: false, metaTitle: '', metaDesc: '', videoUrl: '', images: [] })
+  const blank = () => ({ id: null, name: '', description: '', price: '', onSale: false, salePrice: '', categoryId: '', inStock: true, quantity: '', featured: false, metaTitle: '', metaDesc: '', videoUrl: '', images: [] })
 
   const openEdit = (p: any) => {
     let imgs: string[] = []
@@ -218,6 +218,12 @@ export default function ProductsPage() {
                     value={Array.isArray(editing.sizes) ? editing.sizes.join(', ') : ''}
                     onChange={e => setEditing({ ...editing, sizes: e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean) })} />
                 </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 6, fontSize: '.875rem' }}>Количество в наличии (шт)</label>
+                <input className="input" type="number" min={0} placeholder="например, 5" value={editing.quantity ?? ''} onChange={e => setEditing({ ...editing, quantity: e.target.value })} />
+                <p style={{ color: 'var(--text-sub)', fontSize: '.75rem', marginTop: 4 }}>Необязательно. Если указать — на странице товара покажется «осталось N шт».</p>
               </div>
 
               <div style={{ display: 'flex', gap: 24, padding: '4px 0' }}>

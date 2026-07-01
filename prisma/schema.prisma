@@ -40,6 +40,7 @@ model Product {
   colors      String   @default("[]")
   sizes       String   @default("[]")
   inStock     Boolean  @default(true)
+  quantity    Int?
   featured    Boolean  @default(false)
   metaTitle   String?
   metaDesc    String?

@@ -63,7 +63,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               </div>
               <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:22, color:product.inStock?'#2e7d45':'#e53e3e' }}>
                 <CheckCircle size={18}/>
-                <span style={{ fontWeight:600 }}>{product.inStock?'В наличии':'Под заказ (7-14 дней)'}</span>
+                <span style={{ fontWeight:600 }}>{product.inStock?'В наличии':'Под заказ (7-14 дней)'}{(product as any).quantity != null ? ` · осталось ${(product as any).quantity} шт` : ''}</span>
               </div>
               <div style={{ fontWeight:600, color:'var(--text)', marginBottom:10, fontSize:'.95rem' }}>Описание</div>
               <p style={{ color:'var(--text-sub)', lineHeight:1.8, marginBottom:26, fontSize:'1rem', whiteSpace:'pre-line' }}>{product.description}</p>

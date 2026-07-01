@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 
-export function SaleCountdown({ end }: { end?: string | null }) {
+export function SaleCountdown({ end, mini }: { end?: string | null; mini?: boolean }) {
   const [now, setNow] = useState<number | null>(null)
 
   useEffect(() => {
@@ -20,6 +20,16 @@ export function SaleCountdown({ end }: { end?: string | null }) {
   const h = Math.floor((diff % 86400000) / 3600000)
   const m = Math.floor((diff % 3600000) / 60000)
   const s = Math.floor((diff % 60000) / 1000)
+
+  if (mini) {
+    const pad = (n: number) => String(n).padStart(2, '0')
+    const txt = d > 0 ? `${d}д ${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(h)}:${pad(m)}:${pad(s)}`
+    return (
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'var(--pink-mist)', color: 'var(--pink-dark)', fontWeight: 700, fontSize: '.72rem', padding: '3px 8px', borderRadius: 20, fontVariantNumeric: 'tabular-nums', border: '1px solid var(--border)' }}>
+        ⏳ {txt}
+      </span>
+    )
+  }
 
   const box = (v: number, l: string) => (
     <div style={{ textAlign: 'center' }}>

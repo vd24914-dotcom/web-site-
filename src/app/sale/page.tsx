@@ -8,6 +8,7 @@ import { Footer } from '@/components/Footer'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { PriceTag } from '@/components/PriceTag'
 import { PromoBanner } from '@/components/PromoBanner'
+import { SaleCountdown } from '@/components/SaleCountdown'
 
 export const metadata: Metadata = {
   title: 'Скидки — Fimush.kin',
@@ -68,6 +69,7 @@ export default async function SalePage() {
                             <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
                               {p.featured && <span className="badge badge-hit">✨ Новинка</span>}
                               <span className="badge badge-sale">🏷 Скидка</span>
+                              {p.saleEnd && <SaleCountdown end={p.saleEnd} mini />}
                             </div>
                             <div style={{ fontSize: '.75rem', color: 'var(--text-sub)', marginBottom: 5 }}>{p.category?.name}</div>
                             <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 10, fontSize: '1rem', lineHeight: 1.4 }}>{p.name}</h3>

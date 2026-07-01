@@ -11,6 +11,7 @@ import { PriceTag } from '@/components/PriceTag'
 import { Typewriter } from '@/components/Typewriter'
 import { SocialLinks } from '@/components/SocialLinks'
 import { PromoBanner } from '@/components/PromoBanner'
+import { SaleCountdown } from '@/components/SaleCountdown'
 import { ArrowRight } from 'lucide-react'
 
 // Кэшируем страницу: посетители получают её мгновенно (без обращения к базе),
@@ -184,6 +185,7 @@ export default async function HomePage() {
                               <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
                                 {p.featured && <span className="badge badge-hit">✨ Новинка</span>}
                                 {p.onSale && p.salePrice && <span className="badge badge-sale">🏷 Скидка</span>}
+                                {p.onSale && p.salePrice && p.saleEnd && <SaleCountdown end={p.saleEnd} mini />}
                               </div>
                             )}
                             <div style={{ fontSize: '.75rem', color: 'var(--text-sub)', marginBottom: 5 }}>{p.category?.name}</div>

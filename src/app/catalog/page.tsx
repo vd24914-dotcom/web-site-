@@ -8,6 +8,7 @@ import { Footer } from '@/components/Footer'
 import { OrderModal } from '@/components/OrderModal'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { PriceTag } from '@/components/PriceTag'
+import { SaleCountdown } from '@/components/SaleCountdown'
 
 export const metadata: Metadata = {
   title: 'Каталог вязаных изделий',
@@ -82,6 +83,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
                             <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
                               {p.featured && <span className="badge badge-hit">✨ Новинка</span>}
                               {p.onSale && p.salePrice && <span className="badge badge-sale">🏷 Скидка</span>}
+                              {p.onSale && p.salePrice && p.saleEnd && <SaleCountdown end={p.saleEnd} mini />}
                             </div>
                           )}
                           <div style={{ fontSize: '.75rem', color: 'var(--text-sub)', marginBottom: 5 }}>{p.category?.name}</div>

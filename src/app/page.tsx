@@ -52,7 +52,7 @@ export default async function HomePage() {
                   {s('hero_title').split('\n').map((l, i) => (
                     <span key={i}>
                       {i === 1
-                        ? <Typewriter text={l} style={{ color: 'var(--pink)', fontStyle: 'italic' }} />
+                        ? <Typewriter text={l} style={{ color: 'var(--pink)', fontStyle: 'italic', fontSize: '.82em' }} />
                         : l}
                       <br />
                     </span>

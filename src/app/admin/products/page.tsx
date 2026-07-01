@@ -22,7 +22,7 @@ export default function ProductsPage() {
   }
   useEffect(() => { load() }, [])
 
-  const blank = () => ({ id: null, name: '', description: '', price: '', onSale: false, salePrice: '', categoryId: '', inStock: true, quantity: '', featured: false, metaTitle: '', metaDesc: '', videoUrl: '', images: [] })
+  const blank = () => ({ id: null, name: '', description: '', price: '', onSale: false, salePrice: '', saleEnd: '', categoryId: '', inStock: true, quantity: '', featured: false, metaTitle: '', metaDesc: '', videoUrl: '', images: [] })
 
   const openEdit = (p: any) => {
     let imgs: string[] = []
@@ -182,6 +182,11 @@ export default function ProductsPage() {
                     <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 6, fontSize: '.875rem' }}>Цена со скидкой (сум) *</label>
                     <input className="input" type="number" placeholder="например, 290000" value={editing.salePrice || ''} onChange={e => setEditing({ ...editing, salePrice: e.target.value })} />
                     <p style={{ color: 'var(--text-sub)', fontSize: '.75rem', marginTop: 4 }}>Обычная цена ({editing.price || '—'}) будет зачёркнута, а рядом покажется эта.</p>
+                    <div style={{ marginTop: 12 }}>
+                      <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 6, fontSize: '.875rem' }}>⏳ Акция действует до (необязательно)</label>
+                      <input className="input" type="datetime-local" value={editing.saleEnd || ''} onChange={e => setEditing({ ...editing, saleEnd: e.target.value })} />
+                      <p style={{ color: 'var(--text-sub)', fontSize: '.75rem', marginTop: 4 }}>Если задать — на странице товара появится таймер обратного отсчёта до конца скидки.</p>
+                    </div>
                   </div>
                 )}
               </div>

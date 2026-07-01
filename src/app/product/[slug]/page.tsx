@@ -9,6 +9,7 @@ import { OrderModal } from '@/components/OrderModal'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { ProductGallery } from '@/components/ProductGallery'
 import { PriceTag } from '@/components/PriceTag'
+import { SaleCountdown } from '@/components/SaleCountdown'
 import { ArrowLeft, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 
@@ -61,6 +62,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               <div style={{ marginBottom:18 }}>
                 <PriceTag price={product.price} onSale={(product as any).onSale} salePrice={(product as any).salePrice} size="lg" />
               </div>
+              {(product as any).onSale && (product as any).salePrice && <SaleCountdown end={(product as any).saleEnd} />}
               <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:22, color:product.inStock?'#2e7d45':'#e53e3e' }}>
                 <CheckCircle size={18}/>
                 <span style={{ fontWeight:600 }}>{product.inStock?'В наличии':'Под заказ (7-14 дней)'}{(product as any).quantity != null ? ` · осталось ${(product as any).quantity} шт` : ''}</span>

@@ -34,6 +34,7 @@ model Product {
   price       Float
   onSale      Boolean  @default(false)
   salePrice   Float?
+  saleEnd     String?
   images      String   @default("[]")
   categoryId  Int
   category    Category @relation(fields: [categoryId], references: [id])

@@ -48,7 +48,7 @@ export default async function HomePage() {
           <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
             <div>
               <ScrollReveal delay={80}>
-                <h1 className="font-display" style={{ fontSize: 'clamp(2.1rem,5vw,3.4rem)', lineHeight: 1.12, color: 'var(--text)', marginBottom: 22 }}>
+                <h1 className="font-display" style={{ fontSize: 'clamp(1.8rem,4.2vw,2.8rem)', lineHeight: 1.18, color: 'var(--text)', marginBottom: 22 }}>
                   {s('hero_title').split('\n').map((l, i) => (
                     <span key={i}>
                       {i === 1
@@ -104,14 +104,16 @@ export default async function HomePage() {
           <div className="container">
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 32 }}>
               {[
-                { icon: '💝', title: s('benefit1_title'), desc: s('benefit1_desc') },
-                { icon: '✏️', title: s('benefit2_title'), desc: s('benefit2_desc') },
-                { icon: '⭐', title: s('benefit3_title'), desc: s('benefit3_desc') },
-                { icon: '🚚', title: s('benefit4_title'), desc: s('benefit4_desc') },
+                { icon: '💝', img: settings.benefit1_icon, title: s('benefit1_title'), desc: s('benefit1_desc') },
+                { icon: '✏️', img: settings.benefit2_icon, title: s('benefit2_title'), desc: s('benefit2_desc') },
+                { icon: '⭐', img: settings.benefit3_icon, title: s('benefit3_title'), desc: s('benefit3_desc') },
+                { icon: '🚚', img: settings.benefit4_icon, title: s('benefit4_title'), desc: s('benefit4_desc') },
               ].map((b, i) => (
                 <ScrollReveal key={b.title} delay={i * 80}>
                   <div style={{ textAlign: 'center', padding: '16px 12px' }}>
-                    <span className="icon-bounce" style={{ fontSize: 42, marginBottom: 16, display: 'block' }}>{b.icon}</span>
+                    {b.img
+                      ? <img src={b.img} alt="" className="icon-bounce" style={{ width: 58, height: 58, objectFit: 'contain', margin: '0 auto 16px', display: 'block' }} />
+                      : <span className="icon-bounce" style={{ fontSize: 42, marginBottom: 16, display: 'block' }}>{b.icon}</span>}
                     <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>{b.title}</h3>
                     <p style={{ fontSize: '.85rem', color: 'var(--text-sub)', lineHeight: 1.65 }}>{b.desc}</p>
                   </div>

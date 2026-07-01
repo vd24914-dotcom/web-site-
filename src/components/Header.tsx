@@ -27,8 +27,8 @@ export function Header({ settings = {} }: Props) {
   const showText = settings.logo_show_text !== '0'
   const links = [
     { href: '/catalog', label: 'Каталог' },
-    { href: '/sale',    label: '🏷 Скидки' },
-    { href: '/news',    label: '📰 Новости' },
+    { href: '/sale',    label: 'Скидки' },
+    { href: '/news',    label: 'Новости' },
     { href: '/#about',  label: 'О нас'   },
     { href: '/#contact',label: 'Контакты'},
   ]

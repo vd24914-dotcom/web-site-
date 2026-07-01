@@ -205,6 +205,17 @@ export default function AppearancePage() {
             />
           </div>
 
+          {/* Иконки преимуществ */}
+          <div style={{ gridColumn: '1 / -1', background: 'white', borderRadius: 16, padding: 24, border: '1px solid var(--border)' }}>
+            <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Иконки блока «Преимущества»</h3>
+            <p style={{ color: 'var(--text-sub)', fontSize: '.8rem', marginBottom: 16 }}>4 иконки на главной. Если не загружать — останутся эмодзи (💝 ✏️ ⭐ 🚚). Лучше квадратный PNG с прозрачным фоном.</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 16 }}>
+              {[1, 2, 3, 4].map(n => (
+                <ImageUploader key={n} value={values['benefit' + n + '_icon']} onChange={url => setValues({ ...values, ['benefit' + n + '_icon']: url })} label={'Иконка ' + n} />
+              ))}
+            </div>
+          </div>
+
           <div style={{ gridColumn: '1 / -1', paddingTop: 8 }}>
             <SaveBtn />
           </div>

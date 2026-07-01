@@ -1,9 +1,11 @@
 import Link from 'next/link'
 import { SocialLinks } from './SocialLinks'
+import { prisma } from '@/lib/prisma'
 interface Props { settings?: Record<string, string> }
-export function Footer({ settings = {} }: Props) {
+export async function Footer({ settings = {} }: Props) {
   const siteName = settings.site_name || 'Fimush.kin'
   const showText = settings.logo_show_text !== '0'
+  const cats = await prisma.category.findMany({ orderBy: { sortOrder: 'asc' } }).catch(() => [])
   return (
     <footer style={{ background: 'var(--white)', color: 'var(--text-sub)', padding: '56px 0 28px', borderTop: '1px solid var(--border)' }}>
       <div className="container">
@@ -21,9 +23,12 @@ export function Footer({ settings = {} }: Props) {
           </div>
           <div>
             <h4 style={{ color: 'var(--text)', marginBottom: 16, fontWeight: 600 }}>Каталог</h4>
-            {[['Все товары','/catalog'],['Свитеры','/catalog?category=svitery'],['Шапки','/catalog?category=shapki'],['Игрушки','/catalog?category=igrushki']].map(([l,h])=>(
-              <div key={h} style={{ marginBottom: 10 }}>
-                <Link href={h} className="footer-link">{l}</Link>
+            <div style={{ marginBottom: 10 }}>
+              <Link href="/catalog" className="footer-link">Все товары</Link>
+            </div>
+            {(cats as any[]).map(c => (
+              <div key={c.id} style={{ marginBottom: 10 }}>
+                <Link href={`/catalog?category=${c.slug}`} className="footer-link">{c.name}</Link>
               </div>
             ))}
           </div>

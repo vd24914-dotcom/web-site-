@@ -50,7 +50,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
             {(categories as any[]).map(c => (
               <Link key={c.id} href={`/catalog?category=${c.slug}`} style={{ textDecoration: 'none' }}>
                 <button className={cat === c.slug ? 'btn-primary' : 'btn-outline'} style={{ padding: '.5rem 1.2rem', fontSize: '.85rem' }}>
-                  {c.emoji} {c.name}
+                  {c.name}
                 </button>
               </Link>
             ))}

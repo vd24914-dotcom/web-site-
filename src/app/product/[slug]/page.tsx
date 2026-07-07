@@ -10,6 +10,7 @@ import { ScrollReveal } from '@/components/ScrollReveal'
 import { ProductGallery } from '@/components/ProductGallery'
 import { PriceTag } from '@/components/PriceTag'
 import { SaleCountdown } from '@/components/SaleCountdown'
+import { RestockCountdown } from '@/components/RestockCountdown'
 import { ArrowLeft, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 
@@ -63,10 +64,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 <PriceTag price={product.price} onSale={(product as any).onSale} salePrice={(product as any).salePrice} size="lg" />
               </div>
               {(product as any).onSale && (product as any).salePrice && <SaleCountdown end={(product as any).saleEnd} />}
-              <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:22, color:product.inStock?'#2e7d45':'#e53e3e' }}>
-                <CheckCircle size={18}/>
-                <span style={{ fontWeight:600 }}>{product.inStock?'В наличии':'Под заказ (7-14 дней)'}{(product as any).quantity != null ? ` · осталось ${(product as any).quantity} шт` : ''}</span>
-              </div>
+              {(product as any).restockAt ? (
+                <RestockCountdown at={(product as any).restockAt} qty={(product as any).restockQty} />
+              ) : (
+                <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:22, color:product.inStock?'#2e7d45':'#e53e3e' }}>
+                  <CheckCircle size={18}/>
+                  <span style={{ fontWeight:600 }}>{product.inStock?'В наличии':'Под заказ (7-14 дней)'}{(product as any).quantity != null ? ` · осталось ${(product as any).quantity} шт` : ''}</span>
+                </div>
+              )}
               <div style={{ fontWeight:600, color:'var(--text)', marginBottom:10, fontSize:'.95rem' }}>Описание</div>
               <p style={{ color:'var(--text-sub)', lineHeight:1.8, marginBottom:26, fontSize:'1rem', whiteSpace:'pre-line' }}>{product.description}</p>
 

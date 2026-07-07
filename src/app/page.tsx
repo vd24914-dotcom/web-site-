@@ -12,6 +12,7 @@ import { Typewriter } from '@/components/Typewriter'
 import { SocialLinks } from '@/components/SocialLinks'
 import { PromoBanner } from '@/components/PromoBanner'
 import { SaleCountdown } from '@/components/SaleCountdown'
+import { RestockCountdown } from '@/components/RestockCountdown'
 import { ArrowRight } from 'lucide-react'
 
 // Кэшируем страницу: посетители получают её мгновенно (без обращения к базе),
@@ -192,7 +193,9 @@ export default async function HomePage() {
                             <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 10, fontSize: '1rem', lineHeight: 1.4 }}>{p.name}</h3>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                               <PriceTag price={p.price} onSale={p.onSale} salePrice={p.salePrice} />
-                              <span style={{ fontSize: '.78rem', color: p.inStock ? '#2e7d45' : '#e53e3e', fontWeight: 600 }}>{p.inStock ? '✓ В наличии' : 'Под заказ'}</span>
+                              {p.restockAt
+                                ? <RestockCountdown at={p.restockAt} qty={p.restockQty} mini />
+                                : <span style={{ fontSize: '.78rem', color: p.inStock ? '#2e7d45' : '#e53e3e', fontWeight: 600 }}>{p.inStock ? '✓ В наличии' : 'Под заказ'}</span>}
                             </div>
                           </div>
                         </div>

@@ -22,7 +22,7 @@ export default function ProductsPage() {
   }
   useEffect(() => { load() }, [])
 
-  const blank = () => ({ id: null, name: '', description: '', price: '', onSale: false, salePrice: '', saleEnd: '', categoryId: '', inStock: true, quantity: '', featured: false, metaTitle: '', metaDesc: '', videoUrl: '', images: [] })
+  const blank = () => ({ id: null, name: '', description: '', price: '', onSale: false, salePrice: '', saleEnd: '', categoryId: '', inStock: true, quantity: '', restockAt: '', restockQty: '', featured: false, metaTitle: '', metaDesc: '', videoUrl: '', images: [] })
 
   const openEdit = (p: any) => {
     let imgs: string[] = []
@@ -229,6 +229,22 @@ export default function ProductsPage() {
                 <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 6, fontSize: '.875rem' }}>Количество в наличии (шт)</label>
                 <input className="input" type="number" min={0} placeholder="например, 5" value={editing.quantity ?? ''} onChange={e => setEditing({ ...editing, quantity: e.target.value })} />
                 <p style={{ color: 'var(--text-sub)', fontSize: '.75rem', marginTop: 4 }}>Необязательно. Если указать — на странице товара покажется «осталось N шт».</p>
+              </div>
+
+              {/* Скоро в наличии */}
+              <div style={{ background: 'var(--cream-dark)', borderRadius: 12, padding: '14px 16px', border: '1px solid var(--border)' }}>
+                <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: '.9rem' }}>⏳ Скоро в наличии (если товара сейчас нет)</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 10 }}>
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 6, fontSize: '.82rem' }}>Дата поступления</label>
+                    <input className="input" type="datetime-local" value={editing.restockAt || ''} onChange={e => setEditing({ ...editing, restockAt: e.target.value })} />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 6, fontSize: '.82rem' }}>Поступит, шт</label>
+                    <input className="input" type="number" min={0} placeholder="например, 10" value={editing.restockQty ?? ''} onChange={e => setEditing({ ...editing, restockQty: e.target.value })} />
+                  </div>
+                </div>
+                <p style={{ color: 'var(--text-sub)', fontSize: '.75rem', marginTop: 8 }}>Если задать дату — на сайте покажется таймер «будет в наличии через…», а когда время выйдет, товар автоматически станет «в наличии» с этим количеством.</p>
               </div>
 
               <div style={{ display: 'flex', gap: 24, padding: '4px 0' }}>

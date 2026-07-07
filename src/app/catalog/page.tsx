@@ -9,6 +9,7 @@ import { OrderModal } from '@/components/OrderModal'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { PriceTag } from '@/components/PriceTag'
 import { SaleCountdown } from '@/components/SaleCountdown'
+import { RestockCountdown } from '@/components/RestockCountdown'
 
 export const metadata: Metadata = {
   title: 'Каталог вязаных изделий',
@@ -79,11 +80,12 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
                           }
                         </div>
                         <div style={{ padding: '16px 18px 20px' }}>
-                          {(p.featured || (p.onSale && p.salePrice)) && (
+                          {(p.featured || (p.onSale && p.salePrice) || p.restockAt) && (
                             <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
                               {p.featured && <span className="badge badge-hit">✨ Новинка</span>}
                               {p.onSale && p.salePrice && <span className="badge badge-sale">🏷 Скидка</span>}
                               {p.onSale && p.salePrice && p.saleEnd && <SaleCountdown end={p.saleEnd} mini />}
+                              {p.restockAt && <RestockCountdown at={p.restockAt} qty={p.restockQty} mini />}
                             </div>
                           )}
                           <div style={{ fontSize: '.75rem', color: 'var(--text-sub)', marginBottom: 5 }}>{p.category?.name}</div>

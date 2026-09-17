@@ -4,16 +4,12 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { Menu, X, ChevronLeft } from 'lucide-react'
 import { ThemeToggle } from '@/components/ThemeToggle'
-import { UnavailableNotice } from '@/components/UnavailableNotice'
 
 interface Props { settings?: Record<string, string> }
 
 export function Header({ settings = {} }: Props) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [notice, setNotice] = useState(false)
-  // Раздел «Мастер-классы» выключен: пункт меню открывает уведомление вместо перехода
-  const mcOff = settings.masterclass_enabled !== '1'
   const pathname = usePathname()
   const router = useRouter()
   const isHome = pathname === '/'
@@ -33,14 +29,9 @@ export function Header({ settings = {} }: Props) {
     { href: '/catalog', label: 'Каталог' },
     { href: '/sale',    label: 'Скидки' },
     { href: '/news',    label: 'Новости' },
-    { href: '/masterclass', label: 'Мастер-классы', notice: mcOff },
     { href: '/#about',  label: 'О нас'   },
     { href: '/#contact',label: 'Контакты'},
   ]
-  const onNavClick = (l: { notice?: boolean }) => (e: React.MouseEvent) => {
-    if (l.notice) { e.preventDefault(); setOpen(false); setNotice(true) }
-    else setOpen(false)
-  }
 
   return (
     <header style={{
@@ -62,7 +53,7 @@ export function Header({ settings = {} }: Props) {
 
         <nav style={{ display: 'flex', gap: 32, alignItems: 'center' }} className="hide-mobile">
           {links.map(l => (
-            <Link key={l.href} href={l.href} className="nav-link" onClick={onNavClick(l)}>{l.label}</Link>
+            <Link key={l.href} href={l.href} className="nav-link">{l.label}</Link>
           ))}
         </nav>
 
@@ -84,7 +75,7 @@ export function Header({ settings = {} }: Props) {
       {open && (
         <div style={{ background: 'var(--cream)', borderTop: '1px solid var(--border)', padding: '16px 24px 20px' }}>
           {links.map((l, i) => (
-            <Link key={l.href} href={l.href} onClick={onNavClick(l)}
+            <Link key={l.href} href={l.href} onClick={() => setOpen(false)}
               style={{ display: 'block', padding: '12px 0', color: 'var(--text)', textDecoration: 'none', borderBottom: i < links.length - 1 ? '1px solid var(--border)' : 'none', fontSize: '1rem', fontWeight: 500 }}>
               {l.label}
             </Link>
@@ -92,8 +83,6 @@ export function Header({ settings = {} }: Props) {
           <Link href="/catalog" className="btn-primary" style={{ marginTop: 16, width: '100%', justifyContent: 'center' }}>Заказать</Link>
         </div>
       )}
-
-      {notice && <UnavailableNotice onClose={() => setNotice(false)} />}
 
       <style>{`.show-mobile{display:none}@media(max-width:768px){.show-mobile{display:flex!important}.hide-mobile{display:none!important}}`}</style>
     </header>

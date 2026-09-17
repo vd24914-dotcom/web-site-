@@ -48,11 +48,6 @@ export const TEXTS = {
   reels_subtitle: 'Процесс, новинки и немного уюта — подписывайтесь в Instagram',
   reels_btn: 'Смотреть в Instagram',
 
-  // Мастер-классы
-  masterclass_title: 'Мастер-классы',
-  masterclass_subtitle: 'Учитесь вязать вместе со мной — пошаговые видеоуроки для любого уровня',
-  masterclass_btn: 'Все мастер-классы',
-
   // Футер
   footer_text: 'Вязаные изделия ручной работы с любовью',
 

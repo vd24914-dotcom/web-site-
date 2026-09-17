@@ -78,16 +78,3 @@ model News {
   published Boolean  @default(true)
   createdAt DateTime @default(now())
 }
-
-model MasterClass {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String   @default("")
-  kind        String   @default("youtube")
-  videoUrl    String
-  cover       String?
-  duration    String?
-  published   Boolean  @default(true)
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-}

@@ -16,7 +16,6 @@ import { RestockCountdown } from '@/components/RestockCountdown'
 import { ArrowRight } from 'lucide-react'
 import { InstagramIcon } from '@/components/SocialLinks'
 import { ReelCard } from '@/components/ReelCard'
-import { MasterClassCard } from '@/components/MasterClassCard'
 import { parseReels } from '@/lib/reels'
 
 // Кэшируем страницу: посетители получают её мгновенно (без обращения к базе),
@@ -38,11 +37,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [settings, featured, categories, masterclasses] = await Promise.all([
+  const [settings, featured, categories] = await Promise.all([
     getSettings(),
     prisma.product.findMany({ where: { featured: true, inStock: true }, include: { category: true }, take: 6 }).catch(() => []),
     prisma.category.findMany({ orderBy: { sortOrder: 'asc' } }).catch(() => []),
-    prisma.masterClass.findMany({ where: { published: true }, orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }], take: 3 }).catch(() => []),
   ])
   const s = (k: keyof typeof TEXTS) => settings[k] || TEXTS[k]
   const reels = parseReels(settings.reels)
@@ -260,31 +258,6 @@ export default async function HomePage() {
               .reels-open:hover{background:var(--pink);color:#fff}
               @media(max-width:768px){.reels-item{flex-basis:240px}.reels-card{width:240px;height:480px}}
             `}</style>
-          </section>
-        )}
-
-        {/* MASTERCLASS — показывается только когда раздел включён (клик по логотипу в админке) */}
-        {settings.masterclass_enabled === '1' && (masterclasses as any[]).length > 0 && (
-          <section id="masterclass" style={{ padding: '72px 0', background: 'var(--white)' }}>
-            <div className="container">
-              <ScrollReveal>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40, flexWrap: 'wrap', gap: 16 }}>
-                  <div>
-                    <span className="badge badge-rose" style={{ marginBottom: 12 }}>🎓 Видеоуроки</span>
-                    <h2 className="font-display" style={{ fontSize: '2.1rem', color: 'var(--text)', marginBottom: 8 }}>{s('masterclass_title')}</h2>
-                    <p style={{ color: 'var(--text-sub)' }}>{s('masterclass_subtitle')}</p>
-                  </div>
-                  <Link href="/masterclass" className="btn-outline">{s('masterclass_btn')} <ArrowRight size={16} /></Link>
-                </div>
-              </ScrollReveal>
-              <div className="mc-grid">
-                {(masterclasses as any[]).map((item, i) => (
-                  <ScrollReveal key={item.id} delay={i * 100}>
-                    <MasterClassCard item={item} />
-                  </ScrollReveal>
-                ))}
-              </div>
-            </div>
           </section>
         )}
 

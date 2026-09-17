@@ -16,11 +16,27 @@ export function Header({ settings = {} }: Props) {
   const isHome = pathname === '/'
   const goBack = () => { if (typeof window !== 'undefined' && window.history.length > 1) router.back(); else router.push('/') }
 
+  // Шапка прячется при прокрутке вниз и выезжает обратно при прокрутке вверх
+  const [hidden, setHidden] = useState(false)
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 20)
+    let lastY = window.scrollY
+    let ticking = false
+    const update = () => {
+      const y = window.scrollY
+      setScrolled(y > 20)
+      const delta = y - lastY
+      if (y < 80) setHidden(false)                 // у самого верха всегда видна
+      else if (delta > 6) setHidden(true)          // едем вниз — прячем
+      else if (delta < -6) setHidden(false)        // едем вверх — показываем
+      lastY = y
+      ticking = false
+    }
+    const fn = () => { if (!ticking) { ticking = true; requestAnimationFrame(update) } }
     window.addEventListener('scroll', fn, { passive: true })
     return () => window.removeEventListener('scroll', fn)
   }, [])
+  // Пока открыто мобильное меню, шапку не прячем
+  const headerHidden = hidden && !open
 
   const logo = settings.logo_image
   const logoEmoji = settings.logo_emoji || '🧶'
@@ -40,7 +56,10 @@ export function Header({ settings = {} }: Props) {
       borderBottom: '1px solid var(--border)',
       position: 'sticky', top: 0, zIndex: 100,
       backdropFilter: 'blur(12px)',
-      transition: 'background .3s, box-shadow .3s',
+      transform: headerHidden ? 'translateY(-110%)' : 'translateY(0)',
+      opacity: headerHidden ? 0 : 1,
+      transition: 'transform .42s cubic-bezier(.22,.68,0,1.05), opacity .3s ease, background .3s, box-shadow .3s',
+      willChange: 'transform',
       boxShadow: scrolled ? '0 4px 24px rgba(250,135,161,.12)' : 'none',
     }}>
       <div className="container" style={{ height: 68, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

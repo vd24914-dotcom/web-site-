@@ -7,12 +7,11 @@ import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { OrderModal } from '@/components/OrderModal'
 import { ScrollReveal } from '@/components/ScrollReveal'
-import { PriceTag } from '@/components/PriceTag'
+import { ProductCard } from '@/components/ProductCard'
 import { Typewriter } from '@/components/Typewriter'
 import { SocialLinks } from '@/components/SocialLinks'
 import { PromoBanner } from '@/components/PromoBanner'
-import { SaleBadge } from '@/components/SaleBadge'
-import { RestockCountdown } from '@/components/RestockCountdown'
+import { isSaleActive } from '@/lib/sale'
 import { ArrowRight } from 'lucide-react'
 import { InstagramIcon } from '@/components/SocialLinks'
 import { ReelCard } from '@/components/ReelCard'
@@ -37,11 +36,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [settings, featuredRaw, categories] = await Promise.all([
+  const [settings, featuredRaw, categories, saleRaw] = await Promise.all([
     getSettings(),
     prisma.product.findMany({ where: { featured: true, inStock: true }, include: { category: true } }).catch(() => []),
     prisma.category.findMany({ orderBy: { sortOrder: 'asc' } }).catch(() => []),
+    prisma.product.findMany({ where: { onSale: true, salePrice: { not: null }, inStock: true }, include: { category: true }, orderBy: { updatedAt: 'desc' } }).catch(() => []),
   ])
+  // Товары на акции: только с действующим сроком
+  const onSale = (saleRaw as any[]).filter((p) => isSaleActive(p))
   // Популярные: кого отметили позже — тот выше. У старых записей без даты отметки берём дату создания.
   const featured = (featuredRaw as any[]).sort((a, b) => {
     const ta = new Date(a.featuredAt || a.createdAt).getTime()
@@ -178,43 +180,40 @@ export default async function HomePage() {
                     <h2 className="font-display" style={{ fontSize: '2.1rem', color: 'var(--text)', marginBottom: 8 }}>Популярные изделия</h2>
                     <p style={{ color: 'var(--text-sub)' }}>Самые востребованные работы</p>
                   </div>
-                  <Link href="/catalog" className="btn-outline">Весь каталог <ArrowRight size={16} /></Link>
+                  <Link href="/catalog?filter=picks" className="btn-outline">Смотреть ещё <ArrowRight size={16} /></Link>
                 </div>
               </ScrollReveal>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 24 }}>
-                {(featured as any[]).map((p, i) => {
-                  const imgs = parseJSON(p.images || '[]'); const img = imgs[0]
-                  return (
-                    <ScrollReveal key={p.id} delay={(i % 3) * 80}>
-                      <Link href={`/product/${p.slug}`} style={{ textDecoration: 'none' }}>
-                        <div className="card">
-                          <div style={{ aspectRatio: '1', background: img ? 'transparent' : 'linear-gradient(135deg,var(--pink-light),var(--cream-dark))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 72, overflow: 'hidden', position: 'relative' }}>
-                            {img
-                              ? <img src={img} alt={p.name} loading="lazy" decoding="async" className="img-zoom" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                              : p.category?.emoji || '🧶'
-                            }
-                          </div>
-                          <div style={{ padding: '16px 18px 20px' }}>
-                            {(p.featured || (p.onSale && p.salePrice)) && (
-                              <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
-                                {p.featured && <span className="badge badge-hit">✨ Новинка</span>}
-                                <SaleBadge price={p.price} onSale={p.onSale} salePrice={p.salePrice} saleEnd={p.saleEnd} />
-                              </div>
-                            )}
-                            <div style={{ fontSize: '.75rem', color: 'var(--text-sub)', marginBottom: 5 }}>{p.category?.name}</div>
-                            <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 10, fontSize: '1rem', lineHeight: 1.4 }}>{p.name}</h3>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <PriceTag price={p.price} onSale={p.onSale} salePrice={p.salePrice} saleEnd={p.saleEnd} />
-                              {p.restockAt
-                                ? <RestockCountdown at={p.restockAt} qty={p.restockQty} mini />
-                                : <span style={{ fontSize: '.78rem', color: p.inStock ? '#2e7d45' : '#e53e3e', fontWeight: 600 }}>{p.inStock ? '✓ В наличии' : 'Под заказ'}</span>}
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                    </ScrollReveal>
-                  )
-                })}
+                {(featured as any[]).map((p, i) => (
+                  <ScrollReveal key={p.id} delay={(i % 3) * 80}>
+                    <ProductCard p={p} />
+                  </ScrollReveal>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* SALE — товары на акции (товар может быть и здесь, и в «Популярных») */}
+        {onSale.length > 0 && (
+          <section id="sale" style={{ padding: '72px 0', background: 'var(--cream)' }}>
+            <div className="container">
+              <ScrollReveal>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 44, flexWrap: 'wrap', gap: 16 }}>
+                  <div>
+                    <span className="badge badge-sale" style={{ marginBottom: 12 }}>🏷 Акция</span>
+                    <h2 className="font-display" style={{ fontSize: '2.1rem', color: 'var(--text)', marginBottom: 8 }}>{s('sale_block_title')}</h2>
+                    <p style={{ color: 'var(--text-sub)' }}>{s('sale_block_subtitle')}</p>
+                  </div>
+                  <Link href="/catalog?filter=picks" className="btn-outline">{s('sale_block_btn')} <ArrowRight size={16} /></Link>
+                </div>
+              </ScrollReveal>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 24 }}>
+                {onSale.map((p, i) => (
+                  <ScrollReveal key={p.id} delay={(i % 3) * 80}>
+                    <ProductCard p={p} />
+                  </ScrollReveal>
+                ))}
               </div>
             </div>
           </section>

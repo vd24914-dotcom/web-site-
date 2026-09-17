@@ -43,6 +43,11 @@ export const TEXTS = {
   contact_telegram: '@uyutnit',
   contact_address: 'Ташкент, Узбекистан',
 
+  // Блок «Товары на акции» на главной
+  sale_block_title: 'Товары на акции',
+  sale_block_subtitle: 'Успейте заказать по выгодной цене, пока действует скидка',
+  sale_block_btn: 'Смотреть ещё',
+
   // Рилсы
   reels_title: 'Рилсы из мастерской',
   reels_subtitle: 'Процесс, новинки и немного уюта — подписывайтесь в Instagram',

@@ -3,16 +3,17 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, X } from 'lucide-react'
 
-interface Props { q?: string; category?: string }
+interface Props { q?: string; category?: string; filter?: string }
 
 /** Строка поиска на странице каталога: отправляет ?q= с сохранением категории */
-export function CatalogSearch({ q = '', category }: Props) {
+export function CatalogSearch({ q = '', category, filter }: Props) {
   const [value, setValue] = useState(q)
   const router = useRouter()
 
   const go = (query: string) => {
     const params = new URLSearchParams()
     if (category) params.set('category', category)
+    if (filter) params.set('filter', filter)
     if (query.trim()) params.set('q', query.trim())
     const qs = params.toString()
     router.push(qs ? `/catalog?${qs}` : '/catalog')

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { Save, RefreshCw, Eye, Plus, Trash2, ArrowUp, ArrowDown, ExternalLink } from 'lucide-react'
 import { ImageUploader } from '@/components/ImageUploader'
-import { parseReelId, parseReels, reelUrl, reelEmbedUrl } from '@/lib/reels'
+import { parseReelId, parseReels, serializeReels, reelUrl, reelEmbedUrl, type Reel } from '@/lib/reels'
 
 const TEXT_SECTIONS = [
   {
@@ -96,13 +96,14 @@ export default function AppearancePage() {
   const [reelError, setReelError] = useState('')
 
   const reels = parseReels(values.reels)
-  const setReels = (list: string[]) => setValues({ ...values, reels: list.length ? JSON.stringify(list) : '' })
+  const setReels = (list: Reel[]) => setValues({ ...values, reels: serializeReels(list) })
   const addReel = () => {
     const id = parseReelId(reelInput)
     if (!id) { setReelError('Не похоже на ссылку на рилс. Пример: https://www.instagram.com/reel/C1a2B3c4D5e/'); return }
-    if (reels.includes(id)) { setReelError('Этот рилс уже добавлен'); return }
-    setReels([...reels, id]); setReelInput(''); setReelError('')
+    if (reels.some(r => r.id === id)) { setReelError('Этот рилс уже добавлен'); return }
+    setReels([...reels, { id }]); setReelInput(''); setReelError('')
   }
+  const setCover = (i: number, cover: string) => setReels(reels.map((r, j) => j === i ? { ...r, cover: cover || undefined } : r))
   const moveReel = (i: number, dir: -1 | 1) => {
     const j = i + dir
     if (j < 0 || j >= reels.length) return
@@ -169,7 +170,7 @@ export default function AppearancePage() {
           <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid var(--border)' }}>
             <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Рилсы на главной</h3>
             <p style={{ color: 'var(--text-sub)', fontSize: '.8rem', marginBottom: 16, lineHeight: 1.5 }}>
-              Откройте рилс в Instagram, нажмите «Поделиться» → «Копировать ссылку» и вставьте её сюда. Блок появится на главной между «Популярными изделиями» и «О мастере». Если список пуст, блок скрыт. Рилс должен быть публичным.
+              Откройте рилс в Instagram, нажмите «Поделиться» → «Копировать ссылку» и вставьте её сюда. К каждому рилсу загрузите обложку (скриншот или кадр из видео, вертикальный 9:16) — она показывается на сайте с кнопкой «play», а по клику запускается сам рилс. Без обложки будет заглушка. Блок появится на главной между «Популярными изделиями» и «О мастере»; если список пуст, он скрыт. Рилс должен быть публичным.
             </p>
             <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
               <input className="input" placeholder="https://www.instagram.com/reel/..." value={reelInput}
@@ -184,16 +185,26 @@ export default function AppearancePage() {
                 Пока нет ни одного рилса
               </div>
             ) : (
-              <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {reels.map((id, i) => (
-                  <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 12, background: 'var(--pink-mist)' }}>
-                    <span style={{ width: 26, height: 26, borderRadius: 8, background: 'var(--pink)', color: 'white', fontSize: '.75rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{i + 1}</span>
-                    <a href={reelUrl(id)} target="_blank" rel="noopener noreferrer" style={{ flex: 1, minWidth: 0, color: 'var(--text)', fontSize: '.85rem', textDecoration: 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <ExternalLink size={13} style={{ flexShrink: 0, color: 'var(--text-sub)' }} /> instagram.com/reel/{id}
-                    </a>
-                    <button type="button" onClick={() => moveReel(i, -1)} disabled={i === 0} title="Выше" style={{ background: 'none', border: 'none', cursor: i === 0 ? 'default' : 'pointer', color: 'var(--text-sub)', opacity: i === 0 ? .3 : 1, padding: 4, display: 'flex' }}><ArrowUp size={16} /></button>
-                    <button type="button" onClick={() => moveReel(i, 1)} disabled={i === reels.length - 1} title="Ниже" style={{ background: 'none', border: 'none', cursor: i === reels.length - 1 ? 'default' : 'pointer', color: 'var(--text-sub)', opacity: i === reels.length - 1 ? .3 : 1, padding: 4, display: 'flex' }}><ArrowDown size={16} /></button>
-                    <button type="button" onClick={() => setReels(reels.filter((_, j) => j !== i))} title="Удалить" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e', padding: 4, display: 'flex' }}><Trash2 size={16} /></button>
+              <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {reels.map((r, i) => (
+                  <div key={r.id} style={{ border: '1px solid var(--border)', borderRadius: 12, background: 'var(--pink-mist)', padding: '10px 12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <span style={{ width: 26, height: 26, borderRadius: 8, background: 'var(--pink)', color: 'white', fontSize: '.75rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{i + 1}</span>
+                      <a href={reelUrl(r.id)} target="_blank" rel="noopener noreferrer" style={{ flex: 1, minWidth: 0, color: 'var(--text)', fontSize: '.85rem', textDecoration: 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <ExternalLink size={13} style={{ flexShrink: 0, color: 'var(--text-sub)' }} /> instagram.com/reel/{r.id}
+                      </a>
+                      <button type="button" onClick={() => moveReel(i, -1)} disabled={i === 0} title="Выше" style={{ background: 'none', border: 'none', cursor: i === 0 ? 'default' : 'pointer', color: 'var(--text-sub)', opacity: i === 0 ? .3 : 1, padding: 4, display: 'flex' }}><ArrowUp size={16} /></button>
+                      <button type="button" onClick={() => moveReel(i, 1)} disabled={i === reels.length - 1} title="Ниже" style={{ background: 'none', border: 'none', cursor: i === reels.length - 1 ? 'default' : 'pointer', color: 'var(--text-sub)', opacity: i === reels.length - 1 ? .3 : 1, padding: 4, display: 'flex' }}><ArrowDown size={16} /></button>
+                      <button type="button" onClick={() => setReels(reels.filter((_, j) => j !== i))} title="Удалить" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e', padding: 4, display: 'flex' }}><Trash2 size={16} /></button>
+                    </div>
+                    <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px dashed var(--border)', display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+                      <div style={{ width: 72, height: 128, borderRadius: 10, overflow: 'hidden', flexShrink: 0, border: '1px solid var(--border)', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-sub)', fontSize: '.7rem', textAlign: 'center' }}>
+                        {r.cover ? <img src={r.cover} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : 'нет обложки'}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <ImageUploader value={r.cover} onChange={url => setCover(i, url)} label="Обложка" hint="Вертикальный кадр 9:16, например 1080×1920" />
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -218,10 +229,10 @@ export default function AppearancePage() {
 
           <div style={{ background: 'white', borderRadius: 16, padding: 20, border: '1px solid var(--border)' }}>
             <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6, fontSize: '.95rem' }}>Предпросмотр</h3>
-            <p style={{ color: 'var(--text-sub)', fontSize: '.78rem', marginBottom: 14 }}>Первый рилс из списка</p>
+            <p style={{ color: 'var(--text-sub)', fontSize: '.78rem', marginBottom: 14 }}>Первый рилс из списка — так он загрузится по клику на сайте</p>
             {reels[0] ? (
               <div style={{ width: 280, height: 560, borderRadius: 18, overflow: 'hidden', border: '1px solid var(--border)', margin: '0 auto' }}>
-                <iframe src={reelEmbedUrl(reels[0])} title="Предпросмотр рилса" style={{ width: '100%', height: '100%', border: 0 }} allow="encrypted-media" allowFullScreen />
+                <iframe src={reelEmbedUrl(reels[0].id)} title="Предпросмотр рилса" style={{ width: '100%', height: '100%', border: 0 }} allow="encrypted-media" allowFullScreen />
               </div>
             ) : (
               <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-sub)', fontSize: '.85rem', border: '1px dashed var(--border)', borderRadius: 12 }}>Добавьте рилс</div>

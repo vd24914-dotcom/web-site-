@@ -15,7 +15,8 @@ import { SaleCountdown } from '@/components/SaleCountdown'
 import { RestockCountdown } from '@/components/RestockCountdown'
 import { ArrowRight } from 'lucide-react'
 import { InstagramIcon } from '@/components/SocialLinks'
-import { parseReels, reelEmbedUrl, reelUrl } from '@/lib/reels'
+import { ReelCard } from '@/components/ReelCard'
+import { parseReels } from '@/lib/reels'
 
 // Кэшируем страницу: посетители получают её мгновенно (без обращения к базе),
 // а при изменении товаров/настроек в админке кэш обновляется автоматически.
@@ -230,22 +231,9 @@ export default async function HomePage() {
                 </div>
               </ScrollReveal>
               <div className="reels-row">
-                {reels.map((id, i) => (
-                  <ScrollReveal key={id} delay={(i % 4) * 80} className="reels-item">
-                    <div className="reels-card">
-                      <iframe
-                        src={reelEmbedUrl(id)}
-                        title={`Instagram Reel ${i + 1}`}
-                        loading="lazy"
-                        allow="autoplay; encrypted-media; picture-in-picture"
-                        allowFullScreen
-                        scrolling="no"
-                        frameBorder={0}
-                      />
-                      <a href={reelUrl(id)} target="_blank" rel="noopener noreferrer" className="reels-open" aria-label="Открыть в Instagram">
-                        <InstagramIcon size={14} /> Открыть
-                      </a>
-                    </div>
+                {reels.map((r, i) => (
+                  <ScrollReveal key={r.id} delay={(i % 4) * 80} className="reels-item">
+                    <ReelCard id={r.id} cover={r.cover} index={i} />
                   </ScrollReveal>
                 ))}
               </div>
@@ -258,6 +246,14 @@ export default async function HomePage() {
               .reels-card{position:relative;width:280px;height:560px;border-radius:22px;overflow:hidden;background:var(--white);border:1px solid var(--border);box-shadow:0 14px 40px rgba(250,135,161,.18);transition:transform .25s,box-shadow .25s}
               .reels-card:hover{transform:translateY(-4px);box-shadow:0 20px 48px rgba(250,135,161,.26)}
               .reels-card iframe{width:100%;height:100%;border:0;display:block;background:var(--white)}
+              .reels-cover{position:relative;width:100%;height:100%;border:0;padding:0;cursor:pointer;background:var(--pink-light);display:block;overflow:hidden}
+              .reels-cover img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+              .reels-cover:hover img{transform:scale(1.04)}
+              .reels-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,.35) 100%);pointer-events:none}
+              .reels-cover-empty{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--pink-deep);background:linear-gradient(160deg,var(--pink-light) 0%,var(--cream-dark) 60%,var(--pink-mist) 100%)}
+              .reels-play{position:absolute;left:50%;top:50%;width:68px;height:68px;margin:-34px 0 0 -34px;border-radius:50%;background:rgba(255,255,255,.92);color:var(--pink-deep);display:flex;align-items:center;justify-content:center;padding-left:4px;box-shadow:0 10px 30px rgba(0,0,0,.22);transition:transform .25s,background .25s;z-index:1}
+              .reels-cover:hover .reels-play{transform:scale(1.08);background:var(--pink);color:#fff}
+              .reels-hint{position:absolute;top:12px;left:12px;display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.85);color:var(--pink-deep);font-size:.7rem;font-weight:700;letter-spacing:.02em;z-index:1}
               .reels-open{position:absolute;left:12px;bottom:12px;display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.92);color:var(--pink-deep);font-size:.75rem;font-weight:600;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.12);backdrop-filter:blur(6px)}
               .reels-open:hover{background:var(--pink);color:#fff}
               @media(max-width:768px){.reels-item{flex-basis:240px}.reels-card{width:240px;height:480px}}

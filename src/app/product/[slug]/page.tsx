@@ -61,7 +61,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               <span className="badge badge-rose" style={{ marginBottom:14 }}>{(product as any).category?.emoji} {(product as any).category?.name}</span>
               <h1 className="font-display" style={{ fontSize:'2rem', color:'var(--text)', marginBottom:14, lineHeight:1.28 }}>{product.name}</h1>
               <div style={{ marginBottom:18 }}>
-                <PriceTag price={product.price} onSale={(product as any).onSale} salePrice={(product as any).salePrice} size="lg" />
+                <PriceTag price={product.price} onSale={(product as any).onSale} salePrice={(product as any).salePrice} saleEnd={(product as any).saleEnd} size="lg" />
               </div>
               {(product as any).onSale && (product as any).salePrice && <SaleCountdown end={(product as any).saleEnd} />}
               {(product as any).restockAt ? (

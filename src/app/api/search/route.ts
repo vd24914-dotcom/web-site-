@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { normalizeQuery, searchProducts } from '@/lib/search'
+import { isSaleActive } from '@/lib/sale'
 
 // Публичный поиск по товарам для живых подсказок в шапке сайта
 export async function GET(req: NextRequest) {
@@ -18,7 +19,7 @@ export async function GET(req: NextRequest) {
     let image: string | null = null
     try { image = JSON.parse(p.images || '[]')[0] || null } catch {}
     return {
-      id: p.id, slug: p.slug, name: p.name, price: p.price, onSale: p.onSale, salePrice: p.salePrice,
+      id: p.id, slug: p.slug, name: p.name, price: p.price, onSale: isSaleActive(p), salePrice: p.salePrice,
       image, category: p.category?.name || '', emoji: p.category?.emoji || '🧶',
     }
   })

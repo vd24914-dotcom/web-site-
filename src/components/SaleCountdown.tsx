@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { parseLocalDate } from '@/lib/sale'
 
 export function SaleCountdown({ end, mini }: { end?: string | null; mini?: boolean }) {
   const [now, setNow] = useState<number | null>(null)
@@ -11,8 +12,8 @@ export function SaleCountdown({ end, mini }: { end?: string | null; mini?: boole
   }, [])
 
   if (!end || now === null) return null
-  const target = new Date(end).getTime()
-  if (isNaN(target)) return null
+  const target = parseLocalDate(end)
+  if (target === null) return null
   const diff = target - now
   if (diff <= 0) return null
 

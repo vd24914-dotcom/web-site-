@@ -1,4 +1,5 @@
-export const revalidate = 3600
+// Страница скидок обновляется чаще остальных, чтобы завершённые акции быстро исчезали из списка
+export const revalidate = 300
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
@@ -8,7 +9,8 @@ import { Footer } from '@/components/Footer'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { PriceTag } from '@/components/PriceTag'
 import { PromoBanner } from '@/components/PromoBanner'
-import { SaleCountdown } from '@/components/SaleCountdown'
+import { SaleBadge } from '@/components/SaleBadge'
+import { isSaleActive } from '@/lib/sale'
 
 export const metadata: Metadata = {
   title: 'Скидки — Fimush.kin',
@@ -21,7 +23,7 @@ async function getSettings(): Promise<Record<string, string>> {
 }
 
 export default async function SalePage() {
-  const [settings, products] = await Promise.all([
+  const [settings, allSale] = await Promise.all([
     getSettings(),
     prisma.product.findMany({
       where: { onSale: true, salePrice: { not: null }, inStock: true },
@@ -29,6 +31,8 @@ export default async function SalePage() {
       orderBy: { createdAt: 'desc' },
     }).catch(() => []),
   ])
+  // Только акции, срок которых ещё не вышел
+  const products = (allSale as any[]).filter((p) => isSaleActive(p))
 
   return (
     <>
@@ -68,13 +72,12 @@ export default async function SalePage() {
                           <div style={{ padding: '16px 18px 20px' }}>
                             <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
                               {p.featured && <span className="badge badge-hit">✨ Новинка</span>}
-                              <span className="badge badge-sale">🏷 Скидка</span>
-                              {p.saleEnd && <SaleCountdown end={p.saleEnd} mini />}
+                              <SaleBadge price={p.price} onSale={p.onSale} salePrice={p.salePrice} saleEnd={p.saleEnd} />
                             </div>
                             <div style={{ fontSize: '.75rem', color: 'var(--text-sub)', marginBottom: 5 }}>{p.category?.name}</div>
                             <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 10, fontSize: '1rem', lineHeight: 1.4 }}>{p.name}</h3>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <PriceTag price={p.price} onSale={p.onSale} salePrice={p.salePrice} />
+                              <PriceTag price={p.price} onSale={p.onSale} salePrice={p.salePrice} saleEnd={p.saleEnd} />
                               <span style={{ fontSize: '.78rem', padding: '.25rem .7rem', background: 'var(--pink-light)', color: 'var(--pink-deep)', borderRadius: 20, fontWeight: 600 }}>Заказать</span>
                             </div>
                           </div>

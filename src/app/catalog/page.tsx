@@ -8,7 +8,7 @@ import { Footer } from '@/components/Footer'
 import { OrderModal } from '@/components/OrderModal'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { PriceTag } from '@/components/PriceTag'
-import { SaleCountdown } from '@/components/SaleCountdown'
+import { SaleBadge } from '@/components/SaleBadge'
 import { RestockCountdown } from '@/components/RestockCountdown'
 import { CatalogSearch } from '@/components/CatalogSearch'
 import { normalizeQuery, searchProducts } from '@/lib/search'
@@ -107,8 +107,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
                           {(p.featured || (p.onSale && p.salePrice) || p.restockAt) && (
                             <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
                               {p.featured && <span className="badge badge-hit">✨ Новинка</span>}
-                              {p.onSale && p.salePrice && <span className="badge badge-sale">🏷 Скидка</span>}
-                              {p.onSale && p.salePrice && p.saleEnd && <SaleCountdown end={p.saleEnd} mini />}
+                              <SaleBadge price={p.price} onSale={p.onSale} salePrice={p.salePrice} saleEnd={p.saleEnd} />
                               {p.restockAt && <RestockCountdown at={p.restockAt} qty={p.restockQty} mini />}
                             </div>
                           )}
@@ -116,7 +115,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
                           <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8, fontSize: '1rem', lineHeight: 1.4 }}>{p.name}</h3>
                           <p style={{ fontSize: '.84rem', color: 'var(--text-sub)', marginBottom: 14, lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.description}</p>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <PriceTag price={p.price} onSale={p.onSale} salePrice={p.salePrice} />
+                            <PriceTag price={p.price} onSale={p.onSale} salePrice={p.salePrice} saleEnd={p.saleEnd} />
                             <span style={{ fontSize: '.78rem', padding: '.25rem .7rem', background: 'var(--pink-light)', color: 'var(--pink-deep)', borderRadius: 20, fontWeight: 600 }}>Заказать</span>
                           </div>
                         </div>

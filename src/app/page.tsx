@@ -11,7 +11,7 @@ import { PriceTag } from '@/components/PriceTag'
 import { Typewriter } from '@/components/Typewriter'
 import { SocialLinks } from '@/components/SocialLinks'
 import { PromoBanner } from '@/components/PromoBanner'
-import { SaleCountdown } from '@/components/SaleCountdown'
+import { SaleBadge } from '@/components/SaleBadge'
 import { RestockCountdown } from '@/components/RestockCountdown'
 import { ArrowRight } from 'lucide-react'
 import { InstagramIcon } from '@/components/SocialLinks'
@@ -192,14 +192,13 @@ export default async function HomePage() {
                             {(p.featured || (p.onSale && p.salePrice)) && (
                               <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
                                 {p.featured && <span className="badge badge-hit">✨ Новинка</span>}
-                                {p.onSale && p.salePrice && <span className="badge badge-sale">🏷 Скидка</span>}
-                                {p.onSale && p.salePrice && p.saleEnd && <SaleCountdown end={p.saleEnd} mini />}
+                                <SaleBadge price={p.price} onSale={p.onSale} salePrice={p.salePrice} saleEnd={p.saleEnd} />
                               </div>
                             )}
                             <div style={{ fontSize: '.75rem', color: 'var(--text-sub)', marginBottom: 5 }}>{p.category?.name}</div>
                             <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 10, fontSize: '1rem', lineHeight: 1.4 }}>{p.name}</h3>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <PriceTag price={p.price} onSale={p.onSale} salePrice={p.salePrice} />
+                              <PriceTag price={p.price} onSale={p.onSale} salePrice={p.salePrice} saleEnd={p.saleEnd} />
                               {p.restockAt
                                 ? <RestockCountdown at={p.restockAt} qty={p.restockQty} mini />
                                 : <span style={{ fontSize: '.78rem', color: p.inStock ? '#2e7d45' : '#e53e3e', fontWeight: 600 }}>{p.inStock ? '✓ В наличии' : 'Под заказ'}</span>}

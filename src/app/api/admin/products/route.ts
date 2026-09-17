@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
+import { isSaleExpired } from '@/lib/sale'
 
 async function auth() {
   if (!await getSession()) return false
@@ -10,8 +11,21 @@ async function auth() {
 
 export async function GET() {
   if (!await auth()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  const products = await prisma.product.findMany({ include: { category: true }, orderBy: { createdAt: 'desc' } })
-  return NextResponse.json({ products })
+  let products = await prisma.product.findMany({ include: { category: true }, orderBy: { createdAt: 'desc' } })
+
+  // Акции с истёкшим сроком автоматически выключаем в базе,
+  // чтобы они не «висели» ни в админке, ни на сайте
+  const expired = products.filter((p: any) => isSaleExpired(p))
+  if (expired.length) {
+    await prisma.product.updateMany({
+      where: { id: { in: expired.map((p: any) => p.id) } },
+      data: { onSale: false, saleEnd: null },
+    })
+    products = products.map((p: any) => expired.some((e: any) => e.id === p.id) ? { ...p, onSale: false, saleEnd: null } : p)
+    revalidatePath('/'); revalidatePath('/catalog'); revalidatePath('/sale'); revalidatePath('/product/[slug]', 'page')
+  }
+
+  return NextResponse.json({ products, expiredSales: expired.map((p: any) => p.name) })
 }
 
 export async function POST(req: NextRequest) {

@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { Plus, Edit2, Trash2, RefreshCw, X, Save, Loader2, Search } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
+import { isSaleActive, parseLocalDate } from '@/lib/sale'
 import { MultiImageUploader } from '@/components/MultiImageUploader'
 
 export default function ProductsPage() {
@@ -112,10 +113,11 @@ export default function ProductsPage() {
                       </td>
                       <td style={{ padding: '10px 16px', color: 'var(--text-sub)', fontSize: '.85rem' }}>{p.category?.emoji} {p.category?.name}</td>
                       <td style={{ padding: '10px 16px', fontWeight: 600, fontSize: '.9rem', whiteSpace: 'nowrap' }}>
-                        {p.onSale && p.salePrice ? (
+                        {isSaleActive(p) ? (
                           <span style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.3 }}>
                             <span style={{ color: 'var(--text-sub)', textDecoration: 'line-through', fontSize: '.78rem', fontWeight: 500 }}>{formatPrice(p.price)}</span>
                             <span style={{ color: 'var(--pink)' }}>🏷 {formatPrice(p.salePrice)}</span>
+                            {p.saleEnd && <span style={{ fontSize: '.7rem', color: 'var(--text-sub)', fontWeight: 500 }}>до {new Date(parseLocalDate(p.saleEnd) as number).toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tashkent' })}</span>}
                           </span>
                         ) : (
                           <span style={{ color: 'var(--pink)' }}>{formatPrice(p.price)}</span>

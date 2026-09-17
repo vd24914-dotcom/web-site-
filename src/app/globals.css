@@ -75,10 +75,10 @@ h1,h2,h3,.font-display { font-family:'Gotham Pro',-apple-system,Segoe UI,sans-se
   transform:translateY(28px);
   transition:opacity .6s cubic-bezier(.22,.68,0,1.2), transform .6s cubic-bezier(.22,.68,0,1.2);
 }
-.reveal.visible { opacity:1; transform:translateY(0); }
+.reveal.visible { opacity:1; transform:none; }
 .reveal-left  { opacity:0; transform:translateX(-32px); transition:opacity .6s ease, transform .6s ease; }
 .reveal-right { opacity:0; transform:translateX(32px);  transition:opacity .6s ease, transform .6s ease; }
-.reveal-left.visible,.reveal-right.visible { opacity:1; transform:translateX(0); }
+.reveal-left.visible,.reveal-right.visible { opacity:1; transform:none; }
 .delay-1 { transition-delay:.1s; }
 .delay-2 { transition-delay:.18s; }
 .delay-3 { transition-delay:.26s; }
@@ -294,3 +294,14 @@ html.theme-transition *::after {
 ::view-transition-old(root) { z-index: 1; }
 ::view-transition-new(root) { z-index: 2; }
 .theme-toggle:hover { box-shadow: 0 0 0 4px rgba(250,135,161,.18); }
+
+/* ── Модальное окно заявки ── */
+.order-overlay { animation: orderFade .2s ease; }
+.order-box { animation: orderPop .32s cubic-bezier(.2,.8,.2,1); }
+@keyframes orderFade { from { opacity:0 } to { opacity:1 } }
+@keyframes orderPop { from { opacity:0; transform:translateY(24px) scale(.96) } to { opacity:1; transform:none } }
+@media (max-width:480px) {
+  .order-overlay { padding:0 !important; align-items:flex-end !important; }
+  .order-box { border-radius:24px 24px 0 0 !important; max-width:100% !important; margin:auto 0 0 !important; animation: orderSlide .35s cubic-bezier(.2,.8,.2,1); }
+}
+@keyframes orderSlide { from { transform:translateY(100%) } to { transform:none } }

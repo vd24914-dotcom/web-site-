@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { X, Send, CheckCircle, Loader2 } from 'lucide-react'
 
 // Узбекский номер: +998 XX XXX XX XX (9 цифр после кода 998)
@@ -50,14 +51,29 @@ export function OrderModal({ productId, productName, trigger, settings = {} }: P
 
   const close = () => { setOpen(false); setStatus('idle') }
 
+  // Окно рисуем в <body> через портал: иначе оно оказывается внутри анимированной
+  // секции с transform и «прилипает» к ней вместо центра экрана.
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => {
+    if (!open) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close() }
+    window.addEventListener('keydown', onKey)
+    return () => { document.body.style.overflow = prev; window.removeEventListener('keydown', onKey) }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
+
   return (
     <>
-      <div onClick={() => setOpen(true)}>{trigger || <button className="btn-primary">Оставить заявку</button>}</div>
+      <div onClick={() => setOpen(true)} style={{ display: 'contents' }}>{trigger || <button className="btn-primary">Оставить заявку</button>}</div>
 
-      {open && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(74, 45, 58, 0.28)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+      {open && mounted && createPortal(
+        <div className="order-overlay" role="dialog" aria-modal="true" aria-label="Оставить заявку"
+          style={{ position: 'fixed', inset: 0, background: 'rgba(74, 45, 58, 0.32)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, overflowY: 'auto' }}
           onClick={e => { if (e.target === e.currentTarget) close() }}>
-          <div style={{ background: 'var(--white)', borderRadius: 20, padding: 36, width: '100%', maxWidth: 460, position: 'relative' }}>
+          <div className="order-box" style={{ background: 'var(--white)', borderRadius: 24, padding: 36, width: '100%', maxWidth: 460, position: 'relative', boxShadow: '0 30px 90px rgba(58,21,40,.28)', border: '1px solid var(--border)', margin: 'auto' }}>
             <button onClick={close} style={{ position: 'absolute', top: 16, right: 16, background: 'var(--cream-dark)', border: 'none', cursor: 'pointer', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <X size={18} color="var(--text-sub)" />
             </button>
@@ -130,7 +146,8 @@ export function OrderModal({ productId, productName, trigger, settings = {} }: P
               </>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )

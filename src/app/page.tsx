@@ -14,6 +14,8 @@ import { PromoBanner } from '@/components/PromoBanner'
 import { SaleCountdown } from '@/components/SaleCountdown'
 import { RestockCountdown } from '@/components/RestockCountdown'
 import { ArrowRight } from 'lucide-react'
+import { InstagramIcon } from '@/components/SocialLinks'
+import { parseReels, reelEmbedUrl, reelUrl } from '@/lib/reels'
 
 // Кэшируем страницу: посетители получают её мгновенно (без обращения к базе),
 // а при изменении товаров/настроек в админке кэш обновляется автоматически.
@@ -40,6 +42,9 @@ export default async function HomePage() {
     prisma.category.findMany({ orderBy: { sortOrder: 'asc' } }).catch(() => []),
   ])
   const s = (k: keyof typeof TEXTS) => settings[k] || TEXTS[k]
+  const reels = parseReels(settings.reels)
+  const igRaw = (settings.social_instagram || '').trim()
+  const igLink = igRaw ? (igRaw.startsWith('http') ? igRaw : `https://instagram.com/${igRaw.replace(/^@/, '')}`) : ''
 
   return (
     <>
@@ -205,6 +210,58 @@ export default async function HomePage() {
                 })}
               </div>
             </div>
+          </section>
+        )}
+
+        {/* REELS */}
+        {reels.length > 0 && (
+          <section id="reels" style={{ padding: '72px 0', background: 'var(--pink-mist)', overflow: 'hidden' }}>
+            <div className="container">
+              <ScrollReveal>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 36, flexWrap: 'wrap', gap: 16 }}>
+                  <div>
+                    <span className="badge badge-rose" style={{ marginBottom: 12 }}><InstagramIcon size={13} /> Instagram</span>
+                    <h2 className="font-display" style={{ fontSize: '2.1rem', color: 'var(--text)', marginBottom: 8 }}>{s('reels_title')}</h2>
+                    <p style={{ color: 'var(--text-sub)' }}>{s('reels_subtitle')}</p>
+                  </div>
+                  {igLink && (
+                    <a href={igLink} target="_blank" rel="noopener noreferrer" className="btn-outline">{s('reels_btn')} <ArrowRight size={16} /></a>
+                  )}
+                </div>
+              </ScrollReveal>
+              <div className="reels-row">
+                {reels.map((id, i) => (
+                  <ScrollReveal key={id} delay={(i % 4) * 80} className="reels-item">
+                    <div className="reels-card">
+                      <iframe
+                        src={reelEmbedUrl(id)}
+                        title={`Instagram Reel ${i + 1}`}
+                        loading="lazy"
+                        allow="autoplay; encrypted-media; picture-in-picture"
+                        allowFullScreen
+                        scrolling="no"
+                        frameBorder={0}
+                      />
+                      <a href={reelUrl(id)} target="_blank" rel="noopener noreferrer" className="reels-open" aria-label="Открыть в Instagram">
+                        <InstagramIcon size={14} /> Открыть
+                      </a>
+                    </div>
+                  </ScrollReveal>
+                ))}
+              </div>
+            </div>
+            <style>{`
+              .reels-row{display:flex;gap:20px;overflow-x:auto;padding:6px 4px 18px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--pink-light) transparent}
+              .reels-row::-webkit-scrollbar{height:6px}
+              .reels-row::-webkit-scrollbar-thumb{background:var(--pink-light);border-radius:6px}
+              .reels-item{flex:0 0 280px;scroll-snap-align:start}
+              .reels-card{position:relative;width:280px;height:560px;border-radius:22px;overflow:hidden;background:var(--white);border:1px solid var(--border);box-shadow:0 14px 40px rgba(250,135,161,.18);transition:transform .25s,box-shadow .25s}
+              .reels-card:hover{transform:translateY(-4px);box-shadow:0 20px 48px rgba(250,135,161,.26)}
+              .reels-card iframe{width:100%;height:100%;border:0;display:block;background:var(--white)}
+              .reels-open{position:absolute;left:12px;bottom:12px;display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.92);color:var(--pink-deep);font-size:.75rem;font-weight:600;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.12);backdrop-filter:blur(6px)}
+              .reels-open:hover{background:var(--pink);color:#fff}
+              @media(max-width:768px){.reels-item{flex-basis:240px}.reels-card{width:240px;height:480px}}
+            `}</style>
           </section>
         )}
 

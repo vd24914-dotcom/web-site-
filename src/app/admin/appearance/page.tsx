@@ -1,7 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Save, RefreshCw, Eye } from 'lucide-react'
+import { Save, RefreshCw, Eye, Plus, Trash2, ArrowUp, ArrowDown, ExternalLink } from 'lucide-react'
 import { ImageUploader } from '@/components/ImageUploader'
+import { parseReelId, parseReels, reelUrl, reelEmbedUrl } from '@/lib/reels'
 
 const TEXT_SECTIONS = [
   {
@@ -89,8 +90,25 @@ export default function AppearancePage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [tab, setTab] = useState<'images' | 'text'>('images')
+  const [tab, setTab] = useState<'images' | 'text' | 'reels'>('images')
   const [activeSection, setActiveSection] = useState(0)
+  const [reelInput, setReelInput] = useState('')
+  const [reelError, setReelError] = useState('')
+
+  const reels = parseReels(values.reels)
+  const setReels = (list: string[]) => setValues({ ...values, reels: list.length ? JSON.stringify(list) : '' })
+  const addReel = () => {
+    const id = parseReelId(reelInput)
+    if (!id) { setReelError('Не похоже на ссылку на рилс. Пример: https://www.instagram.com/reel/C1a2B3c4D5e/'); return }
+    if (reels.includes(id)) { setReelError('Этот рилс уже добавлен'); return }
+    setReels([...reels, id]); setReelInput(''); setReelError('')
+  }
+  const moveReel = (i: number, dir: -1 | 1) => {
+    const j = i + dir
+    if (j < 0 || j >= reels.length) return
+    const next = [...reels]; [next[i], next[j]] = [next[j], next[i]]
+    setReels(next)
+  }
 
   useEffect(() => {
     fetch('/api/admin/settings').then(r => r.json()).then(d => {
@@ -133,7 +151,7 @@ export default function AppearancePage() {
 
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
-        {[['images', '🖼️ Картинки и логотип'], ['text', '✏️ Тексты и контент']].map(([key, label]) => (
+        {[['images', '🖼️ Картинки и логотип'], ['text', '✏️ Тексты и контент'], ['reels', '🎬 Рилсы']].map(([key, label]) => (
           <button key={key} onClick={() => setTab(key as any)}
             style={{ padding: '10px 20px', borderRadius: 12, border: '1px solid', cursor: 'pointer', fontSize: '.9rem', fontWeight: 600, transition: 'all .15s',
               background: tab === key ? 'var(--pink)' : 'white',
@@ -144,6 +162,73 @@ export default function AppearancePage() {
           </button>
         ))}
       </div>
+
+      {/* REELS TAB */}
+      {tab === 'reels' && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 340px', gap: 20, alignItems: 'start' }}>
+          <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid var(--border)' }}>
+            <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Рилсы на главной</h3>
+            <p style={{ color: 'var(--text-sub)', fontSize: '.8rem', marginBottom: 16, lineHeight: 1.5 }}>
+              Откройте рилс в Instagram, нажмите «Поделиться» → «Копировать ссылку» и вставьте её сюда. Блок появится на главной между «Популярными изделиями» и «О мастере». Если список пуст, блок скрыт. Рилс должен быть публичным.
+            </p>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
+              <input className="input" placeholder="https://www.instagram.com/reel/..." value={reelInput}
+                onChange={e => { setReelInput(e.target.value); setReelError('') }}
+                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addReel() } }} />
+              <button type="button" onClick={addReel} className="btn-primary" style={{ fontSize: '.85rem', whiteSpace: 'nowrap' }}><Plus size={15} /> Добавить</button>
+            </div>
+            {reelError && <p style={{ color: '#e53e3e', fontSize: '.78rem', marginBottom: 10 }}>{reelError}</p>}
+
+            {reels.length === 0 ? (
+              <div style={{ marginTop: 16, padding: 24, textAlign: 'center', border: '1px dashed var(--border)', borderRadius: 12, color: 'var(--text-sub)', fontSize: '.85rem' }}>
+                Пока нет ни одного рилса
+              </div>
+            ) : (
+              <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {reels.map((id, i) => (
+                  <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 12, background: 'var(--pink-mist)' }}>
+                    <span style={{ width: 26, height: 26, borderRadius: 8, background: 'var(--pink)', color: 'white', fontSize: '.75rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{i + 1}</span>
+                    <a href={reelUrl(id)} target="_blank" rel="noopener noreferrer" style={{ flex: 1, minWidth: 0, color: 'var(--text)', fontSize: '.85rem', textDecoration: 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <ExternalLink size={13} style={{ flexShrink: 0, color: 'var(--text-sub)' }} /> instagram.com/reel/{id}
+                    </a>
+                    <button type="button" onClick={() => moveReel(i, -1)} disabled={i === 0} title="Выше" style={{ background: 'none', border: 'none', cursor: i === 0 ? 'default' : 'pointer', color: 'var(--text-sub)', opacity: i === 0 ? .3 : 1, padding: 4, display: 'flex' }}><ArrowUp size={16} /></button>
+                    <button type="button" onClick={() => moveReel(i, 1)} disabled={i === reels.length - 1} title="Ниже" style={{ background: 'none', border: 'none', cursor: i === reels.length - 1 ? 'default' : 'pointer', color: 'var(--text-sub)', opacity: i === reels.length - 1 ? .3 : 1, padding: 4, display: 'flex' }}><ArrowDown size={16} /></button>
+                    <button type="button" onClick={() => setReels(reels.filter((_, j) => j !== i))} title="Удалить" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e', padding: 4, display: 'flex' }}><Trash2 size={16} /></button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 8, fontSize: '.875rem' }}>Заголовок блока</label>
+                <input className="input" placeholder="Рилсы из мастерской" value={values.reels_title || ''} onChange={e => setValues({ ...values, reels_title: e.target.value })} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 8, fontSize: '.875rem' }}>Подзаголовок</label>
+                <input className="input" placeholder="Процесс, новинки и немного уюта — подписывайтесь в Instagram" value={values.reels_subtitle || ''} onChange={e => setValues({ ...values, reels_subtitle: e.target.value })} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 8, fontSize: '.875rem' }}>Кнопка (ведёт на ваш Instagram из раздела «Контакты»)</label>
+                <input className="input" placeholder="Смотреть в Instagram" value={values.reels_btn || ''} onChange={e => setValues({ ...values, reels_btn: e.target.value })} />
+              </div>
+              <div><SaveBtn /></div>
+            </div>
+          </div>
+
+          <div style={{ background: 'white', borderRadius: 16, padding: 20, border: '1px solid var(--border)' }}>
+            <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6, fontSize: '.95rem' }}>Предпросмотр</h3>
+            <p style={{ color: 'var(--text-sub)', fontSize: '.78rem', marginBottom: 14 }}>Первый рилс из списка</p>
+            {reels[0] ? (
+              <div style={{ width: 280, height: 560, borderRadius: 18, overflow: 'hidden', border: '1px solid var(--border)', margin: '0 auto' }}>
+                <iframe src={reelEmbedUrl(reels[0])} title="Предпросмотр рилса" style={{ width: '100%', height: '100%', border: 0 }} allow="encrypted-media" allowFullScreen />
+              </div>
+            ) : (
+              <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-sub)', fontSize: '.85rem', border: '1px dashed var(--border)', borderRadius: 12 }}>Добавьте рилс</div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* IMAGES TAB */}
       {tab === 'images' && (

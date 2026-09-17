@@ -43,6 +43,11 @@ export const TEXTS = {
   contact_telegram: '@uyutnit',
   contact_address: 'Ташкент, Узбекистан',
 
+  // Рилсы
+  reels_title: 'Рилсы из мастерской',
+  reels_subtitle: 'Процесс, новинки и немного уюта — подписывайтесь в Instagram',
+  reels_btn: 'Смотреть в Instagram',
+
   // Футер
   footer_text: 'Вязаные изделия ручной работы с любовью',
 

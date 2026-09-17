@@ -37,3 +37,8 @@ export function SocialLinks({ settings = {}, size = 18 }: Props) {
     </div>
   )
 }
+
+/** Иконка Instagram для использования вне списка соцсетей */
+export function InstagramIcon({ size = 16 }: { size?: number }) {
+  return <Svg s={size} d={IG} />
+}

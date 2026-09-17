@@ -42,14 +42,16 @@ export default async function HomePage() {
     prisma.category.findMany({ orderBy: { sortOrder: 'asc' } }).catch(() => []),
     prisma.product.findMany({ where: { onSale: true, salePrice: { not: null }, inStock: true }, include: { category: true }, orderBy: { updatedAt: 'desc' } }).catch(() => []),
   ])
+  // На главной в каждом блоке не больше 9 карточек, остальное — по кнопке «Смотреть ещё»
+  const HOME_LIMIT = 9
   // Товары на акции: только с действующим сроком
-  const onSale = (saleRaw as any[]).filter((p) => isSaleActive(p))
+  const onSale = (saleRaw as any[]).filter((p) => isSaleActive(p)).slice(0, HOME_LIMIT)
   // Популярные: кого отметили позже — тот выше. У старых записей без даты отметки берём дату создания.
   const featured = (featuredRaw as any[]).sort((a, b) => {
     const ta = new Date(a.featuredAt || a.createdAt).getTime()
     const tb = new Date(b.featuredAt || b.createdAt).getTime()
     return tb - ta
-  })
+  }).slice(0, HOME_LIMIT)
   const s = (k: keyof typeof TEXTS) => settings[k] || TEXTS[k]
   // Блок рилсов показывается только когда включён в админке (Дизайн и контент → Рилсы)
   const reels = settings.reels_enabled === '1' ? parseReels(settings.reels) : []

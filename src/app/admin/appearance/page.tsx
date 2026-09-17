@@ -168,6 +168,11 @@ export default function AppearancePage() {
       {tab === 'reels' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 340px', gap: 20, alignItems: 'start' }}>
           <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid var(--border)' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', marginBottom: 18, padding: '12px 14px', borderRadius: 12, border: '1px solid', fontSize: '.9rem', fontWeight: 600,
+              background: values.reels_enabled === '1' ? '#e8f5ec' : 'var(--pink-mist)', borderColor: values.reels_enabled === '1' ? '#bfe3c9' : 'var(--pink-light)', color: values.reels_enabled === '1' ? '#1f5f33' : 'var(--pink-deep)' }}>
+              <input type="checkbox" checked={values.reels_enabled === '1'} onChange={e => setValues({ ...values, reels_enabled: e.target.checked ? '1' : '' })} style={{ width: 18, height: 18 }} />
+              {values.reels_enabled === '1' ? 'Блок «Рилсы» показывается на сайте' : 'Блок «Рилсы» скрыт с сайта (временно отключён)'}
+            </label>
             <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Рилсы на главной</h3>
             <p style={{ color: 'var(--text-sub)', fontSize: '.8rem', marginBottom: 16, lineHeight: 1.5 }}>
               Откройте рилс в Instagram, нажмите «Поделиться» → «Копировать ссылку» и вставьте её сюда. К каждому рилсу загрузите обложку (скриншот или кадр из видео, вертикальный 9:16) — она показывается на сайте с кнопкой «play», а по клику запускается сам рилс. Без обложки будет заглушка. Блок появится на главной между «Популярными изделиями» и «О мастере»; если список пуст, он скрыт. Рилс должен быть публичным.

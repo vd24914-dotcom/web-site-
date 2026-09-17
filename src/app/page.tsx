@@ -43,7 +43,8 @@ export default async function HomePage() {
     prisma.category.findMany({ orderBy: { sortOrder: 'asc' } }).catch(() => []),
   ])
   const s = (k: keyof typeof TEXTS) => settings[k] || TEXTS[k]
-  const reels = parseReels(settings.reels)
+  // Блок рилсов показывается только когда включён в админке (Дизайн и контент → Рилсы)
+  const reels = settings.reels_enabled === '1' ? parseReels(settings.reels) : []
   const igRaw = (settings.social_instagram || '').trim()
   const igLink = igRaw ? (igRaw.startsWith('http') ? igRaw : `https://instagram.com/${igRaw.replace(/^@/, '')}`) : ''
 

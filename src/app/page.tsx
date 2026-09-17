@@ -263,8 +263,8 @@ export default async function HomePage() {
           </section>
         )}
 
-        {/* MASTERCLASS */}
-        {(masterclasses as any[]).length > 0 && (
+        {/* MASTERCLASS — показывается только когда раздел включён (клик по логотипу в админке) */}
+        {settings.masterclass_enabled === '1' && (masterclasses as any[]).length > 0 && (
           <section id="masterclass" style={{ padding: '72px 0', background: 'var(--white)' }}>
             <div className="container">
               <ScrollReveal>

@@ -12,11 +12,15 @@ export default function MasterClassAdminPage() {
   const [editing, setEditing] = useState<any>(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [enabled, setEnabled] = useState<boolean | null>(null)
 
   const load = async () => {
     setLoading(true)
-    const d = await fetch('/api/admin/masterclass').then(r => r.json())
-    setItems(d.items || []); setLoading(false)
+    const [d, s] = await Promise.all([
+      fetch('/api/admin/masterclass').then(r => r.json()),
+      fetch('/api/admin/settings').then(r => r.json()).catch(() => ({})),
+    ])
+    setItems(d.items || []); setEnabled(s?.settings?.masterclass_enabled === '1'); setLoading(false)
   }
   useEffect(() => { load() }, [])
 
@@ -61,6 +65,16 @@ export default function MasterClassAdminPage() {
           <Plus size={16} /> Добавить мастер-класс
         </button>
       </div>
+
+      {enabled !== null && (
+        <div style={{ marginBottom: 20, padding: '12px 16px', borderRadius: 12, border: '1px solid', fontSize: '.85rem', display: 'flex', alignItems: 'center', gap: 10,
+          background: enabled ? '#e8f5ec' : 'var(--pink-mist)', borderColor: enabled ? '#bfe3c9' : 'var(--pink-light)', color: enabled ? '#1f5f33' : 'var(--pink-deep)' }}>
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: enabled ? '#2e7d45' : '#c9c9c9', flexShrink: 0 }} />
+          {enabled
+            ? <span><b>Раздел включён</b> — посетители видят мастер-классы на сайте. Чтобы скрыть, нажмите на логотип в левом верхнем углу.</span>
+            : <span><b>Раздел скрыт</b> — на сайте показывается «временно недоступно». Чтобы включить, нажмите на логотип в левом верхнем углу админки.</span>}
+        </div>
+      )}
 
       {loading ? (
         <div style={{ textAlign: 'center', padding: 60 }}><RefreshCw size={32} className="animate-spin" style={{ color: 'var(--pink)', margin: '0 auto' }} /></div>

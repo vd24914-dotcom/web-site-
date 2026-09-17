@@ -269,28 +269,38 @@ export default async function HomePage() {
         )}
 
         {/* ABOUT */}
-        <section id="about" style={{ padding: '88px 0', background: 'var(--cream)' }}>
-          <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
-            <ScrollReveal direction="left">
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
-                {settings.about_image ? (
-                  <div className="about-art" style={{ width: 460, height: 500, borderRadius: '40% 60% 60% 40% / 50% 40% 60% 50%', overflow: 'hidden', boxShadow: '0 24px 64px rgba(250,135,161,.22)' }}>
-                    <img src={settings.about_image} alt="О мастере" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <section id="about" className="about-section">
+          {/* декоративные пятна на фоне */}
+          <div aria-hidden="true" className="about-blob about-blob-1 animate-float" />
+          <div aria-hidden="true" className="about-blob about-blob-2 animate-float" />
+          <div className="container">
+            <ScrollReveal>
+              <div className="about-card">
+                <div className="about-grid">
+                  <div className="about-photo-wrap">
+                    <div aria-hidden="true" className="about-photo-back gradient-flow" />
+                    {settings.about_image ? (
+                      <div className="about-photo">
+                        <img src={settings.about_image} alt="О мастере" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                    ) : (
+                      <div className="about-photo about-photo-empty gradient-flow">
+                        {s('about_icon')}
+                      </div>
+                    )}
+                    <div aria-hidden="true" className="about-stitch">🧶</div>
                   </div>
-                ) : (
-                  <div className="about-art gradient-flow" style={{ width: 420, height: 460, background: 'linear-gradient(135deg,var(--pink-light) 0%,var(--cream-dark) 50%,var(--pink-light) 100%)', borderRadius: '40% 60% 60% 40% / 50% 40% 60% 50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 120, boxShadow: '0 24px 64px rgba(250,135,161,.2)' }}>
-                    {s('about_icon')}
+                  <div className="about-body">
+                    <span aria-hidden="true" className="about-quote font-display">“</span>
+                    <span className="badge badge-rose" style={{ marginBottom: 18 }}>👩‍🎨 О мастере</span>
+                    <h2 className="font-display about-title">{s('about_title')}</h2>
+                    <div className="about-divider" />
+                    <p className="about-text">{s('about_text')}</p>
                   </div>
-                )}
+                </div>
               </div>
             </ScrollReveal>
-            <ScrollReveal direction="right">
-              <span className="badge badge-rose" style={{ marginBottom: 18 }}>О мастере</span>
-              <h2 className="font-display" style={{ fontSize: '2rem', color: 'var(--text)', marginBottom: 18, lineHeight: 1.25 }}>{s('about_title')}</h2>
-              <p style={{ color: 'var(--text-sub)', lineHeight: 1.8, fontSize: '1rem' }}>{s('about_text')}</p>
-            </ScrollReveal>
           </div>
-          <style>{`@media(max-width:768px){section#about div[style*="grid-template-columns"]{grid-template-columns:1fr!important}}`}</style>
         </section>
 
         {/* CTA */}

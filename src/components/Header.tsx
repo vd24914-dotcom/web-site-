@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { Menu, X, ChevronLeft } from 'lucide-react'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { SearchBox } from '@/components/SearchBox'
 
 interface Props { settings?: Record<string, string> }
 
@@ -58,6 +59,8 @@ export function Header({ settings = {} }: Props) {
         </nav>
 
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <span className="hide-mobile" style={{ display: 'inline-flex' }}><SearchBox /></span>
+          <span className="show-mobile"><SearchBox compact /></span>
           <ThemeToggle />
           <Link href="/catalog" className="btn-primary hide-mobile" style={{ padding: '.55rem 1.25rem', fontSize: '.85rem' }}>Заказать</Link>
           {!isHome && (

@@ -10,6 +10,8 @@ import { ScrollReveal } from '@/components/ScrollReveal'
 import { PriceTag } from '@/components/PriceTag'
 import { SaleCountdown } from '@/components/SaleCountdown'
 import { RestockCountdown } from '@/components/RestockCountdown'
+import { CatalogSearch } from '@/components/CatalogSearch'
+import { normalizeQuery, searchProducts } from '@/lib/search'
 
 export const metadata: Metadata = {
   title: 'Каталог вязаных изделий',
@@ -21,9 +23,11 @@ async function getSettings(): Promise<Record<string, string>> {
   return Object.fromEntries((rows as any[]).map((r: any) => [r.key, r.value]))
 }
 
-export default async function CatalogPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
-  const cat = (await searchParams).category
-  const [settings, products, categories] = await Promise.all([
+export default async function CatalogPage({ searchParams }: { searchParams: Promise<{ category?: string; q?: string }> }) {
+  const sp = await searchParams
+  const cat = sp.category
+  const q = normalizeQuery(sp.q)
+  const [settings, allProducts, categories] = await Promise.all([
     getSettings(),
     prisma.product.findMany({
       where: { inStock: true, ...(cat ? { category: { slug: cat } } : {}) },
@@ -32,25 +36,35 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
     }).catch(() => []),
     prisma.category.findMany({ orderBy: { sortOrder: 'asc' } }).catch(() => []),
   ])
+  // Фильтр по поисковому запросу (?q=) поверх выбранной категории
+  const products = q ? searchProducts(allProducts as any[], q) : (allProducts as any[])
+  const withQ = (href: string) => (q ? `${href}${href.includes('?') ? '&' : '?'}q=${encodeURIComponent(q)}` : href)
 
   return (
     <>
       <Header settings={settings} />
       <main>
         <div style={{ background: 'linear-gradient(135deg,var(--cream) 0%,var(--pink-mist) 100%)', padding: '52px 0 36px', borderBottom: '1px solid var(--border)' }}>
-          <div className="container">
-            <h1 className="font-display" style={{ fontSize: '2.4rem', color: 'var(--text)', marginBottom: 6 }}>Каталог</h1>
-            <p style={{ color: 'var(--text-sub)' }}>{(products as any[]).length} товаров в наличии</p>
+          <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 24, flexWrap: 'wrap' }}>
+            <div>
+              <h1 className="font-display" style={{ fontSize: '2.4rem', color: 'var(--text)', marginBottom: 6 }}>{q ? 'Поиск' : 'Каталог'}</h1>
+              <p style={{ color: 'var(--text-sub)' }}>
+                {q
+                  ? <>{products.length === 0 ? 'Ничего не найдено' : `${products.length} ${plural(products.length)}`} по запросу «<b style={{ color: 'var(--text)' }}>{q}</b>»</>
+                  : `${products.length} товаров в наличии`}
+              </p>
+            </div>
+            <CatalogSearch q={q} category={cat} />
           </div>
         </div>
 
         <div className="container" style={{ paddingTop: 32, paddingBottom: 88 }}>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 40 }}>
-            <Link href="/catalog" style={{ textDecoration: 'none' }}>
+            <Link href={withQ('/catalog')} style={{ textDecoration: 'none' }}>
               <button className={!cat ? 'btn-primary' : 'btn-outline'} style={{ padding: '.5rem 1.2rem', fontSize: '.85rem' }}>Все</button>
             </Link>
             {(categories as any[]).map(c => (
-              <Link key={c.id} href={`/catalog?category=${c.slug}`} style={{ textDecoration: 'none' }}>
+              <Link key={c.id} href={withQ(`/catalog?category=${c.slug}`)} style={{ textDecoration: 'none' }}>
                 <button className={cat === c.slug ? 'btn-primary' : 'btn-outline'} style={{ padding: '.5rem 1.2rem', fontSize: '.85rem' }}>
                   {c.name}
                 </button>
@@ -58,7 +72,17 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
             ))}
           </div>
 
-          {(products as any[]).length === 0 ? (
+          {products.length === 0 && q ? (
+            <div style={{ textAlign: 'center', padding: '80px 0' }}>
+              <div style={{ fontSize: 72, marginBottom: 18 }}>🔍</div>
+              <h2 className="font-display" style={{ color: 'var(--text)', marginBottom: 12 }}>По запросу «{q}» ничего не нашлось</h2>
+              <p style={{ color: 'var(--text-sub)', marginBottom: 28 }}>Попробуйте другое слово{cat ? ' или снимите фильтр по категории' : ''}. А если нужно что-то особенное — напишите нам, свяжем под заказ</p>
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Link href={cat ? `/catalog?q=${encodeURIComponent(q)}` : '/catalog'} className="btn-outline">{cat ? 'Искать во всех категориях' : 'Весь каталог'}</Link>
+                <OrderModal settings={settings} trigger={<button className="btn-primary">Оставить заявку</button>} />
+              </div>
+            </div>
+          ) : products.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '80px 0' }}>
               <div style={{ fontSize: 72, marginBottom: 18 }}>🧶</div>
               <h2 className="font-display" style={{ color: 'var(--text)', marginBottom: 12 }}>Скоро здесь появятся товары</h2>
@@ -108,4 +132,11 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
       <Footer settings={settings} />
     </>
   )
+}
+
+function plural(n: number) {
+  const m10 = n % 10, m100 = n % 100
+  if (m10 === 1 && m100 !== 11) return 'товар'
+  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return 'товара'
+  return 'товаров'
 }

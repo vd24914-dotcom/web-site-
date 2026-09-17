@@ -39,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function HomePage() {
   const [settings, featured, categories] = await Promise.all([
     getSettings(),
-    prisma.product.findMany({ where: { featured: true, inStock: true }, include: { category: true }, take: 6 }).catch(() => []),
+    prisma.product.findMany({ where: { featured: true, inStock: true }, include: { category: true }, orderBy: { createdAt: 'desc' } }).catch(() => []),
     prisma.category.findMany({ orderBy: { sortOrder: 'asc' } }).catch(() => []),
   ])
   const s = (k: keyof typeof TEXTS) => settings[k] || TEXTS[k]

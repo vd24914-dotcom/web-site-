@@ -56,8 +56,8 @@ img, svg, video { max-width: 100%; }
   --text:#3a1528; --text-sub:#8a5068; --border:#f5c8d8; --white:#ffffff;
 }
 
-html { transition: background .3s; }
-body, .card, .input, header, footer, section { transition: background-color .3s, color .3s, border-color .3s; }
+html { transition: background .45s ease; }
+body, .card, .input, header, footer, section, main, nav, aside { transition: background-color .45s ease, color .45s ease, border-color .45s ease, box-shadow .45s ease; }
 
 /* ── Base ── */
 html { scroll-behavior: smooth; }
@@ -279,3 +279,18 @@ select.input { cursor:pointer; }
 
 .nav-link { color:var(--text-sub); text-decoration:none; font-size:.9rem; font-weight:500; transition:color .2s; }
 .nav-link:hover { color:var(--pink); }
+
+/* ── Плавное переключение темы ── */
+/* Запасной вариант без View Transitions: на время смены темы все цвета перетекают */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition: background-color .55s ease, background .55s ease, color .55s ease, border-color .55s ease, box-shadow .55s ease, fill .55s ease, stroke .55s ease !important;
+}
+/* View Transitions: отключаем стандартное перекрёстное затухание, новую тему раскрываем кругом от кнопки */
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) { z-index: 2; }
+.theme-toggle:hover { box-shadow: 0 0 0 4px rgba(250,135,161,.18); }

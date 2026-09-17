@@ -1,12 +1,14 @@
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Корень воркспейса задан явно, иначе Turbopack цепляет посторонний
+  // package-lock.json из родительской папки
+  turbopack: {
+    root: __dirname,
+  },
   images: {
     remotePatterns: [{ protocol: 'https', hostname: '**' }],
     unoptimized: true,
-  },
-  eslint: {
-    // Не валить сборку из-за предупреждений линтера
-    ignoreDuringBuilds: true,
   },
   typescript: {
     // Не валить сборку из-за ошибок типов

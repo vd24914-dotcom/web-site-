@@ -71,8 +71,8 @@ export default function MasterClassAdminPage() {
           background: enabled ? '#e8f5ec' : 'var(--pink-mist)', borderColor: enabled ? '#bfe3c9' : 'var(--pink-light)', color: enabled ? '#1f5f33' : 'var(--pink-deep)' }}>
           <span style={{ width: 10, height: 10, borderRadius: '50%', background: enabled ? '#2e7d45' : '#c9c9c9', flexShrink: 0 }} />
           {enabled
-            ? <span><b>Раздел включён</b> — посетители видят мастер-классы на сайте. Чтобы скрыть, нажмите на логотип в левом верхнем углу.</span>
-            : <span><b>Раздел скрыт</b> — на сайте показывается «временно недоступно». Чтобы включить, нажмите на логотип в левом верхнем углу админки.</span>}
+            ? <span><b>Раздел включён</b> — посетители видят мастер-классы на сайте.</span>
+            : <span><b>Раздел скрыт</b> — посетителям показывается «временно недоступно».</span>}
         </div>
       )}
 

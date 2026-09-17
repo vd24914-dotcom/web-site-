@@ -57,8 +57,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   const logoBtn = (style: React.CSSProperties) => (
-    <button type="button" onClick={mc.toggle} title={mc.enabled ? 'Мастер-классы включены (нажмите, чтобы скрыть)' : 'Мастер-классы скрыты (нажмите, чтобы включить)'}
-      style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', position: 'relative', display: 'block' }}>
+    <button type="button" onClick={mc.toggle} aria-label="Логотип"
+      style={{ background: 'none', border: 'none', padding: 0, cursor: 'default', position: 'relative', display: 'block' }}>
       <img src="/admin-logo.png" alt="Fimush.kin Админ" style={style} />
       {mc.enabled !== null && (
         <span aria-hidden="true" style={{ position: 'absolute', right: -4, top: -4, width: 9, height: 9, borderRadius: '50%', background: mc.enabled ? '#2e7d45' : '#c9c9c9', border: '2px solid white', boxShadow: '0 0 0 1px rgba(0,0,0,.06)' }} />

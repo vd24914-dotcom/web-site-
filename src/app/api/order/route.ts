@@ -7,8 +7,12 @@ import { parseJSON } from '@/lib/utils'
 const esc = (s: any) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
 export async function POST(req: NextRequest) {
-  const { name, phone, email, message, productId } = await req.json()
+  const body = await req.json()
+  const { name, phone, message, productId } = body
   if (!name || !phone) return NextResponse.json({ error: 'Заполните имя и телефон' }, { status: 400 })
+  // В поле email теперь хранится Telegram-ник клиента, нормализуем к виду @username
+  const tg = String(body.email || '').trim().replace(/^(https?:\/\/)?(t\.me|telegram\.me)\//i, '').replace(/^@/, '').replace(/[^A-Za-z0-9_]/g, '').slice(0, 32)
+  const email = tg ? `@${tg}` : ''
 
   let product: any = null
   if (productId) product = await prisma.product.findUnique({ where: { id: productId } }).catch(() => null)
@@ -41,7 +45,7 @@ export async function POST(req: NextRequest) {
     '',
     `👤 <b>Имя:</b> ${esc(name)}`,
     `📱 <b>Телефон:</b> ${esc(phone)}`,
-    email ? `✉️ <b>Почта:</b> ${esc(email)}` : '',
+    email ? `✈️ <b>Telegram:</b> <a href="https://t.me/${esc(email.slice(1))}">${esc(email)}</a>` : '',
     message ? `💬 <b>Пожелания:</b> ${esc(message)}` : '',
     siteUrl ? `\n🔗 Админка: ${siteUrl}/admin/orders` : '',
   ].filter(Boolean).join('\n')

@@ -101,8 +101,13 @@ export function OrderModal({ productId, productName, trigger, settings = {} }: P
                     )}
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: '.85rem', fontWeight: 500, color: 'var(--text)', marginBottom: 6 }}>Почта <span style={{ color: 'var(--text-sub)', fontWeight: 400 }}>(по желанию)</span></label>
-                    <input className="input" type="email" placeholder="email@example.com" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
+                    <label style={{ display: 'block', fontSize: '.85rem', fontWeight: 500, color: 'var(--text)', marginBottom: 6 }}>Telegram <span style={{ color: 'var(--text-sub)', fontWeight: 400 }}>(по желанию, чтобы написать вам)</span></label>
+                    <div style={{ position: 'relative' }}>
+                      <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--pink)', fontWeight: 700, pointerEvents: 'none' }}>@</span>
+                      <input className="input" type="text" inputMode="text" autoComplete="off" autoCapitalize="none" spellCheck={false} placeholder="username" style={{ paddingLeft: 32 }}
+                        value={form.email.replace(/^@/, '')}
+                        onChange={e => setForm({ ...form, email: e.target.value.replace(/^\s*@?/, '').replace(/^(https?:\/\/)?(t\.me|telegram\.me)\//i, '').replace(/[^A-Za-z0-9_]/g, '').slice(0, 32) })} />
+                    </div>
                   </div>
                   <div>
                     <label style={{ display: 'block', fontSize: '.85rem', fontWeight: 500, color: 'var(--text)', marginBottom: 6 }}>Пожелания</label>

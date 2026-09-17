@@ -60,6 +60,24 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ product })
 }
 
+// Быстрое изменение одного флага из списка товаров (например, «Популярное»)
+export async function PATCH(req: NextRequest) {
+  if (!await auth()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const data = await req.json()
+  const id = parseInt(data.id)
+  if (!id) return NextResponse.json({ error: 'Нет id' }, { status: 400 })
+  const patch: Record<string, any> = {}
+  if (typeof data.featured === 'boolean') patch.featured = data.featured
+  if (typeof data.inStock === 'boolean') patch.inStock = data.inStock
+  if (Object.keys(patch).length === 0) return NextResponse.json({ error: 'Нечего менять' }, { status: 400 })
+  const product = await prisma.product.update({ where: { id }, data: patch })
+  revalidatePath('/')
+  revalidatePath('/catalog')
+  revalidatePath('/sale')
+  revalidatePath('/product/[slug]', 'page')
+  return NextResponse.json({ product })
+}
+
 export async function PUT(req: NextRequest) {
   if (!await auth()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const data = await req.json()

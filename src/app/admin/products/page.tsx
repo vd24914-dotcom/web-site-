@@ -47,14 +47,26 @@ export default function ProductsPage() {
     setProducts(prev => prev.filter(p => p.id !== id))
   }
 
+  // Переключение «Популярное» прямо из списка, без открытия формы
+  const toggleFeatured = async (p: any) => {
+    const next = !p.featured
+    setProducts(prev => prev.map(x => x.id === p.id ? { ...x, featured: next } : x))
+    const res = await fetch('/api/admin/products', {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: p.id, featured: next }),
+    }).catch(() => null)
+    if (!res || !res.ok) setProducts(prev => prev.map(x => x.id === p.id ? { ...x, featured: !next } : x))
+  }
+
   const filtered = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
+  const featuredCount = products.filter(p => p.featured).length
 
   return (
     <div style={{ padding: 32 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
           <h1 className="font-display" style={{ fontSize: '1.8rem', color: 'var(--text)' }}>Товары</h1>
-          <p style={{ color: 'var(--text-sub)', fontSize: '.9rem' }}>{products.length} товаров в каталоге</p>
+          <p style={{ color: 'var(--text-sub)', fontSize: '.9rem' }}>{products.length} товаров в каталоге · {featuredCount} в «Популярных» на главной</p>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
           <button onClick={load} className="btn-outline" style={{ padding: '.6rem' }}><RefreshCw size={16} /></button>
@@ -85,7 +97,7 @@ export default function ProductsPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--border)', background: 'var(--cream-dark)' }}>
-                  {['Фото', 'Товар', 'Категория', 'Цена', 'В наличии', 'Новинка', 'Действия'].map(h => (
+                  {['Фото', 'Товар', 'Категория', 'Цена', 'В наличии', 'Популярное', 'Действия'].map(h => (
                     <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: '.8rem', color: 'var(--text-sub)', fontWeight: 600, textTransform: 'uppercase' }}>{h}</th>
                   ))}
                 </tr>
@@ -128,7 +140,13 @@ export default function ProductsPage() {
                           {p.inStock ? '✓ Да' : '✗ Нет'}
                         </span>
                       </td>
-                      <td style={{ padding: '10px 16px' }}>{p.featured ? '⭐' : '—'}</td>
+                      <td style={{ padding: '10px 16px' }}>
+                        <label title={p.featured ? 'Убрать из «Популярных изделий»' : 'Показать в «Популярных изделиях» на главной'}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '.8rem', fontWeight: 600, color: p.featured ? 'var(--pink-deep)' : 'var(--text-sub)' }}>
+                          <input type="checkbox" checked={!!p.featured} onChange={() => toggleFeatured(p)} style={{ width: 18, height: 18, accentColor: '#FA87A1', cursor: 'pointer' }} />
+                          {p.featured ? '⭐ Да' : 'Нет'}
+                        </label>
+                      </td>
                       <td style={{ padding: '10px 16px' }}>
                         <div style={{ display: 'flex', gap: 6 }}>
                           <button onClick={() => openEdit(p)} style={{ background: 'var(--pink-light)', border: 'none', cursor: 'pointer', color: 'var(--pink-dark)', padding: '6px 10px', borderRadius: 8 }}><Edit2 size={14} /></button>
@@ -256,7 +274,7 @@ export default function ProductsPage() {
                 </label>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '.9rem', fontWeight: 500, color: 'var(--text)' }}>
                   <input type="checkbox" checked={editing.featured} onChange={e => setEditing({ ...editing, featured: e.target.checked })} style={{ width: 16, height: 16 }} />
-                  ✨ Новинка (показать на главной)
+                  ⭐ Популярное изделие (показывать в блоке «Популярные изделия» на главной, бейдж «Новинка»)
                 </label>
               </div>
 

@@ -279,3 +279,36 @@ select.input { cursor:pointer; }
 
 .nav-link { color:var(--text-sub); text-decoration:none; font-size:.9rem; font-weight:500; transition:color .2s; }
 .nav-link:hover { color:var(--pink); }
+
+/* ── Мастер-классы ── */
+.mc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:28px}
+.mc-card{background:var(--white);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 10px 32px rgba(250,135,161,.12);transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s;display:flex;flex-direction:column;height:100%}
+.mc-card:hover{transform:translateY(-6px);box-shadow:0 22px 56px rgba(250,135,161,.24)}
+.mc-cover{position:relative;aspect-ratio:16/9;width:100%;border:0;padding:0;background:var(--pink-light);cursor:pointer;overflow:hidden;display:block}
+.mc-cover img,.mc-cover video{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.mc-card:hover .mc-cover img,.mc-card:hover .mc-cover video{transform:scale(1.06)}
+.mc-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08) 0%,rgba(0,0,0,0) 40%,rgba(0,0,0,.42) 100%);pointer-events:none}
+.mc-play{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:rgba(255,255,255,.94);color:var(--pink-deep);display:flex;align-items:center;justify-content:center;padding-left:4px;box-shadow:0 12px 30px rgba(0,0,0,.25);z-index:2;transition:transform .3s,background .3s,color .3s}
+.mc-play::before{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(255,255,255,.7);animation:mcPulse 2.2s ease-out infinite}
+.mc-card:hover .mc-play{transform:scale(1.1);background:var(--pink);color:#fff}
+@keyframes mcPulse{0%{transform:scale(.9);opacity:.9}70%{transform:scale(1.35);opacity:0}100%{transform:scale(1.35);opacity:0}}
+.mc-pill{position:absolute;z-index:2;display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;font-size:.7rem;font-weight:700;letter-spacing:.02em;backdrop-filter:blur(6px)}
+.mc-pill-src{top:12px;left:12px;background:rgba(255,255,255,.9);color:var(--pink-deep)}
+.mc-pill-src.yt{color:#e02b2b}
+.mc-pill-dur{bottom:12px;right:12px;background:rgba(0,0,0,.6);color:#fff}
+.mc-body{padding:18px 20px 22px;display:flex;flex-direction:column;gap:8px;flex:1}
+.mc-title{font-weight:700;color:var(--text);font-size:1.05rem;line-height:1.35;margin:0}
+.mc-desc{color:var(--text-sub);font-size:.86rem;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:0}
+.mc-meta{margin-top:auto;padding-top:10px;display:flex;align-items:center;justify-content:space-between;font-size:.75rem;color:var(--text-sub)}
+.mc-watch{display:inline-flex;align-items:center;gap:6px;color:var(--pink-dark);font-weight:600;transition:gap .2s}
+.mc-card:hover .mc-watch{gap:10px}
+.mc-modal{position:fixed;inset:0;z-index:9999;background:rgba(20,8,14,.86);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:20px;animation:mcFade .2s ease}
+.mc-modal-box{position:relative;width:min(960px,100%);background:#0f0a0d;border-radius:22px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.6);animation:mcPop .3s cubic-bezier(.2,.8,.2,1)}
+.mc-modal-player{position:relative;aspect-ratio:16/9;width:100%;background:#000}
+.mc-modal-player iframe,.mc-modal-player video{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.mc-modal-title{padding:14px 18px;color:#fff;font-weight:600;font-size:.95rem;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.mc-modal-close{position:absolute;top:12px;right:12px;z-index:3;width:40px;height:40px;border-radius:50%;border:0;cursor:pointer;background:rgba(255,255,255,.92);color:var(--pink-deep);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.3);transition:background .2s,color .2s}
+.mc-modal-close:hover{background:var(--pink);color:#fff}
+@keyframes mcFade{from{opacity:0}to{opacity:1}}
+@keyframes mcPop{from{opacity:0;transform:scale(.95) translateY(14px)}to{opacity:1;transform:none}}
+@media(max-width:640px){.mc-modal{padding:0;align-items:flex-start}.mc-modal-box{border-radius:0;min-height:100%}.mc-grid{gap:20px}}

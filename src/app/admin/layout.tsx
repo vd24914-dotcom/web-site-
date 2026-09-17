@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { LayoutDashboard, Package, ShoppingBag, Tag, Settings, LogOut, Palette, Newspaper, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Package, ShoppingBag, Tag, Settings, LogOut, Palette, Newspaper, Menu, X, GraduationCap } from 'lucide-react'
 
 const NAV = [
   { href: '/admin',            icon: <LayoutDashboard size={17} />, label: 'Главная' },
@@ -10,6 +10,7 @@ const NAV = [
   { href: '/admin/products',   icon: <Package size={17} />,         label: 'Товары' },
   { href: '/admin/categories', icon: <Tag size={17} />,             label: 'Категории' },
   { href: '/admin/news',       icon: <Newspaper size={17} />,       label: 'Новости' },
+  { href: '/admin/masterclass', icon: <GraduationCap size={17} />,  label: 'Мастер-классы' },
   { href: '/admin/appearance', icon: <Palette size={17} />,         label: 'Дизайн и контент' },
   { href: '/admin/settings',   icon: <Settings size={17} />,        label: 'Настройки' },
 ]

@@ -64,6 +64,14 @@ const TEXT_SECTIONS = [
     ]
   },
   {
+    label: '🎓 Мастер-классы',
+    fields: [
+      { key: 'masterclass_title', label: 'Заголовок блока', placeholder: 'Мастер-классы' },
+      { key: 'masterclass_subtitle', label: 'Подзаголовок', placeholder: 'Учитесь вязать вместе со мной — пошаговые видеоуроки для любого уровня', textarea: true },
+      { key: 'masterclass_btn', label: 'Кнопка на главной', placeholder: 'Все мастер-классы', note: 'Сами видео добавляются в разделе «Мастер-классы» в меню админки.' },
+    ]
+  },
+  {
     label: '🏷 Акция и таймер',
     fields: [
       { key: 'sale_title', label: 'Текст акции (в баннере)', placeholder: 'Скидки недели! Успейте' },

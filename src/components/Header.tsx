@@ -29,6 +29,7 @@ export function Header({ settings = {} }: Props) {
     { href: '/catalog', label: 'Каталог' },
     { href: '/sale',    label: 'Скидки' },
     { href: '/news',    label: 'Новости' },
+    { href: '/masterclass', label: 'Мастер-классы' },
     { href: '/#about',  label: 'О нас'   },
     { href: '/#contact',label: 'Контакты'},
   ]

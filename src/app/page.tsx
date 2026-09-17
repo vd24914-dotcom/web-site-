@@ -37,11 +37,17 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [settings, featured, categories] = await Promise.all([
+  const [settings, featuredRaw, categories] = await Promise.all([
     getSettings(),
-    prisma.product.findMany({ where: { featured: true, inStock: true }, include: { category: true }, orderBy: { createdAt: 'desc' } }).catch(() => []),
+    prisma.product.findMany({ where: { featured: true, inStock: true }, include: { category: true } }).catch(() => []),
     prisma.category.findMany({ orderBy: { sortOrder: 'asc' } }).catch(() => []),
   ])
+  // Популярные: кого отметили позже — тот выше. У старых записей без даты отметки берём дату создания.
+  const featured = (featuredRaw as any[]).sort((a, b) => {
+    const ta = new Date(a.featuredAt || a.createdAt).getTime()
+    const tb = new Date(b.featuredAt || b.createdAt).getTime()
+    return tb - ta
+  })
   const s = (k: keyof typeof TEXTS) => settings[k] || TEXTS[k]
   // Блок рилсов показывается только когда включён в админке (Дизайн и контент → Рилсы)
   const reels = settings.reels_enabled === '1' ? parseReels(settings.reels) : []

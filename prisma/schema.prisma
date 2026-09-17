@@ -45,6 +45,7 @@ model Product {
   restockAt   String?
   restockQty  Int?
   featured    Boolean  @default(false)
+  featuredAt  DateTime?
   metaTitle   String?
   metaDesc    String?
   videoUrl    String?

@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
       restockAt: data.restockAt || null,
       restockQty: (data.restockQty === '' || data.restockQty == null) ? null : parseInt(data.restockQty),
       featured: data.featured ?? false,
+      featuredAt: data.featured ? new Date() : null,
       metaTitle: data.metaTitle || null,
       metaDesc: data.metaDesc || null,
       videoUrl: data.videoUrl || null,
@@ -60,6 +61,14 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ product })
 }
 
+// Момент, когда товар пометили «Популярным»: при включении — сейчас, при выключении — сбрасываем,
+// если уже был популярным — оставляем прежнюю дату (порядок на главной не прыгает)
+function nextFeaturedAt(existing: { featured: boolean; featuredAt: Date | null } | null, featured: boolean): Date | null {
+  if (!featured) return null
+  if (existing?.featured && existing.featuredAt) return existing.featuredAt
+  return new Date()
+}
+
 // Быстрое изменение одного флага из списка товаров (например, «Популярное»)
 export async function PATCH(req: NextRequest) {
   if (!await auth()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -67,7 +76,11 @@ export async function PATCH(req: NextRequest) {
   const id = parseInt(data.id)
   if (!id) return NextResponse.json({ error: 'Нет id' }, { status: 400 })
   const patch: Record<string, any> = {}
-  if (typeof data.featured === 'boolean') patch.featured = data.featured
+  if (typeof data.featured === 'boolean') {
+    const existing = await prisma.product.findUnique({ where: { id }, select: { featured: true, featuredAt: true } })
+    patch.featured = data.featured
+    patch.featuredAt = nextFeaturedAt(existing, data.featured)
+  }
   if (typeof data.inStock === 'boolean') patch.inStock = data.inStock
   if (Object.keys(patch).length === 0) return NextResponse.json({ error: 'Нечего менять' }, { status: 400 })
   const product = await prisma.product.update({ where: { id }, data: patch })
@@ -81,6 +94,7 @@ export async function PATCH(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   if (!await auth()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const data = await req.json()
+  const existing = await prisma.product.findUnique({ where: { id: data.id }, select: { featured: true, featuredAt: true } })
   const product = await prisma.product.update({
     where: { id: data.id },
     data: {
@@ -99,6 +113,7 @@ export async function PUT(req: NextRequest) {
       restockAt: data.restockAt || null,
       restockQty: (data.restockQty === '' || data.restockQty == null) ? null : parseInt(data.restockQty),
       featured: data.featured ?? false,
+      featuredAt: nextFeaturedAt(existing, !!data.featured),
       metaTitle: data.metaTitle || null,
       metaDesc: data.metaDesc || null,
       videoUrl: data.videoUrl || null,

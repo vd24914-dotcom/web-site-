@@ -83,9 +83,9 @@ export default async function HomePage() {
         />
 
         {/* BENEFITS */}
-        <section style={{ padding: '72px 0', background: 'var(--white)' }}>
+        <section style={{ padding: '40px 0' }}>
           <div className="container">
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 32 }}>
+            <div className="home-panel" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 24 }}>
               {[
                 { icon: '💝', img: settings.benefit1_icon, title: s('benefit1_title'), desc: s('benefit1_desc') },
                 { icon: '✏️', img: settings.benefit2_icon, title: s('benefit2_title'), desc: s('benefit2_desc') },
@@ -93,7 +93,7 @@ export default async function HomePage() {
                 { icon: '🚚', img: settings.benefit4_icon, title: s('benefit4_title'), desc: s('benefit4_desc') },
               ].map((b, i) => (
                 <ScrollReveal key={b.title} delay={i * 80}>
-                  <div style={{ textAlign: 'center', padding: '16px 12px' }}>
+                  <div style={{ textAlign: 'center', padding: '8px 12px' }}>
                     {b.img
                       ? <img src={b.img} alt="" className="icon-bounce" style={{ width: 58, height: 58, objectFit: 'contain', margin: '0 auto 16px', display: 'block' }} />
                       : <span className="icon-bounce" style={{ fontSize: 42, marginBottom: 16, display: 'block' }}>{b.icon}</span>}
@@ -110,7 +110,7 @@ export default async function HomePage() {
 
         {/* FEATURED */}
         {(featured as any[]).length > 0 && (
-          <section style={{ padding: '72px 0', background: 'var(--white)' }}>
+          <section style={{ padding: '40px 0' }}>
             <div className="container">
               <ScrollReveal>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 44, flexWrap: 'wrap', gap: 16 }}>
@@ -134,7 +134,7 @@ export default async function HomePage() {
 
         {/* SALE — товары на акции (товар может быть и здесь, и в «Популярных») */}
         {onSale.length > 0 && (
-          <section id="sale" style={{ padding: '72px 0', background: 'var(--cream)' }}>
+          <section id="sale" style={{ padding: '40px 0' }}>
             <div className="container">
               <ScrollReveal>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 44, flexWrap: 'wrap', gap: 16 }}>
@@ -159,7 +159,7 @@ export default async function HomePage() {
 
         {/* REELS */}
         {reels.length > 0 && (
-          <section id="reels" style={{ padding: '72px 0', background: 'var(--pink-mist)', overflow: 'hidden' }}>
+          <section id="reels" style={{ padding: '40px 0', overflow: 'hidden' }}>
             <div className="container">
               <ScrollReveal>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 36, flexWrap: 'wrap', gap: 16 }}>
@@ -205,7 +205,7 @@ export default async function HomePage() {
         )}
 
         {/* ABOUT */}
-        <section id="about" style={{ padding: '96px 0', background: 'linear-gradient(180deg, var(--pink-mist) 0%, var(--pink-light) 100%)', borderTop: '1px solid var(--border)', position: 'relative' }}>
+        <section id="about" style={{ padding: '40px 0', position: 'relative' }}>
           <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
             <ScrollReveal direction="left">
               <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -230,7 +230,7 @@ export default async function HomePage() {
         </section>
 
         {/* CTA */}
-        <section id="contact" data-keep-bg className="gradient-flow" style={{ background: 'linear-gradient(135deg,#FA87A1 0%,#e06080 50%,#c84060 100%)', padding: '88px 0' }}>
+        <section id="contact" data-keep-bg className="gradient-flow" style={{ background: 'linear-gradient(135deg,#FA87A1 0%,#e06080 50%,#c84060 100%)', padding: '80px 0', marginTop: 40 }}>
           <div className="container" style={{ textAlign: 'center' }}>
             <ScrollReveal>
               <h2 className="font-display" style={{ fontSize: '2.3rem', color: 'var(--white)', marginBottom: 16 }}>{s('cta_title')}</h2>

@@ -149,13 +149,13 @@ export function CommerceHero({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
               >
-                <span className="bg-gradient-to-r from-[#D63F6E] via-[#B28FCE] to-[#7FA7DC] bg-clip-text text-transparent">
+                <span className="text-foreground">
                   {title1}
                 </span>
                 {title2 && (
                   <>
                     <br />
-                    <span className="text-foreground">{title2}</span>
+                    <span className="text-primary">{title2}</span>
                   </>
                 )}
               </motion.h1>
@@ -174,11 +174,11 @@ export function CommerceHero({
         </div>
 
         {categories.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-7xl mx-auto mt-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-7xl mx-auto mt-6">
             {categories.map((category, index) => (
               <motion.div
                 key={category.title + category.href}
-                className="group relative bg-white/45 dark:bg-[#211722]/55 backdrop-blur-md border border-white/60 dark:border-white/10 rounded-3xl p-4 sm:p-6 min-h-[250px] sm:min-h-[300px] w-full overflow-hidden shadow-[0_14px_40px_rgba(120,50,90,.08)] hover:shadow-[0_24px_60px_rgba(120,50,90,.14)] hover:-translate-y-1 transition-all duration-500"
+                className="group relative bg-white dark:bg-[#241823] border border-white/80 dark:border-white/10 rounded-3xl p-4 sm:p-6 min-h-[250px] sm:min-h-[300px] w-full overflow-hidden shadow-[0_14px_40px_rgba(120,50,90,.08)] hover:shadow-[0_24px_60px_rgba(120,50,90,.14)] hover:-translate-y-1 transition-all duration-500"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }}
@@ -200,7 +200,7 @@ export function CommerceHero({
                       </span>
                     )}
                   </div>
-                  <div className="absolute bottom-0 right-0 w-16 h-16 md:w-20 md:h-20 bg-white/90 dark:bg-[#211722]/90 backdrop-blur-sm rounded-tl-xl flex items-center justify-center z-10 border-l border-t border-white/60 dark:border-white/10">
+                  <div className="absolute bottom-0 right-0 w-16 h-16 md:w-20 md:h-20 bg-[#F7F3FA] dark:bg-[#2e1d29] rounded-tl-xl flex items-center justify-center z-10">
                     <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 w-10 h-10 md:w-12 md:h-12 bg-[#EAF4FC] dark:bg-[#263040] text-foreground rounded-full flex items-center justify-center group-hover:bg-primary group-hover:text-white group-hover:scale-110 transition-all duration-300 shadow-lg">
                       <ArrowUpRight className="w-5 h-5" />
                     </div>

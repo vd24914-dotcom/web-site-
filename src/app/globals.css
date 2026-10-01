@@ -448,3 +448,8 @@ body:has(> .site-veil) footer { background: color-mix(in srgb, var(--white) 72%,
   .pcard, .pcard-photo, .pcard-go { transition:none !important; }
   .pcard:hover { transform:none; } .pcard:hover .pcard-photo { transform:none; }
 }
+
+/* ── Панель-подложка для блоков главной (преимущества) ── */
+.home-panel { background:rgba(255,255,255,.94); border:1px solid rgba(255,255,255,.9); border-radius:28px; padding:36px 32px; box-shadow:0 14px 40px rgba(120,50,90,.08); }
+[data-theme="dark"] .home-panel { background:rgba(36,24,35,.94); border-color:rgba(255,255,255,.08); box-shadow:0 14px 40px rgba(0,0,0,.35); }
+@media (max-width:640px) { .home-panel { padding:24px 18px; border-radius:22px; } }

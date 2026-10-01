@@ -90,7 +90,7 @@ export const CONTENT: ContentGroup[] = [
     ],
   },
   {
-    id: 'reels', title: 'Рилсы', description: 'Подписи блока с видео из Instagram (сами рилсы — во вкладке «Рилсы»)',
+    id: 'reels', title: 'Рилсы', description: 'Подписи блока и сами видео из Instagram',
     fields: [
       tx('reels_badge', 'Метка', 'Instagram'),
       tx('reels_title', 'Заголовок', 'Рилсы из мастерской'),

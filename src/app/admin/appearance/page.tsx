@@ -11,16 +11,13 @@ import { parseReelId, parseReels, serializeReels, reelUrl, type Reel } from '@/l
  * Разделы и поля берутся из реестра src/lib/content.ts, поэтому новый текст на сайте
  * достаточно добавить туда — он сам появится здесь. Пустое поле = стандартный текст.
  */
-type Special = 'hero-extra' | 'reels'
-const SPECIAL: { id: Special; title: string; description: string }[] = [
-  { id: 'hero-extra', title: 'Меню и карточки', description: 'Пункты меню первого экрана и карточки категорий под заголовком' },
-  { id: 'reels', title: 'Рилсы', description: 'Видео из Instagram на главной' },
-]
-
 export default function ContentPage() {
   const [saved, setSaved] = useState<Record<string, string>>({})
   const [values, setValues] = useState<Record<string, string>>({})
   const [cats, setCats] = useState<any[]>([])
+  const [savedCats, setSavedCats] = useState<any[]>([])
+  const setCat = (id: number, patch: Record<string, string>) => setCats(prev => prev.map(c => c.id === id ? { ...c, ...patch } : c))
+  const changedCats = cats.filter(c => { const o = savedCats.find(x => x.id === c.id); return o && (o.name !== c.name || (o.icon || '') !== (c.icon || '') || o.emoji !== c.emoji) })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [justSaved, setJustSaved] = useState(false)
@@ -29,7 +26,7 @@ export default function ContentPage() {
 
   useEffect(() => {
     fetch('/api/admin/settings').then(r => r.json()).then(d => { setSaved(d.settings || {}); setValues(d.settings || {}) }).catch(() => {}).finally(() => setLoading(false))
-    fetch('/api/admin/categories').then(r => r.json()).then(d => setCats(d.categories || [])).catch(() => {})
+    fetch('/api/admin/categories').then(r => r.json()).then(d => { setCats(d.categories || []); setSavedCats(d.categories || []) }).catch(() => {})
   }, [])
 
   const set = (key: string, v: string) => setValues(prev => ({ ...prev, [key]: v }))
@@ -37,7 +34,7 @@ export default function ContentPage() {
     const keys = new Set([...Object.keys(values), ...Object.keys(saved)])
     return [...keys].filter(k => (values[k] || '') !== (saved[k] || ''))
   }, [values, saved])
-  const dirty = changedKeys.length > 0
+  const dirty = changedKeys.length > 0 || changedCats.length > 0
 
   useEffect(() => {
     const onBeforeUnload = (e: BeforeUnloadEvent) => { if (dirty) { e.preventDefault(); e.returnValue = '' } }
@@ -49,8 +46,11 @@ export default function ContentPage() {
     setSaving(true)
     const payload: Record<string, string> = {}
     for (const k of changedKeys) payload[k] = values[k] || ''
-    await fetch('/api/admin/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ settings: payload }) })
-    setSaved({ ...values })
+    if (changedKeys.length) await fetch('/api/admin/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ settings: payload }) })
+    for (const c of changedCats) {
+      await fetch('/api/admin/categories', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: c.id, name: c.name, emoji: c.emoji, icon: c.icon || '', sortOrder: c.sortOrder }) })
+    }
+    setSaved({ ...values }); setSavedCats(cats)
     setSaving(false); setJustSaved(true)
     setTimeout(() => setJustSaved(false), 2200)
   }
@@ -94,17 +94,13 @@ export default function ContentPage() {
                 {customized(g) > 0 && <em>{customized(g)}</em>}
               </button>
             ))}
-            <div className="ad-groups-sep">Особые</div>
-            {SPECIAL.map(g => (
-              <button key={g.id} type="button" className={active === g.id ? 'on' : ''} onClick={() => setActive(g.id)}><span>{g.title}</span></button>
-            ))}
           </nav>
         )}
 
         <div className="ad-main">
           {q && groups.length === 0 && <div className="ad-empty">Ничего не нашлось по «{query}»</div>}
 
-          {(q || !SPECIAL.some(s => s.id === active)) && groups.map(g => (
+          {groups.map(g => (
             <section key={g.id} className="ad-card">
               <div className="ad-card-head">
                 <h2>{g.title}</h2>
@@ -113,17 +109,16 @@ export default function ContentPage() {
               <div className="ad-fields">
                 {g.fields.map(f => <Field key={f.key} f={f} value={values[f.key] || ''} saved={saved[f.key] || ''} onChange={v => set(f.key, v)} />)}
               </div>
+              {g.id === 'hero' && <HeroExtra values={values} set={set} cats={cats} setCat={setCat} />}
+              {g.id === 'reels' && <ReelsEditor values={values} set={set} />}
             </section>
           ))}
-
-          {!q && active === 'hero-extra' && <HeroExtra values={values} set={set} cats={cats} />}
-          {!q && active === 'reels' && <ReelsEditor values={values} set={set} />}
         </div>
       </div>
 
       <div className={`ad-savebar${dirty || justSaved ? ' show' : ''}`}>
-        <span>{justSaved ? <><Check size={16} /> Сохранено, сайт обновится через пару секунд</> : `Несохранённых изменений: ${changedKeys.length}`}</span>
-        {dirty && <button type="button" className="ad-btn ghost" onClick={() => setValues({ ...saved })}><Undo2 size={16} /> Отменить</button>}
+        <span>{justSaved ? <><Check size={16} /> Сохранено, сайт обновится через пару секунд</> : `Несохранённых изменений: ${changedKeys.length + changedCats.length}`}</span>
+        {dirty && <button type="button" className="ad-btn ghost" onClick={() => { setValues({ ...saved }); setCats(savedCats) }}><Undo2 size={16} /> Отменить</button>}
         {dirty && <button type="button" className="ad-btn primary" onClick={save} disabled={saving}>{saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Сохранить</button>}
       </div>
     </div>
@@ -158,7 +153,7 @@ function Field({ f, value, saved, onChange }: { f: ContentField; value: string; 
   )
 }
 
-function HeroExtra({ values, set, cats }: { values: Record<string, string>; set: (k: string, v: string) => void; cats: any[] }) {
+function HeroExtra({ values, set, cats, setCat }: { values: Record<string, string>; set: (k: string, v: string) => void; cats: any[]; setCat: (id: number, patch: Record<string, string>) => void }) {
   const nav = parseHeroNav(values.hero_nav)
   const setNav = (list: HeroNavItem[]) => set('hero_nav', serializeHeroNav(list))
   const slugs = (values.hero_categories || '').split(',').map(x => x.trim()).filter(Boolean)
@@ -166,8 +161,8 @@ function HeroExtra({ values, set, cats }: { values: Record<string, string>; set:
   const move = (i: number, d: -1 | 1) => { const j = i + d; if (j < 0 || j >= nav.length) return; const n = [...nav]; [n[i], n[j]] = [n[j], n[i]]; setNav(n) }
   return (
     <>
-      <section className="ad-card">
-        <div className="ad-card-head"><h2>Меню первого экрана</h2><p>Ссылка — страница (/catalog, /sale, /news) или якорь на главной (/#about, /#contact)</p></div>
+      <div className="ad-sub">
+        <div className="ad-card-head"><h3>Меню первого экрана</h3><p>Ссылка — страница (/catalog, /sale, /news) или якорь на главной (/#about, /#contact)</p></div>
         <div className="ad-list">
           {nav.map((item, i) => (
             <div key={i} className="ad-row">
@@ -182,25 +177,30 @@ function HeroExtra({ values, set, cats }: { values: Record<string, string>; set:
           ))}
           <button type="button" className="ad-add" onClick={() => setNav([...nav, { name: '', href: '/' }])}><Plus size={15} /> Добавить пункт</button>
         </div>
-      </section>
-      <section className="ad-card">
-        <div className="ad-card-head"><h2>Карточки категорий</h2><p>Отметьте категории под заголовком (лучше 4, до 8). Порядок — как отмечали. Картинки — в разделе «Категории»</p></div>
+      </div>
+      <div className="ad-sub">
+        <div className="ad-card-head"><h3>Карточки категорий</h3><p>Отметьте, какие показывать под заголовком (лучше 4, до 8), порядок — как отмечали. Название и картинку карточки меняйте прямо здесь</p></div>
         {cats.length === 0 ? <div className="ad-empty">Категорий пока нет</div> : (
           <div className="ad-cats">
             {cats.map((c: any) => {
               const idx = slugs.indexOf(c.slug)
               return (
-                <label key={c.id} className={`ad-cat${idx >= 0 ? ' on' : ''}`}>
-                  <input type="checkbox" checked={idx >= 0} onChange={() => toggle(c.slug)} />
-                  {c.icon ? <img src={c.icon} alt="" /> : <span className="ad-cat-emoji">{c.emoji}</span>}
-                  <span className="ad-cat-name">{c.name}</span>
-                  {idx >= 0 && <b>{idx + 1}</b>}
-                </label>
+                <div key={c.id} className={`ad-cat${idx >= 0 ? ' on' : ''}`}>
+                  <label className="ad-cat-top">
+                    <input type="checkbox" checked={idx >= 0} onChange={() => toggle(c.slug)} />
+                    <span>{idx >= 0 ? `На главной · ${idx + 1}` : 'Не показывается'}</span>
+                  </label>
+                  <ImageUploader value={c.icon || ''} onChange={url => setCat(c.id, { icon: url })} hint="PNG с прозрачным фоном" />
+                  <div className="ad-cat-fields">
+                    <input className="ad-input" value={c.name} onChange={e => setCat(c.id, { name: e.target.value })} placeholder="Название" />
+                    <input className="ad-input emoji" value={c.emoji || ''} onChange={e => setCat(c.id, { emoji: e.target.value })} title="Эмодзи, если нет картинки" />
+                  </div>
+                </div>
               )
             })}
           </div>
         )}
-      </section>
+      </div>
     </>
   )
 }
@@ -219,8 +219,8 @@ function ReelsEditor({ values, set }: { values: Record<string, string>; set: (k:
   const move = (i: number, d: -1 | 1) => { const j = i + d; if (j < 0 || j >= reels.length) return; const n = [...reels]; [n[i], n[j]] = [n[j], n[i]]; setReels(n) }
   const on = values.reels_enabled === '1'
   return (
-    <section className="ad-card">
-      <div className="ad-card-head"><h2>Рилсы на главной</h2><p>В Instagram: «Поделиться» → «Копировать ссылку». К каждому рилсу загрузите обложку 9:16</p></div>
+    <div className="ad-sub">
+      <div className="ad-card-head"><h3>Видео</h3><p>В Instagram: «Поделиться» → «Копировать ссылку». К каждому рилсу загрузите обложку 9:16</p></div>
       <label className="ad-switch big">
         <input type="checkbox" checked={on} onChange={e => set('reels_enabled', e.target.checked ? '1' : '')} />
         <span /> {on ? 'Блок показывается на сайте' : 'Блок скрыт'}
@@ -249,6 +249,6 @@ function ReelsEditor({ values, set }: { values: Record<string, string>; set: (k:
           </div>
         ))}
       </div>
-    </section>
+    </div>
   )
 }

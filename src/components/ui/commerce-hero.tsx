@@ -57,10 +57,10 @@ export function CommerceHero({
 
         <div className="mt-6 bg-accent/50 rounded-2xl relative">
           <header className="flex items-center">
-            <div className="w-full md:w-2/3 lg:w-1/2 bg-background/95 backdrop-blur-sm p-4 rounded-br-2xl flex items-center gap-2">
+            <div className="w-full md:w-2/3 lg:w-[63%] bg-background/95 backdrop-blur-sm p-4 rounded-br-2xl flex items-center gap-3">
               <Brand brand={brand} logo={logo} logoEmoji={logoEmoji} showBrandText={showBrandText} />
 
-              <nav className="hidden lg:flex items-center justify-between w-full">
+              <nav className="hidden lg:flex items-center justify-between gap-1 w-full pr-1">
                 {navigation.map((item) => (
                   <Button
                     key={item.name + item.href}

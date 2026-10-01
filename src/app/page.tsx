@@ -106,33 +106,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* CATEGORIES */}
-        {(categories as any[]).length > 0 && (
-          <section style={{ padding: '72px 0', background: 'var(--cream)' }}>
-            <div className="container">
-              <ScrollReveal>
-                <div style={{ textAlign: 'center', marginBottom: 44 }}>
-                  <h2 className="font-display" style={{ fontSize: '2.1rem', color: 'var(--text)', marginBottom: 10 }}>Категории</h2>
-                  <p style={{ color: 'var(--text-sub)' }}>Найдите что-то особенное для себя или в подарок</p>
-                </div>
-              </ScrollReveal>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(148px,1fr))', gap: 16 }}>
-                {(categories as any[]).map((cat, i) => (
-                  <ScrollReveal key={cat.id} delay={i * 60}>
-                    <Link href={`/catalog?category=${cat.slug}`} style={{ textDecoration: 'none' }}>
-                      <div className="card" style={{ padding: '26px 16px', textAlign: 'center', cursor: 'pointer' }}>
-                        {cat.icon
-                          ? <img src={cat.icon} alt={cat.name} className="icon-bounce" style={{ width: 50, height: 50, objectFit: 'contain', margin: '0 auto 10px', display: 'block' }} />
-                          : <span className="icon-bounce" style={{ fontSize: 42, marginBottom: 10, display: 'block' }}>{cat.emoji}</span>}
-                        <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: '.9rem' }}>{cat.name}</div>
-                      </div>
-                    </Link>
-                  </ScrollReveal>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
+        {/* Категории теперь в первом блоке (карточки под заголовком) */}
 
         {/* FEATURED */}
         {(featured as any[]).length > 0 && (

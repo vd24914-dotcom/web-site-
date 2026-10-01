@@ -37,7 +37,8 @@
 @font-face { font-family:'Gotham Pro'; src:url('/fonts/gothampro_bold.ttf') format('truetype');    font-weight:600 700; font-style:normal; font-display:swap; }
 @font-face { font-family:'Gotham Pro'; src:url('/fonts/gothampro_black.ttf') format('truetype');   font-weight:800 900; font-style:normal; font-display:swap; }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* Сброс в слое base: иначе он перебивает отступы утилит Tailwind (p-*, m-*) */
+@layer base { * { box-sizing: border-box; margin: 0; padding: 0; } }
 
 /* Никогда не допускаем горизонтальную прокрутку и вылет картинок за экран */
 html, body { max-width: 100%; overflow-x: hidden; }

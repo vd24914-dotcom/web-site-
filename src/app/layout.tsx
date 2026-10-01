@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#FA87A1',
+  themeColor: '#211722',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -25,9 +25,9 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" suppressHydrationWarning>
+    <html lang="ru" data-theme="dark" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem('theme');if(t==='dark'){document.documentElement.setAttribute('data-theme','dark')}}catch(e){}document.addEventListener('gesturestart',function(e){e.preventDefault()},{passive:false});document.addEventListener('gesturechange',function(e){e.preventDefault()},{passive:false});var _ld=0;document.addEventListener('touchend',function(e){var n=Date.now();if(n-_ld<=320){e.preventDefault()}_ld=n},{passive:false});` }} />
+        <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark')}catch(e){}document.addEventListener('gesturestart',function(e){e.preventDefault()},{passive:false});document.addEventListener('gesturechange',function(e){e.preventDefault()},{passive:false});var _ld=0;document.addEventListener('touchend',function(e){var n=Date.now();if(n-_ld<=320){e.preventDefault()}_ld=n},{passive:false});` }} />
       </head>
       <body><CartProvider><SiteBackground />{children}<CartDrawer /><ScrollToTop /></CartProvider></body>
     </html>

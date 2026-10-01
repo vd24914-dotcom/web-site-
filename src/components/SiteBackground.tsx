@@ -15,8 +15,8 @@ export function SiteBackground() {
   return (
     <div className="site-veil" aria-hidden="true">
       <div className="site-veil-layer"><GradientBackground /></div>
-      <div className="site-veil-layer site-veil-lines"><ContourLines /></div>
       <div className="site-veil-layer veil-dim" />
+      <div className="site-veil-layer site-veil-lines"><ContourLines /></div>
     </div>
   )
 }

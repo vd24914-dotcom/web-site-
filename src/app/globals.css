@@ -106,7 +106,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
   --ice:         #263040;
   --header-bg:   rgba(33,23,34,.92);
   --header-bg-scrolled: rgba(33,23,34,.96);
-  --contour-color: rgba(255,255,255,.09);
+  --contour-color: rgba(255,255,255,.2);
 
   /* shadcn */
   --background: #211722;
@@ -390,7 +390,7 @@ html.theme-transition *::after {
 .site-veil-layer { position: absolute; inset: 0; }
 .site-veil-lines { color: var(--contour-color); }
 .veil-dim { background: transparent; transition: background .45s ease; }
-[data-theme="dark"] .veil-dim { background: rgba(22,16,22,.86); }
+[data-theme="dark"] .veil-dim { background: rgba(22,16,22,.84); }
 /* Пока фон на странице, тело и секции прозрачные — градиент виден везде */
 body:has(> .site-veil) { background: transparent; }
 body:has(> .site-veil) main > section:not([data-keep-bg]) { background: transparent !important; }
@@ -553,7 +553,7 @@ body:has(> .site-veil) footer { background: color-mix(in srgb, var(--white) 72%,
 @media (max-width:900px) { .pp-grid { grid-template-columns:1fr; gap:28px; } .pp-panel { padding:20px; border-radius:22px; } .pp-title { font-size:1.6rem; } }
 
 /* Узкие телефоны: шапка без переключателя темы, логотип компактнее */
-@media (max-width:480px) { .hide-xs { display:none !important; } header a[href="/"] > img { max-width:112px !important; height:34px !important; } }
+@media (max-width:480px) { header a[href="/"] > img { max-width:104px !important; height:32px !important; } header .theme-toggle { width:46px !important; height:26px !important; } header button[aria-label="Назад"] { display:none !important; } }
 
 /* ── SVG-иконки вместо эмодзи ── */
 .ico-text { display:inline-flex; align-items:center; gap:6px; }

@@ -81,7 +81,7 @@ export function Header({ settings = {} }: Props) {
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
           <span className="hide-mobile search-full" style={{ display: 'inline-flex' }}><SearchBox /></span>
           <span className="search-compact"><SearchBox compact /></span>
-          <span className="hide-xs" style={{ display: 'inline-flex' }}><ThemeToggle /></span>
+          <ThemeToggle />
           <CartButton />
           <Link href="/catalog" className="btn-primary hide-mobile" style={{ padding: '.55rem 1.25rem', fontSize: '.85rem' }}>Заказать</Link>
           {!isHome && (

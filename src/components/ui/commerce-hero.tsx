@@ -78,7 +78,7 @@ export function CommerceHero({
               </nav>
 
               <Sheet>
-                <div className="lg:hidden ml-auto flex items-center gap-1"><CartButton /><SheetTrigger asChild>
+                <div className="lg:hidden ml-auto flex items-center gap-1.5"><ThemeToggle /><CartButton /><SheetTrigger asChild>
                   <Button variant="ghost" size="icon" className="hover:text-primary transition-colors" aria-label="Меню">
                     <Menu className="w-5 h-5" />
                   </Button>

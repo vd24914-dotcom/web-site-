@@ -1,5 +1,4 @@
 'use client'
-import { Tag, Hourglass } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { parseLocalDate } from '@/lib/sale'
 
@@ -28,7 +27,7 @@ export function SaleCountdown({ end, mini }: { end?: string | null; mini?: boole
     const txt = d > 0 ? `${d}д ${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(h)}:${pad(m)}:${pad(s)}`
     return (
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'var(--pink-mist)', color: 'var(--pink-dark)', fontWeight: 700, fontSize: '.72rem', padding: '3px 8px', borderRadius: 20, fontVariantNumeric: 'tabular-nums', border: '1px solid var(--border)' }}>
-        <Hourglass size={11} aria-hidden="true" /> {txt}
+        {txt}
       </span>
     )
   }
@@ -42,7 +41,7 @@ export function SaleCountdown({ end, mini }: { end?: string | null; mini?: boole
 
   return (
     <div style={{ marginBottom: 22, padding: '13px 16px', background: 'var(--pink-mist)', border: '1px solid var(--border)', borderRadius: 14 }}>
-      <div className="ico-text" style={{ fontSize: '.82rem', color: 'var(--pink-dark)', fontWeight: 700, marginBottom: 10 }}><Tag size={14} aria-hidden="true" /> До конца акции осталось:</div>
+      <div style={{ fontSize: '.82rem', color: 'var(--pink-dark)', fontWeight: 700, marginBottom: 10 }}>До конца акции осталось:</div>
       <div style={{ display: 'flex', gap: 8 }}>
         {box(d, 'дней')}{box(h, 'часов')}{box(m, 'минут')}{box(s, 'секунд')}
       </div>

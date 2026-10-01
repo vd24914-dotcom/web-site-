@@ -397,7 +397,7 @@ body:has(> .site-veil) main > section:not([data-keep-bg]) { background: transpar
 body:has(> .site-veil) footer { background: color-mix(in srgb, var(--white) 72%, transparent) !important; backdrop-filter: blur(8px); }
 
 /* ── Карточка товара (.pcard) ───────────────────────────────── */
-.pill { display:inline-flex; align-items:center; gap:.3rem; height:26px; padding:0 .7rem; border-radius:999px; font-size:.74rem; font-weight:600; line-height:1; white-space:nowrap; letter-spacing:.01em; backdrop-filter:blur(8px); }
+.pill { display:inline-flex; align-items:center; gap:.3rem; height:26px; padding:0 .75rem; border-radius:999px; font-size:.74rem; font-weight:600; line-height:1; white-space:nowrap; letter-spacing:.01em; backdrop-filter:blur(8px); }
 .pill-ink  { background:rgba(58,21,40,.72); color:#fff; }
 .pill-sale { background:var(--pink); color:#fff; box-shadow:0 4px 14px rgba(224,82,124,.35); }
 [data-theme="dark"] .pill-ink { background:rgba(255,255,255,.85); color:#211722; }
@@ -577,3 +577,7 @@ p.ico-text, div.ico-text { display:flex; }
 }
 @media (max-width:900px) { .site-nav { gap:14px; } .site-nav .nav-link { font-size:.85rem; } }
 @media (max-width:768px) { .search-compact { display:inline-flex; } }
+
+/* Панель с сеткой карточек: такой же белый фон, чуть меньше внутренний отступ */
+.home-panel[style*="grid"] { padding:28px; }
+@media (max-width:640px) { .home-panel[style*="grid"] { padding:14px; } }

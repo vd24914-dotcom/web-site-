@@ -28,14 +28,14 @@ export default async function NewsPage() {
       <main>
         <section className="gradient-flow" style={{ background: 'linear-gradient(150deg, var(--cream) 0%, var(--pink-mist) 50%, var(--pink-light) 100%)', padding: '56px 0 36px' }}>
           <div className="container" style={{ textAlign: 'center' }}>
-            <span className="badge badge-rose" style={{ marginBottom: 14 }}><Newspaper size={13} aria-hidden="true" /> Лента</span>
+            <span className="badge badge-rose" style={{ marginBottom: 14 }}>Лента</span>
             <h1 className="font-display" style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', color: 'var(--text)', marginBottom: 10 }}>Новости</h1>
             <p style={{ color: 'var(--text-sub)' }}>Новинки, акции и обновления мастерской</p>
           </div>
         </section>
 
-        <section style={{ padding: '40px 0 80px', background: 'var(--white)' }}>
-          <div className="container" style={{ maxWidth: 760 }}>
+        <section style={{ padding: '40px 0 80px' }}>
+          <div className="container home-panel" style={{ maxWidth: 760 }}>
             {(news as any[]).length === 0 ? (
               <div style={{ textAlign: 'center', padding: 60 }}>
                 <div className="empty-ico"><Newspaper size={30} /></div>

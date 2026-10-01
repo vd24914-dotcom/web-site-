@@ -140,7 +140,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
               <OrderModal settings={settings} trigger={<button className="btn-primary">Оставить заявку</button>} />
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(278px,1fr))', gap: 24 }}>
+            <div className="home-panel" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(278px,1fr))', gap: 24 }}>
               {(products as any[]).map((p, i) => {
                 return (
                   <ScrollReveal key={p.id} delay={(i % 3) * 80}>

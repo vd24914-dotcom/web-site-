@@ -10,7 +10,7 @@ import { ProductCard } from '@/components/ProductCard'
 import { SocialLinks } from '@/components/SocialLinks'
 import { PromoBanner } from '@/components/PromoBanner'
 import { isSaleActive } from '@/lib/sale'
-import { ArrowRight, Tag, HeartHandshake, PencilRuler, Award, Truck } from 'lucide-react'
+import { ArrowRight, HeartHandshake, PencilRuler, Award, Truck } from 'lucide-react'
 import { InstagramIcon } from '@/components/SocialLinks'
 import { ReelCard } from '@/components/ReelCard'
 import { parseReels } from '@/lib/reels'
@@ -121,7 +121,7 @@ export default async function HomePage() {
                   <Link href="/catalog?filter=picks" className="btn-outline">Смотреть ещё <ArrowRight size={16} /></Link>
                 </div>
               </ScrollReveal>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 24 }}>
+              <div className="home-panel" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 24 }}>
                 {(featured as any[]).map((p, i) => (
                   <ScrollReveal key={p.id} delay={(i % 3) * 80}>
                     <ProductCard p={p} />
@@ -139,14 +139,14 @@ export default async function HomePage() {
               <ScrollReveal>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 44, flexWrap: 'wrap', gap: 16 }}>
                   <div>
-                    <span className="badge badge-sale" style={{ marginBottom: 12 }}><Tag size={13} aria-hidden="true" /> Акция</span>
+                    <span className="badge badge-sale" style={{ marginBottom: 12 }}>Акция</span>
                     <h2 className="font-display" style={{ fontSize: '2.1rem', color: 'var(--text)', marginBottom: 8 }}>{s('sale_block_title')}</h2>
                     <p style={{ color: 'var(--text-sub)' }}>{s('sale_block_subtitle')}</p>
                   </div>
                   <Link href="/catalog?filter=picks" className="btn-outline">{s('sale_block_btn')} <ArrowRight size={16} /></Link>
                 </div>
               </ScrollReveal>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 24 }}>
+              <div className="home-panel" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 24 }}>
                 {onSale.map((p, i) => (
                   <ScrollReveal key={p.id} delay={(i % 3) * 80}>
                     <ProductCard p={p} />
@@ -164,7 +164,7 @@ export default async function HomePage() {
               <ScrollReveal>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 36, flexWrap: 'wrap', gap: 16 }}>
                   <div>
-                    <span className="badge badge-rose" style={{ marginBottom: 12 }}><InstagramIcon size={13} /> Instagram</span>
+                    <span className="badge badge-rose" style={{ marginBottom: 12 }}>Instagram</span>
                     <h2 className="font-display" style={{ fontSize: '2.1rem', color: 'var(--text)', marginBottom: 8 }}>{s('reels_title')}</h2>
                     <p style={{ color: 'var(--text-sub)' }}>{s('reels_subtitle')}</p>
                   </div>

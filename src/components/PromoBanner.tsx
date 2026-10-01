@@ -1,5 +1,4 @@
 'use client'
-import { Tag } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
@@ -36,7 +35,7 @@ export function PromoBanner({ end, title }: Props) {
     <Link href="/sale" style={{ textDecoration: 'none', display: 'block' }}>
       <div className="gradient-flow" style={{ background: 'linear-gradient(135deg,#E0527C 0%,#B28FCE 55%,#E0527C 100%)', padding: '11px 16px' }}>
         <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <span className="ico-text" style={{ color: '#fff', fontWeight: 700, fontSize: '.95rem' }}><Tag size={15} aria-hidden="true" /> {title || 'Акция! Успейте'}</span>
+          <span style={{ color: '#fff', fontWeight: 700, fontSize: '.95rem' }}>{title || 'Акция! Успейте'}</span>
           <div style={{ display: 'flex', gap: 6 }}>
             {box(d, 'дней')}{box(h, 'часов')}{box(m, 'минут')}{box(s, 'секунд')}
           </div>

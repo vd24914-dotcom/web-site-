@@ -41,13 +41,13 @@ export default async function SalePage() {
       <main>
         <section className="gradient-flow" style={{ background: 'linear-gradient(150deg, var(--cream) 0%, var(--pink-mist) 50%, var(--pink-light) 100%)', padding: '56px 0 36px' }}>
           <div className="container" style={{ textAlign: 'center' }}>
-            <span className="badge badge-sale" style={{ marginBottom: 14 }}><Tag size={13} aria-hidden="true" /> Акция</span>
+            <span className="badge badge-sale" style={{ marginBottom: 14 }}>Акция</span>
             <h1 className="font-display" style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', color: 'var(--text)', marginBottom: 10 }}>Скидки</h1>
             <p style={{ color: 'var(--text-sub)' }}>Изделия ручной работы по выгодной цене</p>
           </div>
         </section>
 
-        <section style={{ padding: '40px 0 80px', background: 'var(--white)' }}>
+        <section style={{ padding: '40px 0 80px' }}>
           <div className="container">
             {(products as any[]).length === 0 ? (
               <div style={{ textAlign: 'center', padding: 60 }}>
@@ -56,7 +56,7 @@ export default async function SalePage() {
                 <Link href="/catalog" className="btn-primary">Перейти в каталог</Link>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 24 }}>
+              <div className="home-panel" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 24 }}>
                 {(products as any[]).map((p, i) => {
                   return (
                     <ScrollReveal key={p.id} delay={(i % 3) * 80}>

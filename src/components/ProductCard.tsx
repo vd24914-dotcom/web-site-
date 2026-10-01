@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowUpRight, Sparkles } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { parseJSON } from '@/lib/utils'
 import { PriceTag } from '@/components/PriceTag'
 import { SaleBadge } from '@/components/SaleBadge'
@@ -31,7 +31,7 @@ export function ProductCard({ p, showDescription = false }: Props) {
         </div>
         {(p.featured || (p.onSale && p.salePrice)) && (
           <div className="pcard-badges">
-            {p.featured && <span className="pill pill-ink"><Sparkles size={12} aria-hidden="true" /> Новинка</span>}
+            {p.featured && <span className="pill pill-ink">Новинка</span>}
             <SaleBadge price={p.price} onSale={p.onSale} salePrice={p.salePrice} saleEnd={p.saleEnd} />
           </div>
         )}

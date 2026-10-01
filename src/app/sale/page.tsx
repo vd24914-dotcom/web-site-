@@ -1,6 +1,5 @@
 // Страница скидок обновляется чаще остальных, чтобы завершённые акции быстро исчезали из списка
 export const revalidate = 300
-import { Tag } from 'lucide-react'
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
@@ -13,6 +12,7 @@ import { PromoBanner } from '@/components/PromoBanner'
 import { isSaleActive } from '@/lib/sale'
 import { getSettings } from '@/lib/settings'
 import { makeT } from '@/lib/content'
+import { SiteIcon } from '@/components/SiteIcon'
 
 export const metadata: Metadata = {
   title: 'Скидки — Fimush.kin',
@@ -50,7 +50,7 @@ export default async function SalePage() {
           <div className="container">
             {(products as any[]).length === 0 ? (
               <div style={{ textAlign: 'center', padding: 60 }}>
-                <div className="empty-ico"><Tag size={30} /></div>
+                <div className="empty-ico"><SiteIcon k="icon_empty_sale" size={30} /></div>
                 <p style={{ color: 'var(--text-sub)', marginBottom: 16 }}>{t('sale_page_empty')}</p>
                 <Link href="/catalog" className="btn-primary">{t('sale_page_empty_btn')}</Link>
               </div>

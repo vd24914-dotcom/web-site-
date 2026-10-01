@@ -1,11 +1,12 @@
 import Link from 'next/link'
-import { ChevronRight, Play } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import { parseJSON } from '@/lib/utils'
 import { ProductGallery } from '@/components/ProductGallery'
 import { RestockCountdown } from '@/components/RestockCountdown'
 import { ProductBuy } from '@/components/ProductBuy'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { makeT } from '@/lib/content'
+import { SiteIcon } from '@/components/SiteIcon'
 
 /**
  * Страница товара (внутри main): хлебные крошки, белая панель с галереей слева и
@@ -61,7 +62,7 @@ export function ProductView({ p, settings }: { p: any; settings: Record<string, 
               />
 
               {p.videoUrl && (
-                <a href={p.videoUrl} target="_blank" rel="noopener noreferrer" className="pp-video"><Play size={16} /> {t('pp_video')}</a>
+                <a href={p.videoUrl} target="_blank" rel="noopener noreferrer" className="pp-video"><SiteIcon k="icon_video" size={16} /> {t('pp_video')}</a>
               )}
               <p className="pp-hint">{t('pp_hint')}</p>
             </div>

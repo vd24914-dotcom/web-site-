@@ -1,8 +1,9 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { X, Send, CheckCircle, Loader2 } from 'lucide-react'
+import { X, Loader2 } from 'lucide-react'
 import { useT } from '@/components/SiteText'
+import { SiteIcon } from '@/components/SiteIcon'
 
 // Узбекский номер: +998 XX XXX XX XX (9 цифр после кода 998)
 function formatUzPhone(input: string): string {
@@ -78,13 +79,13 @@ export function OrderModal({ productId, productName, trigger, settings = {}, not
           style={{ position: 'fixed', inset: 0, background: 'rgba(74, 45, 58, 0.32)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, overflowY: 'auto' }}
           onClick={e => { if (e.target === e.currentTarget) close() }}>
           <div className="order-box" style={{ background: 'var(--white)', borderRadius: 24, padding: 36, width: '100%', maxWidth: 460, position: 'relative', boxShadow: '0 30px 90px rgba(58,21,40,.28)', border: '1px solid var(--border)', margin: 'auto' }}>
-            <button onClick={close} style={{ position: 'absolute', top: 16, right: 16, background: 'var(--cream-dark)', border: 'none', cursor: 'pointer', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <button onClick={close} aria-label={t('order_close')} style={{ position: 'absolute', top: 16, right: 16, background: 'var(--cream-dark)', border: 'none', cursor: 'pointer', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <X size={18} color="var(--text-sub)" />
             </button>
 
             {status === 'done' ? (
               <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                <CheckCircle size={56} color="var(--green)" style={{ margin: '0 auto 16px' }} />
+                <SiteIcon k="icon_done" size={56} color="var(--green)" style={{ margin: '0 auto 16px', display: 'block' }} />
                 <h3 className="font-display" style={{ fontSize: '1.5rem', color: 'var(--text)', marginBottom: 12 }}>{t('order_success_title')}</h3>
                 <p style={{ color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 24 }}>
                   {t('order_success_text')}
@@ -143,7 +144,7 @@ export function OrderModal({ productId, productName, trigger, settings = {}, not
                   <button type="submit" className="btn-primary" disabled={status === 'loading'} style={{ marginTop: 4 }}>
                     {status === 'loading'
                       ? <><Loader2 size={16} className="animate-spin" /> {t('order_sending')}</>
-                      : <><Send size={16} /> {t('order_btn')}</>
+                      : <><SiteIcon k="icon_send" size={16} /> {t('order_btn')}</>
                     }
                   </button>
                 </form>

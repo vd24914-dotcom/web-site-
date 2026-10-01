@@ -3,7 +3,7 @@
 // на сайте показывается значение `def` отсюда. Админка («Контент сайта»)
 // строится по этому списку автоматически: добавили поле здесь — оно появилось там.
 
-export type FieldType = 'text' | 'textarea' | 'image' | 'url' | 'datetime' | 'toggle' | 'emoji'
+export type FieldType = 'text' | 'textarea' | 'image' | 'url' | 'datetime' | 'toggle' | 'emoji' | 'icon'
 
 export interface ContentField {
   key: string
@@ -11,6 +11,8 @@ export interface ContentField {
   def?: string
   type?: FieldType
   hint?: string
+  /** Подблок внутри раздела: поля с одинаковым section показываются вместе (иконка + её тексты) */
+  section?: string
 }
 
 export interface ContentGroup {
@@ -23,6 +25,10 @@ export interface ContentGroup {
 const tx = (key: string, label: string, def = '', hint?: string): ContentField => ({ key, label, def, hint })
 const ta = (key: string, label: string, def = '', hint?: string): ContentField => ({ key, label, def, hint, type: 'textarea' })
 const img = (key: string, label: string, hint?: string): ContentField => ({ key, label, type: 'image', hint })
+/** Иконка: пусто — стандартная иконка сайта, можно загрузить свою картинку */
+const ico = (key: string, label = 'Иконка', hint?: string): ContentField => ({ key, label, type: 'icon', hint })
+/** Подблок раздела: иконка и тексты одного элемента рядом */
+const sec = (section: string, fields: ContentField[]): ContentField[] => fields.map((f) => ({ ...f, section }))
 
 export const CONTENT: ContentGroup[] = [
   {
@@ -45,6 +51,7 @@ export const CONTENT: ContentGroup[] = [
       tx('nav_contacts', 'Меню: контакты', 'Контакты'),
       tx('header_order_btn', 'Кнопка в шапке', 'Заказать'),
       tx('search_btn', 'Кнопка поиска', 'Поиск'),
+      ico('icon_cart', 'Иконка корзины', 'В шапке и в заголовке корзины'),
     ],
   },
   {
@@ -59,10 +66,10 @@ export const CONTENT: ContentGroup[] = [
   {
     id: 'benefits', title: 'Преимущества', description: 'Четыре плашки под первым экраном',
     fields: [
-      tx('benefit1_title', 'Плашка 1 — заголовок', 'С любовью'), ta('benefit1_desc', 'Плашка 1 — текст', 'Каждое изделие вяжется вручную с особой заботой'), img('benefit1_icon', 'Плашка 1 — иконка', 'Пусто — стандартная иконка'),
-      tx('benefit2_title', 'Плашка 2 — заголовок', 'Под заказ'), ta('benefit2_desc', 'Плашка 2 — текст', 'Выбирайте цвет, размер и узор — сделаем именно для вас'), img('benefit2_icon', 'Плашка 2 — иконка'),
-      tx('benefit3_title', 'Плашка 3 — заголовок', 'Качество'), ta('benefit3_desc', 'Плашка 3 — текст', 'Только натуральные нити премиального качества'), img('benefit3_icon', 'Плашка 3 — иконка'),
-      tx('benefit4_title', 'Плашка 4 — заголовок', 'Доставка'), ta('benefit4_desc', 'Плашка 4 — текст', 'Доставляем по всему Узбекистану'), img('benefit4_icon', 'Плашка 4 — иконка'),
+      ...sec('Плашка 1', [ico('benefit1_icon'), tx('benefit1_title', 'Заголовок', 'С любовью'), ta('benefit1_desc', 'Текст', 'Каждое изделие вяжется вручную с особой заботой')]),
+      ...sec('Плашка 2', [ico('benefit2_icon'), tx('benefit2_title', 'Заголовок', 'Под заказ'), ta('benefit2_desc', 'Текст', 'Выбирайте цвет, размер и узор — сделаем именно для вас')]),
+      ...sec('Плашка 3', [ico('benefit3_icon'), tx('benefit3_title', 'Заголовок', 'Качество'), ta('benefit3_desc', 'Текст', 'Только натуральные нити премиального качества')]),
+      ...sec('Плашка 4', [ico('benefit4_icon'), tx('benefit4_title', 'Заголовок', 'Доставка'), ta('benefit4_desc', 'Текст', 'Доставляем по всему Узбекистану')]),
     ],
   },
   {
@@ -117,25 +124,22 @@ export const CONTENT: ContentGroup[] = [
     ],
   },
   {
-    id: 'contacts', title: 'Контакты и соцсети', description: 'Показываются в подвале и в блоке «Заказать»',
+    id: 'footer', title: 'Подвал и контакты', description: 'Низ всех страниц, контакты и кнопки соцсетей (они же в розовом блоке «Заказать»). Пустое поле контакта — кнопка не показывается',
     fields: [
-      tx('contact_phone', 'Телефон', '+998 90 000-00-00'),
-      tx('contact_telegram', 'Telegram (@имя или ссылка)', '@uyutnit'),
-      tx('social_instagram', 'Instagram (@имя или ссылка)'),
-      tx('social_whatsapp', 'WhatsApp (номер с кодом страны)'),
-      { key: 'social_facebook', label: 'Facebook (ссылка)', type: 'url' },
-      { key: 'social_youtube', label: 'YouTube (ссылка)', type: 'url' },
-      tx('contact_email', 'Email'),
-      tx('contact_address', 'Адрес', 'Ташкент, Узбекистан'),
-    ],
-  },
-  {
-    id: 'footer', title: 'Подвал', description: 'Нижняя часть всех страниц',
-    fields: [
-      ta('footer_text', 'Текст под логотипом', 'Вязаные изделия ручной работы с любовью'),
-      tx('footer_catalog_title', 'Заголовок колонки каталога', 'Каталог'),
-      tx('footer_all_products', 'Ссылка на весь каталог', 'Все товары'),
-      tx('footer_contacts_title', 'Заголовок колонки контактов', 'Контакты'),
+      ...sec('Подвал', [
+        ta('footer_text', 'Текст под логотипом', 'Вязаные изделия ручной работы с любовью'),
+        tx('footer_catalog_title', 'Заголовок колонки каталога', 'Каталог'),
+        tx('footer_all_products', 'Ссылка на весь каталог', 'Все товары'),
+        tx('footer_contacts_title', 'Заголовок колонки контактов', 'Контакты'),
+      ]),
+      ...sec('Телефон', [ico('icon_phone'), tx('contact_phone', 'Номер', '+998 90 000-00-00')]),
+      ...sec('Telegram', [ico('icon_telegram'), tx('contact_telegram', '@имя или ссылка', '@uyutnit')]),
+      ...sec('Instagram', [ico('icon_instagram'), tx('social_instagram', '@имя или ссылка')]),
+      ...sec('WhatsApp', [ico('icon_whatsapp'), tx('social_whatsapp', 'Номер с кодом страны')]),
+      ...sec('Facebook', [ico('icon_facebook'), { key: 'social_facebook', label: 'Ссылка', type: 'url' }]),
+      ...sec('YouTube', [ico('icon_youtube'), { key: 'social_youtube', label: 'Ссылка', type: 'url' }]),
+      ...sec('Email', [ico('icon_email'), tx('contact_email', 'Адрес почты')]),
+      ...sec('Адрес', [ico('icon_address'), tx('contact_address', 'Адрес', 'Ташкент, Узбекистан')]),
     ],
   },
   {
@@ -144,10 +148,17 @@ export const CONTENT: ContentGroup[] = [
       tx('card_new', 'Метка «новинка»', 'Новинка'),
       tx('card_in_stock', 'Есть в наличии', 'В наличии'),
       tx('card_preorder', 'Нет в наличии', 'Под заказ'),
-      tx('card_add', 'Кнопка корзины', 'В корзину'),
-      tx('card_added', 'После добавления', 'Добавлено'),
-      tx('card_in_cart', 'Когда остаток уже в корзине', 'Уже в корзине'),
-      tx('card_oneclick', 'Кнопка быстрого заказа', 'В 1 клик'),
+      ...sec('Кнопка «В корзину»', [
+        ico('icon_add', 'Иконка', 'Та же иконка на странице товара'),
+        tx('card_add', 'Текст', 'В корзину'),
+        ico('icon_added', 'Иконка после добавления'),
+        tx('card_added', 'После добавления', 'Добавлено'),
+        tx('card_in_cart', 'Когда остаток уже в корзине', 'Уже в корзине'),
+      ]),
+      ...sec('Кнопка «В 1 клик»', [
+        ico('icon_oneclick', 'Иконка', 'Та же иконка на странице товара'),
+        tx('card_oneclick', 'Текст', 'В 1 клик'),
+      ]),
     ],
   },
   {
@@ -171,7 +182,7 @@ export const CONTENT: ContentGroup[] = [
       tx('pp_stock_note', 'Подпись об остатке', 'В наличии {n} шт', '{n} заменится на число'),
       tx('pp_in_cart_note', 'Сколько уже в корзине', ', в корзине уже {n}'),
       tx('pp_go_cart', 'Ссылка в корзину', 'Перейти в корзину →'),
-      tx('pp_video', 'Кнопка видео', 'Смотреть видео'),
+      ...sec('Кнопка видео', [ico('icon_video'), tx('pp_video', 'Текст', 'Смотреть видео')]),
       ta('pp_hint', 'Подсказка под кнопками', 'После заявки свяжемся с вами и обсудим детали: цвет, размер, сроки и доставку.'),
       tx('pp_desc_title', 'Заголовок описания', 'Описание'),
     ],
@@ -196,14 +207,24 @@ export const CONTENT: ContentGroup[] = [
       tx('catalog_search_btn', 'Поиск — кнопка', 'Найти'),
       tx('catalog_search_title', 'Заголовок при поиске', 'Поиск'),
       tx('catalog_nothing', 'Ничего не найдено', 'Ничего не найдено'),
-      tx('catalog_empty_title', 'Пустой каталог — заголовок', 'Скоро здесь появятся товары'),
-      tx('catalog_empty_text', 'Пустой каталог — текст', 'Напишите нам, если хотите что-то заказать'),
-      tx('catalog_empty_sale', 'Нет товаров на акции', 'Сейчас нет товаров на акции'),
-      tx('catalog_empty_picks', 'Ничего не отмечено', 'Пока ничего не отмечено'),
-      tx('catalog_empty_filter_text', 'Пустой фильтр — текст', 'Загляните в полный каталог — там всё, что есть в наличии'),
-      tx('catalog_notfound_title', 'Поиск без результатов — заголовок', 'По запросу «{q}» ничего не нашлось'),
-      ta('catalog_notfound_text', 'Поиск без результатов — текст', 'Попробуйте другое слово. А если нужно что-то особенное — напишите нам, свяжем под заказ'),
-      tx('catalog_search_all', 'Кнопка «искать везде»', 'Искать по всему каталогу'),
+      ...sec('Пустой каталог', [
+        ico('icon_empty_catalog'),
+        tx('catalog_empty_title', 'Заголовок', 'Скоро здесь появятся товары'),
+        tx('catalog_empty_text', 'Текст', 'Напишите нам, если хотите что-то заказать'),
+      ]),
+      ...sec('Пустой фильтр', [
+        ico('icon_empty_picks', 'Иконка «популярные»'),
+        tx('catalog_empty_picks', 'Ничего не отмечено', 'Пока ничего не отмечено'),
+        ico('icon_empty_sale', 'Иконка «акции»', 'Та же иконка на пустой странице скидок'),
+        tx('catalog_empty_sale', 'Нет товаров на акции', 'Сейчас нет товаров на акции'),
+        tx('catalog_empty_filter_text', 'Текст', 'Загляните в полный каталог — там всё, что есть в наличии'),
+      ]),
+      ...sec('Поиск без результатов', [
+        ico('icon_notfound', 'Иконка', 'Та же иконка в поиске в шапке'),
+        tx('catalog_notfound_title', 'Заголовок', 'По запросу «{q}» ничего не нашлось'),
+        ta('catalog_notfound_text', 'Текст', 'Попробуйте другое слово. А если нужно что-то особенное — напишите нам, свяжем под заказ'),
+        tx('catalog_search_all', 'Кнопка «искать везде»', 'Искать по всему каталогу'),
+      ]),
       tx('catalog_order_btn', 'Кнопка заявки', 'Оставить заявку'),
     ],
   },
@@ -225,14 +246,14 @@ export const CONTENT: ContentGroup[] = [
       tx('news_badge', 'Метка', 'Лента'),
       tx('news_title', 'Заголовок', 'Новости'),
       tx('news_subtitle', 'Подзаголовок', 'Новинки, акции и обновления мастерской'),
-      tx('news_empty', 'Если новостей нет', 'Новостей пока нет. Загляните позже!'),
+      ...sec('Если новостей нет', [ico('icon_empty_news'), tx('news_empty', 'Текст', 'Новостей пока нет. Загляните позже!')]),
     ],
   },
   {
     id: 'cart', title: 'Корзина', description: 'Боковая панель корзины и оформление заказа',
     fields: [
       tx('cart_title', 'Заголовок', 'Корзина'),
-      tx('cart_empty_title', 'Пустая — заголовок', 'Пока пусто'),
+      ...sec('Пустая корзина', [ico('icon_cart_empty'), tx('cart_empty_title', 'Заголовок', 'Пока пусто')]),
       ta('cart_empty_text', 'Пустая — текст', 'Добавьте изделия из каталога — они появятся здесь, и можно будет отправить один заказ на всё сразу.'),
       tx('cart_empty_btn', 'Пустая — кнопка', 'В каталог'),
       tx('cart_total', 'Итого', 'Итого'),
@@ -241,9 +262,9 @@ export const CONTENT: ContentGroup[] = [
       tx('cart_clear', 'Очистить', 'Очистить корзину'),
       tx('cart_no_more', 'Больше нет в наличии', 'Больше нет в наличии'),
       tx('cart_wishes_placeholder', 'Пожелания — подсказка', 'Цвет, размер, сроки, доставка…'),
-      tx('cart_send', 'Кнопка отправки', 'Отправить заказ'),
+      ...sec('Кнопка отправки', [ico('icon_send', 'Иконка', 'Та же иконка в форме заявки'), tx('cart_send', 'Текст', 'Отправить заказ')]),
       tx('cart_back', 'Назад к списку', '← Назад к списку'),
-      tx('cart_done_title', 'Отправлено — заголовок', 'Заявка отправлена!'),
+      ...sec('Заказ отправлен', [ico('icon_done', 'Иконка', 'Та же иконка в форме заявки'), tx('cart_done_title', 'Заголовок', 'Заявка отправлена!')]),
       ta('cart_done_text', 'Отправлено — текст', 'Свяжемся с вами в ближайшее время и подтвердим заказ. Спасибо!'),
       tx('cart_done_btn', 'Отправлено — кнопка', 'Продолжить покупки'),
     ],
@@ -275,7 +296,7 @@ export const CONTENT: ContentGroup[] = [
       tx('timer_sale_title', 'Акция — заголовок', 'До конца акции осталось:'),
       tx('timer_restock_title', 'Поступление — заголовок', 'Будет в наличии через:'),
       tx('timer_restock_soon', 'Поступление — на карточке', 'Скоро'),
-      tx('timer_back_in_stock', 'Снова в наличии', 'Снова в наличии'),
+      ...sec('Снова в наличии', [ico('icon_back_in_stock'), tx('timer_back_in_stock', 'Текст', 'Снова в наличии')]),
       tx('timer_days', 'Подпись «дней»', 'дней'),
       tx('timer_hours', 'Подпись «часов»', 'часов'),
       tx('timer_minutes', 'Подпись «минут»', 'минут'),

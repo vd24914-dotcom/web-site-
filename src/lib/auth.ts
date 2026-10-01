@@ -2,7 +2,8 @@ import { SignJWT, jwtVerify } from 'jose'
 import { cookies } from 'next/headers'
 import { NextRequest } from 'next/server'
 
-const SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback-secret-32chars-minimum!!')
+// Без JWT_SECRET на сервере — случайный ключ: подделать вход по известной строке нельзя
+const SECRET = new TextEncoder().encode(process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? crypto.randomUUID() + crypto.randomUUID() : 'fallback-secret-32chars-minimum!!'))
 const COOKIE = 'uyutnit_admin'
 
 export async function signToken(payload: any) {

@@ -1,5 +1,4 @@
 export const revalidate = 600
-import { Newspaper } from 'lucide-react'
 import { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 import { Header } from '@/components/Header'
@@ -7,6 +6,7 @@ import { Footer } from '@/components/Footer'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { getSettings } from '@/lib/settings'
 import { makeT } from '@/lib/content'
+import { SiteIcon } from '@/components/SiteIcon'
 
 export const metadata: Metadata = {
   title: 'Новости — Fimush.kin',
@@ -37,7 +37,7 @@ export default async function NewsPage() {
           <div className="container home-panel" style={{ maxWidth: 760 }}>
             {(news as any[]).length === 0 ? (
               <div style={{ textAlign: 'center', padding: 60 }}>
-                <div className="empty-ico"><Newspaper size={30} /></div>
+                <div className="empty-ico"><SiteIcon k="icon_empty_news" size={30} /></div>
                 <p style={{ color: 'var(--text-sub)' }}>{t('news_empty')}</p>
               </div>
             ) : (

@@ -13,7 +13,8 @@ interface Props {
 /** Пилюля скидки «−N%» (или «Скидка», если процент не посчитать) + мини-таймер. Исчезает сама в момент окончания акции. */
 export function SaleBadge({ price, onSale, salePrice, saleEnd }: Props) {
   const p = { price, onSale, salePrice, saleEnd }
-  const [active, setActive] = useState(() => isSaleActive(p))
+  // Первый рендер не зависит от часов (одинаково на сервере и в браузере), срок проверяем после загрузки
+  const [active, setActive] = useState(() => !!onSale && salePrice != null && salePrice < price)
 
   useEffect(() => {
     setActive(isSaleActive(p))

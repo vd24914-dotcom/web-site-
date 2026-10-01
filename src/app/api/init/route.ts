@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
       create: { email, passwordHash: hash },
     })
 
-    return NextResponse.json({ success: true, email, password })
+    return NextResponse.json({ success: true, email })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

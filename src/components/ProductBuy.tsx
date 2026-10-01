@@ -1,12 +1,13 @@
 'use client'
 import { useState } from 'react'
-import { ShoppingBag, Zap, Check, Minus, Plus } from 'lucide-react'
+import { Minus, Plus } from 'lucide-react'
 import { useCart, roomFor } from '@/lib/cart'
 import { isSaleActive } from '@/lib/sale'
 import { PriceTag } from '@/components/PriceTag'
 import { SaleCountdown } from '@/components/SaleCountdown'
 import { OrderModal } from '@/components/OrderModal'
 import { useT } from '@/components/SiteText'
+import { SiteIcon } from '@/components/SiteIcon'
 
 export interface BuyProduct {
   id: number
@@ -97,10 +98,10 @@ export function ProductBuy({ product, settings }: { product: BuyProduct; setting
           <button type="button" onClick={() => setQty(q => Math.min(maxPick, q + 1))} disabled={qty >= maxPick} aria-label="Больше"><Plus size={14} /></button>
         </div>
         <button type="button" className={`btn-primary pp-add${justAdded ? ' added' : ''}`} onClick={addToCart} disabled={soldOut}>
-          {soldOut ? t('card_in_cart') : justAdded ? <><Check size={18} /> {t('card_added')}</> : <><ShoppingBag size={18} /> {t('pp_add')}</>}
+          {soldOut ? t('card_in_cart') : justAdded ? <><SiteIcon k="icon_added" size={18} /> {t('card_added')}</> : <><SiteIcon k="icon_add" size={18} /> {t('pp_add')}</>}
         </button>
         <OrderModal productId={product.id} productName={product.name} settings={settings} note={note} trigger={
-          <button type="button" className="btn-ink pp-oneclick"><Zap size={18} /> {t('pp_oneclick')}</button>
+          <button type="button" className="btn-ink pp-oneclick"><SiteIcon k="icon_oneclick" size={18} /> {t('pp_oneclick')}</button>
         } />
       </div>
       {stock != null && stock > 0 && <p className="pp-stock-note">{t('pp_stock_note', { n: stock })}{room < stock ? t('pp_in_cart_note', { n: stock - room }) : ''}</p>}

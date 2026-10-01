@@ -21,17 +21,21 @@ export default function CategoriesPage() {
   const save = async () => {
     if (!editing?.name) return
     setSaving(true)
-    await fetch('/api/admin/categories', {
+    const res = await fetch('/api/admin/categories', {
       method: editing.id ? 'PUT' : 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(editing),
-    })
-    setSaving(false); setEditing(null); load()
+    }).catch(() => null)
+    setSaving(false)
+    if (!res || !res.ok) { const d = res ? await res.json().catch(() => ({})) : {}; alert('Не сохранилось: ' + (d.error || 'нет связи с сервером')); return }
+    setEditing(null); load()
   }
 
   const del = async (id: number) => {
     if (!confirm('Удалить категорию?')) return
-    await fetch(`/api/admin/categories?id=${id}`, { method: 'DELETE' }); load()
+    const res = await fetch(`/api/admin/categories?id=${id}`, { method: 'DELETE' }).catch(() => null)
+    if (!res || !res.ok) { const d = res ? await res.json().catch(() => ({})) : {}; alert(d.error || 'Не удалось удалить категорию'); return }
+    load()
   }
 
   return (
@@ -53,8 +57,8 @@ export default function CategoriesPage() {
               : <span style={{ fontSize: 28, width: 40, textAlign: 'center', flexShrink: 0 }}>{c.emoji}</span>}
             <span style={{ flex: 1, fontWeight: 600, color: 'var(--text)' }}>{c.name}</span>
             <span style={{ fontSize: '.8rem', color: 'var(--text-sub)', background: 'var(--cream-dark)', padding: '4px 10px', borderRadius: 20, whiteSpace: 'nowrap' }}>№ {c.sortOrder}</span>
-            <button onClick={() => setEditing({ ...c, icon: c.icon || '' })} style={{ background: 'var(--pink-light)', border: 'none', cursor: 'pointer', color: 'var(--pink-dark)', padding: '6px 10px', borderRadius: 8 }}><Edit2 size={14} /></button>
-            <button onClick={() => del(c.id)} style={{ background: '#fee2e2', border: 'none', cursor: 'pointer', color: '#991b1b', padding: '6px 10px', borderRadius: 8 }}><Trash2 size={14} /></button>
+            <button onClick={() => setEditing({ ...c, icon: c.icon || '' })} aria-label="Изменить" title="Изменить" style={{ background: 'var(--pink-light)', border: 'none', cursor: 'pointer', color: 'var(--pink-dark)', padding: '6px 10px', borderRadius: 8 }}><Edit2 size={14} /></button>
+            <button onClick={() => del(c.id)} aria-label="Удалить" title="Удалить" style={{ background: '#fee2e2', border: 'none', cursor: 'pointer', color: '#991b1b', padding: '6px 10px', borderRadius: 8 }}><Trash2 size={14} /></button>
           </div>
         ))}
       </div>
@@ -63,7 +67,7 @@ export default function CategoriesPage() {
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(74,45,58,.28)', backdropFilter: 'blur(6px)', zIndex: 1000, overflowY: 'auto', padding: 20 }}
           onClick={e => { if (e.target === e.currentTarget) setEditing(null) }}>
           <div style={{ background: 'white', borderRadius: 20, padding: 30, maxWidth: 460, margin: '40px auto', position: 'relative' }}>
-            <button onClick={() => setEditing(null)} style={{ position: 'absolute', top: 16, right: 16, background: 'var(--cream-dark)', border: 'none', cursor: 'pointer', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={18} color="var(--text-sub)" /></button>
+            <button onClick={() => setEditing(null)} aria-label="Закрыть" style={{ position: 'absolute', top: 16, right: 16, background: 'var(--cream-dark)', border: 'none', cursor: 'pointer', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={18} color="var(--text-sub)" /></button>
             <h2 className="font-display" style={{ fontSize: '1.3rem', color: 'var(--text)', marginBottom: 20 }}>{editing.id ? 'Редактировать категорию' : 'Новая категория'}</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <ImageUploader value={editing.icon} onChange={url => setEditing({ ...editing, icon: url })} label="Иконка категории (картинка)" hint="Лучше квадратный PNG с прозрачным фоном. Если не загружать — покажется эмодзи." />

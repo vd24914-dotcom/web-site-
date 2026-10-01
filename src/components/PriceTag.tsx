@@ -18,7 +18,8 @@ interface Props {
  */
 export function PriceTag({ price, onSale, salePrice, saleEnd, size = 'md' }: Props) {
   const p = { price, onSale, salePrice, saleEnd }
-  const [active, setActive] = useState(() => isSaleActive(p))
+  // Первый рендер не зависит от часов (одинаково на сервере и в браузере), срок проверяем после загрузки
+  const [active, setActive] = useState(() => !!onSale && salePrice != null && salePrice < price)
 
   useEffect(() => {
     setActive(isSaleActive(p))

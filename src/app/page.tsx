@@ -141,7 +141,7 @@ export default async function HomePage() {
                     <h2 className="font-display" style={{ fontSize: '2.1rem', color: 'var(--text)', marginBottom: 8 }}>{s('sale_block_title')}</h2>
                     <p style={{ color: 'var(--text-sub)' }}>{s('sale_block_subtitle')}</p>
                   </div>
-                  <Link href="/catalog?filter=picks" className="btn-outline">{s('sale_block_btn')} <ArrowRight size={16} /></Link>
+                  <Link href="/sale" className="btn-outline">{s('sale_block_btn')} <ArrowRight size={16} /></Link>
                 </div>
               </ScrollReveal>
               <div className="home-panel" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 24 }}>

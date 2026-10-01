@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import { Phone, Send, MapPin } from 'lucide-react'
 import { SocialLinks } from './SocialLinks'
 import { prisma } from '@/lib/prisma'
 import { makeT } from '@/lib/content'
+import { SiteIcon } from '@/components/SiteIcon'
 interface Props { settings?: Record<string, string> }
 export async function Footer({ settings = {} }: Props) {
   const t = makeT(settings)
@@ -37,9 +37,9 @@ export async function Footer({ settings = {} }: Props) {
           </div>
           <div>
             <h4 style={{ color: 'var(--text)', marginBottom: 16, fontWeight: 600 }}>{t('footer_contacts_title')}</h4>
-            <p className="ico-text" style={{ fontSize: '.875rem', marginBottom: 10, opacity: .85 }}><Phone size={15} aria-hidden="true" /> {t('contact_phone')}</p>
-            <p className="ico-text" style={{ fontSize: '.875rem', marginBottom: 10, opacity: .85 }}><Send size={15} aria-hidden="true" /> Telegram: {t('contact_telegram')}</p>
-            <p className="ico-text" style={{ fontSize: '.875rem', opacity: .85 }}><MapPin size={15} aria-hidden="true" /> {t('contact_address')}</p>
+            <p className="ico-text" style={{ fontSize: '.875rem', marginBottom: 10, opacity: .85 }}><SiteIcon k="icon_phone" size={15} /> {t('contact_phone')}</p>
+            <p className="ico-text" style={{ fontSize: '.875rem', marginBottom: 10, opacity: .85 }}><SiteIcon k="icon_telegram" size={15} /> Telegram: {t('contact_telegram')}</p>
+            <p className="ico-text" style={{ fontSize: '.875rem', opacity: .85 }}><SiteIcon k="icon_address" size={15} /> {t('contact_address')}</p>
           </div>
         </div>
       </div>

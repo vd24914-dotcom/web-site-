@@ -1,7 +1,8 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { COOKIE } from '@/lib/auth'
-export async function POST() {
-  const res = NextResponse.redirect(new URL('/admin/login', process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'))
+export async function POST(req: NextRequest) {
+  // 303 — браузер откроет страницу входа обычным GET на том же домене
+  const res = NextResponse.redirect(new URL('/admin/login', req.url), 303)
   res.cookies.delete(COOKIE)
   return res
 }

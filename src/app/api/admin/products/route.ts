@@ -9,6 +9,19 @@ async function auth() {
   return true
 }
 
+/** Обновить все страницы, где видны товары */
+function refreshAll() {
+  revalidatePath('/'); revalidatePath('/catalog'); revalidatePath('/sale'); revalidatePath('/product/[slug]', 'page')
+}
+
+/** Проверка обязательных полей; текст ошибки — для админки */
+function invalid(data: any): string | null {
+  if (!String(data.name || '').trim()) return 'нет названия'
+  if (isNaN(parseFloat(data.price))) return 'нет цены'
+  if (isNaN(parseInt(data.categoryId))) return 'не выбрана категория'
+  return null
+}
+
 export async function GET() {
   if (!await auth()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   let products = await prisma.product.findMany({ include: { category: true }, orderBy: { createdAt: 'desc' } })
@@ -31,6 +44,8 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   if (!await auth()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const data = await req.json()
+  const bad = invalid(data)
+  if (bad) return NextResponse.json({ error: bad }, { status: 400 })
   const slugify = (await import('slugify')).default
   const slug = slugify(data.name, { lower: true, strict: true }) + '-' + Date.now()
   const product = await prisma.product.create({
@@ -56,8 +71,7 @@ export async function POST(req: NextRequest) {
       videoUrl: data.videoUrl || null,
     }
   })
-  revalidatePath('/')
-  revalidatePath('/catalog')
+  refreshAll()
   return NextResponse.json({ product })
 }
 
@@ -94,6 +108,8 @@ export async function PATCH(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   if (!await auth()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const data = await req.json()
+  const bad = invalid(data)
+  if (bad) return NextResponse.json({ error: bad }, { status: 400 })
   const existing = await prisma.product.findUnique({ where: { id: data.id }, select: { featured: true, featuredAt: true } })
   const product = await prisma.product.update({
     where: { id: data.id },
@@ -119,9 +135,7 @@ export async function PUT(req: NextRequest) {
       videoUrl: data.videoUrl || null,
     }
   })
-  revalidatePath('/')
-  revalidatePath('/catalog')
-  revalidatePath(`/product/${product.slug}`)
+  refreshAll()
   return NextResponse.json({ product })
 }
 
@@ -129,8 +143,11 @@ export async function DELETE(req: NextRequest) {
   if (!await auth()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { searchParams } = new URL(req.url)
   const id = parseInt(searchParams.get('id') || '0')
-  await prisma.product.delete({ where: { id } })
-  revalidatePath('/')
-  revalidatePath('/catalog')
+  try {
+    await prisma.product.delete({ where: { id } })
+  } catch {
+    return NextResponse.json({ error: 'Товар не найден' }, { status: 404 })
+  }
+  refreshAll()
   return NextResponse.json({ success: true })
 }

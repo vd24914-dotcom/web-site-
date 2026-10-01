@@ -23,27 +23,45 @@ export default function ProductsPage() {
   }
   useEffect(() => { load() }, [])
 
-  const blank = () => ({ id: null, name: '', description: '', price: '', onSale: false, salePrice: '', saleEnd: '', categoryId: '', inStock: true, quantity: '', restockAt: '', restockQty: '', featured: false, metaTitle: '', metaDesc: '', videoUrl: '', images: [] })
+  const blank = () => ({ id: null, name: '', description: '', price: '', onSale: false, salePrice: '', saleEnd: '', categoryId: '', inStock: true, quantity: '', restockAt: '', restockQty: '', featured: false, metaTitle: '', metaDesc: '', videoUrl: '', images: [], colorsText: '', sizesText: '' })
+
+  // Цвета и размеры в базе — JSON-массив; в форме редактируем как строку «через запятую»
+  const listText = (raw: any) => {
+    try { const a = Array.isArray(raw) ? raw : JSON.parse(raw || '[]'); return Array.isArray(a) ? a.join(', ') : '' } catch { return '' }
+  }
+  const splitList = (t: string) => (t || '').split(',').map(x => x.trim()).filter(Boolean)
 
   const openEdit = (p: any) => {
     let imgs: string[] = []
     try { imgs = JSON.parse(p.images || '[]') } catch {}
-    setEditing({ ...p, images: imgs })
+    setEditing({ ...p, images: imgs, colorsText: listText(p.colors), sizesText: listText(p.sizes) })
   }
 
   const save = async () => {
-    if (!editing) return; setSaving(true)
-    await fetch('/api/admin/products', {
+    if (!editing) return
+    if (!editing.name?.trim()) { alert('Укажите название товара'); return }
+    if (!editing.price || isNaN(parseFloat(editing.price))) { alert('Укажите цену'); return }
+    if (!editing.categoryId) { alert('Выберите категорию'); return }
+    setSaving(true)
+    const { colorsText, sizesText, category, ...rest } = editing
+    const res = await fetch('/api/admin/products', {
       method: editing.id ? 'PUT' : 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...editing, colors: [], sizes: [] })
-    })
-    await load(); setEditing(null); setSaving(false)
+      body: JSON.stringify({ ...rest, colors: splitList(colorsText), sizes: splitList(sizesText) })
+    }).catch(() => null)
+    setSaving(false)
+    if (!res || !res.ok) {
+      const d = res ? await res.json().catch(() => ({})) : {}
+      alert('Не сохранилось: ' + (d.error || 'нет связи с сервером') + '. Проверьте поля и попробуйте ещё раз.')
+      return
+    }
+    await load(); setEditing(null)
   }
 
   const del = async (id: number) => {
     if (!confirm('Удалить товар?')) return
-    await fetch(`/api/admin/products?id=${id}`, { method: 'DELETE' })
+    const res = await fetch(`/api/admin/products?id=${id}`, { method: 'DELETE' }).catch(() => null)
+    if (!res || !res.ok) { alert('Не удалось удалить товар'); return }
     setProducts(prev => prev.filter(p => p.id !== id))
   }
 
@@ -234,14 +252,14 @@ export default function ProductsPage() {
                 <div>
                   <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 6, fontSize: '.875rem' }}>Цвета (через запятую)</label>
                   <input className="input" placeholder="Белый, Серый, Бежевый"
-                    value={Array.isArray(editing.colors) ? editing.colors.join(', ') : ''}
-                    onChange={e => setEditing({ ...editing, colors: e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean) })} />
+                    value={editing.colorsText ?? ''}
+                    onChange={e => setEditing({ ...editing, colorsText: e.target.value })} />
                 </div>
                 <div>
                   <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 6, fontSize: '.875rem' }}>Размеры (через запятую)</label>
                   <input className="input" placeholder="XS, S, M, L, XL"
-                    value={Array.isArray(editing.sizes) ? editing.sizes.join(', ') : ''}
-                    onChange={e => setEditing({ ...editing, sizes: e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean) })} />
+                    value={editing.sizesText ?? ''}
+                    onChange={e => setEditing({ ...editing, sizesText: e.target.value })} />
                 </div>
               </div>
 

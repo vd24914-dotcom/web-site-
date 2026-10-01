@@ -1,8 +1,8 @@
 'use client'
-import { ShoppingBag, Check } from 'lucide-react'
 import { useCart, roomFor } from '@/lib/cart'
 import { isSaleActive } from '@/lib/sale'
 import { useT } from '@/components/SiteText'
+import { SiteIcon } from '@/components/SiteIcon'
 
 interface Props {
   p: { id: number; slug: string; name: string; price: number; onSale?: boolean; salePrice?: number | null; saleEnd?: string | null; quantity?: number | null; inStock?: boolean }
@@ -25,7 +25,7 @@ export function CardAddButton({ p, image }: Props) {
 
   return (
     <button type="button" className={`pcard-add${justAdded ? ' added' : ''}${full ? ' full' : ''}`} onClick={onClick}>
-      {justAdded ? <><Check size={15} aria-hidden="true" /> {t('card_added')}</> : full ? t('card_in_cart') : <><ShoppingBag size={15} aria-hidden="true" /> {t('card_add')}</>}
+      {justAdded ? <><SiteIcon k="icon_added" size={15} /> {t('card_added')}</> : full ? t('card_in_cart') : <><SiteIcon k="icon_add" size={15} /> {t('card_add')}</>}
     </button>
   )
 }

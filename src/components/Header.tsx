@@ -88,11 +88,11 @@ export function Header({ settings = {} }: Props) {
           <Link href="/catalog" className="btn-primary hide-mobile" style={{ padding: '.55rem 1.25rem', fontSize: '.85rem' }}>{t('header_order_btn')}</Link>
           {!isHome && (
             <button onClick={goBack} className="show-mobile" aria-label="Назад"
-              style={{ background: 'var(--cream-dark)', border: 'none', cursor: 'pointer', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              style={{ background: 'var(--cream-dark)', border: 'none', cursor: 'pointer', borderRadius: '50%', width: 36, height: 36, alignItems: 'center', justifyContent: 'center' }}>
               <ChevronLeft size={22} color="var(--text)" />
             </button>
           )}
-          <button onClick={() => setOpen(!open)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }} className="show-mobile" aria-label="Menu">
+          <button onClick={() => setOpen(!open)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }} className="show-mobile" aria-label="Меню" aria-expanded={open}>
             {open ? <X size={22} color="var(--pink)" /> : <Menu size={22} color="var(--text)" />}
           </button>
         </div>

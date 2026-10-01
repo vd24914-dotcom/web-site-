@@ -1,7 +1,9 @@
 'use client'
-import { useEffect, useMemo, useState } from 'react'
-import { Search, Save, RotateCcw, ExternalLink, Plus, Trash2, ArrowUp, ArrowDown, Loader2, Check, Undo2 } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Search, Save, RotateCcw, ExternalLink, Plus, Trash2, ArrowUp, ArrowDown, Loader2, Check, Undo2, Upload } from 'lucide-react'
 import { ImageUploader } from '@/components/ImageUploader'
+import { ICON_DEFAULTS } from '@/components/SiteIcon'
+import { resizeImageToBlob } from '@/lib/image'
 import { CONTENT, DEFAULTS, type ContentField } from '@/lib/content'
 import { parseHeroNav, serializeHeroNav, type HeroNavItem } from '@/lib/hero'
 import { parseReelId, parseReels, serializeReels, reelUrl, type Reel } from '@/lib/reels'
@@ -46,9 +48,14 @@ export default function ContentPage() {
     setSaving(true)
     const payload: Record<string, string> = {}
     for (const k of changedKeys) payload[k] = values[k] || ''
-    if (changedKeys.length) await fetch('/api/admin/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ settings: payload }) })
+    const ok = (r: Response | null) => !!r && r.ok
+    if (changedKeys.length) {
+      const r = await fetch('/api/admin/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ settings: payload }) }).catch(() => null)
+      if (!ok(r)) { setSaving(false); alert('Не сохранилось. Проверьте интернет и попробуйте ещё раз'); return }
+    }
     for (const c of changedCats) {
-      await fetch('/api/admin/categories', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: c.id, name: c.name, emoji: c.emoji, icon: c.icon || '', sortOrder: c.sortOrder }) })
+      const r = await fetch('/api/admin/categories', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: c.id, name: c.name, emoji: c.emoji, icon: c.icon || '', sortOrder: c.sortOrder }) }).catch(() => null)
+      if (!ok(r)) { setSaving(false); setSaved({ ...values }); alert(`Категория «${c.name}» не сохранилась. Название не может быть пустым`); return }
     }
     setSaved({ ...values }); setSavedCats(cats)
     setSaving(false); setJustSaved(true)
@@ -61,7 +68,7 @@ export default function ContentPage() {
   })
 
   const q = query.trim().toLowerCase()
-  const matches = (f: ContentField) => !q || [f.label, f.hint, f.def, values[f.key]].some(x => (x || '').toLowerCase().includes(q))
+  const matches = (f: ContentField) => !q || [f.label, f.section, f.hint, f.def, values[f.key]].some(x => (x || '').toLowerCase().includes(q))
   const groups = q ? CONTENT.map(g => ({ ...g, fields: g.fields.filter(matches) })).filter(g => g.fields.length) : CONTENT.filter(g => g.id === active)
   const customized = (g: typeof CONTENT[number]) => g.fields.filter(f => saved[f.key]).length
 
@@ -106,9 +113,12 @@ export default function ContentPage() {
                 <h2>{g.title}</h2>
                 {g.description && <p>{g.description}</p>}
               </div>
-              <div className="ad-fields">
-                {g.fields.map(f => <Field key={f.key} f={f} value={values[f.key] || ''} saved={saved[f.key] || ''} onChange={v => set(f.key, v)} />)}
-              </div>
+              {chunks(g.fields).map((c, ci) => {
+                const fields = <div className="ad-fields">{c.fields.map(f => <Field key={f.key} f={f} value={values[f.key] || ''} saved={saved[f.key] || ''} onChange={v => set(f.key, v)} />)}</div>
+                return c.section
+                  ? <div key={ci} className="ad-sec"><div className="ad-sec-title">{c.section}</div>{fields}</div>
+                  : <div key={ci}>{fields}</div>
+              })}
               {g.id === 'hero' && <HeroExtra values={values} set={set} cats={cats} setCat={setCat} />}
               {g.id === 'reels' && <ReelsEditor values={values} set={set} />}
             </section>
@@ -125,6 +135,56 @@ export default function ContentPage() {
   )
 }
 
+/** Поля подряд с одинаковым section — один подблок */
+function chunks(fields: ContentField[]) {
+  const out: { section?: string; fields: ContentField[] }[] = []
+  for (const f of fields) {
+    const last = out[out.length - 1]
+    if (last && last.section === f.section) last.fields.push(f)
+    else out.push({ section: f.section, fields: [f] })
+  }
+  return out
+}
+
+/** Иконка: превью (своя картинка или стандартная иконка), загрузка и возврат к стандартной */
+function IconField({ k, value, onChange }: { k: string; value: string; onChange: (v: string) => void }) {
+  const D = ICON_DEFAULTS[k]
+  const input = useRef<HTMLInputElement>(null)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  const upload = async (file: File) => {
+    setBusy(true); setError('')
+    try {
+      if (!file.type.startsWith('image/')) throw new Error('Это не изображение')
+      const fd = new FormData()
+      // SVG загружаем как есть, остальное — сжимаем
+      if (file.type === 'image/svg+xml') fd.append('file', file, file.name)
+      else fd.append('file', await resizeImageToBlob(file), 'icon.webp')
+      const res = await fetch('/api/upload', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Ошибка загрузки')
+      onChange(data.url)
+    } catch (e: any) { setError(e.message || 'Ошибка загрузки') }
+    setBusy(false)
+  }
+  return (
+    <div className="ad-icon-field">
+      <div className={`ad-icon-prev${value ? ' custom' : ''}`}>
+        {busy ? <Loader2 size={22} className="animate-spin" /> : value ? <img src={value} alt="" /> : D ? <D size={26} /> : null}
+      </div>
+      <div className="ad-icon-side">
+        <span className="ad-icon-state">{value ? 'Своя картинка' : 'Стандартная иконка'}</span>
+        <div className="ad-icon-btns">
+          <button type="button" className="ad-btn ghost sm" onClick={() => input.current?.click()} disabled={busy}><Upload size={14} /> {value ? 'Заменить' : 'Загрузить свою'}</button>
+          {value && <button type="button" className="ad-reset" onClick={() => onChange('')}><RotateCcw size={12} /> стандартная</button>}
+        </div>
+        {error && <small className="ad-hint err">{error}</small>}
+      </div>
+      <input ref={input} type="file" hidden accept="image/png,image/webp,image/svg+xml,image/jpeg,image/gif" onChange={e => { const file = e.target.files?.[0]; if (file) upload(file); e.target.value = '' }} />
+    </div>
+  )
+}
+
 function Field({ f, value, saved, onChange }: { f: ContentField; value: string; saved: string; onChange: (v: string) => void }) {
   const type = f.type || 'text'
   const def = DEFAULTS[f.key] ?? ''
@@ -134,7 +194,7 @@ function Field({ f, value, saved, onChange }: { f: ContentField; value: string; 
     <div className={`ad-field${wide ? ' wide' : ''}${changed ? ' changed' : ''}`}>
       <div className="ad-label">
         <label htmlFor={`f-${f.key}`}>{f.label}</label>
-        {value && type !== 'toggle' && type !== 'image' && (
+        {value && type !== 'toggle' && type !== 'image' && type !== 'icon' && (
           <button type="button" className="ad-reset" onClick={() => onChange('')} title="Вернуть стандартный текст"><RotateCcw size={12} /> по умолчанию</button>
         )}
       </div>
@@ -148,6 +208,7 @@ function Field({ f, value, saved, onChange }: { f: ContentField; value: string; 
         </label>
       )}
       {type === 'image' && <ImageUploader value={value} onChange={onChange} hint={f.hint} />}
+      {type === 'icon' && <IconField k={f.key} value={value} onChange={onChange} />}
       {f.hint && type !== 'image' && <small className="ad-hint">{f.hint}</small>}
     </div>
   )

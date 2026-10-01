@@ -11,9 +11,10 @@ import { ProductCard } from '@/components/ProductCard'
 import { CatalogSearch } from '@/components/CatalogSearch'
 import { normalizeQuery, searchProducts } from '@/lib/search'
 import { isSaleActive } from '@/lib/sale'
-import { ArrowRight, Tag, Star, SearchX, PackageOpen } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { getSettings } from '@/lib/settings'
 import { makeT } from '@/lib/content'
+import { SiteIcon } from '@/components/SiteIcon'
 
 export const metadata: Metadata = {
   title: 'Каталог вязаных изделий',
@@ -95,35 +96,31 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
               return (
                 <Link key={f.key || 'all'} href={buildHref({ category: cat, filter: f.key, q })}
                   style={{ textDecoration: 'none', padding: '7px 14px', borderRadius: 999, fontSize: '.82rem', fontWeight: 600, border: '1px solid', transition: 'all .15s',
-                    background: active ? 'var(--pink)' : 'var(--white)', borderColor: active ? 'var(--pink)' : 'var(--border)', color: active ? '#fff' : 'var(--text-sub)' }}>
+                    background: active ? 'var(--pink)' : 'var(--white)', borderColor: active ? 'var(--pink)' : 'var(--border)', color: active ? 'var(--on-pink, #fff)' : 'var(--text-sub)' }}>
                   {f.label}
                 </Link>
               )
             })}
           </div>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 40 }}>
-            <Link href={withQ('/catalog')} style={{ textDecoration: 'none' }}>
-              <button className={!cat ? 'btn-primary' : 'btn-outline'} style={{ padding: '.5rem 1.2rem', fontSize: '.85rem' }}>{t('catalog_all')}</button>
-            </Link>
+            <Link href={withQ('/catalog')} className={!cat ? 'btn-primary' : 'btn-outline'} style={{ padding: '.5rem 1.2rem', fontSize: '.85rem', textDecoration: 'none' }}>{t('catalog_all')}</Link>
             {(categories as any[]).map(c => (
-              <Link key={c.id} href={withQ(`/catalog?category=${c.slug}`)} style={{ textDecoration: 'none' }}>
-                <button className={cat === c.slug ? 'btn-primary' : 'btn-outline'} style={{ padding: '.5rem 1.2rem', fontSize: '.85rem' }}>
-                  {c.name}
-                </button>
+              <Link key={c.id} href={withQ(`/catalog?category=${c.slug}`)} className={cat === c.slug ? 'btn-primary' : 'btn-outline'} style={{ padding: '.5rem 1.2rem', fontSize: '.85rem', textDecoration: 'none' }}>
+                {c.name}
               </Link>
             ))}
           </div>
 
           {products.length === 0 && !q && filter ? (
             <div style={{ textAlign: 'center', padding: '80px 0' }}>
-              <div className="empty-ico">{filter === 'sale' ? <Tag size={30} /> : <Star size={30} />}</div>
+              <div className="empty-ico"><SiteIcon k={filter === 'sale' ? 'icon_empty_sale' : 'icon_empty_picks'} size={30} /></div>
               <h2 className="font-display" style={{ color: 'var(--text)', marginBottom: 12 }}>{filter === 'sale' ? t('catalog_empty_sale') : t('catalog_empty_picks')}</h2>
               <p style={{ color: 'var(--text-sub)', marginBottom: 28 }}>{t('catalog_empty_filter_text')}</p>
               <Link href={buildHref({ category: cat, q })} className="btn-primary">{t('filter_all')} <ArrowRight size={16} /></Link>
             </div>
           ) : products.length === 0 && q ? (
             <div style={{ textAlign: 'center', padding: '80px 0' }}>
-              <div className="empty-ico"><SearchX size={30} /></div>
+              <div className="empty-ico"><SiteIcon k="icon_notfound" size={30} /></div>
               <h2 className="font-display" style={{ color: 'var(--text)', marginBottom: 12 }}>{t('catalog_notfound_title', { q })}</h2>
               <p style={{ color: 'var(--text-sub)', marginBottom: 28 }}>{t('catalog_notfound_text')}</p>
               <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -133,7 +130,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
             </div>
           ) : products.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '80px 0' }}>
-              <div className="empty-ico"><PackageOpen size={30} /></div>
+              <div className="empty-ico"><SiteIcon k="icon_empty_catalog" size={30} /></div>
               <h2 className="font-display" style={{ color: 'var(--text)', marginBottom: 12 }}>{t('catalog_empty_title')}</h2>
               <p style={{ color: 'var(--text-sub)', marginBottom: 28 }}>{t('catalog_empty_text')}</p>
               <OrderModal settings={settings} trigger={<button className="btn-primary">{t('catalog_order_btn')}</button>} />

@@ -2,11 +2,12 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createPortal } from 'react-dom'
-import { X, Minus, Plus, Trash2, ShoppingBag, Send, CheckCircle, Loader2, ArrowRight, PackageOpen } from 'lucide-react'
+import { X, Minus, Plus, Trash2, Loader2, ArrowRight, PackageOpen } from 'lucide-react'
 import { useCart, unitPrice, roomFor } from '@/lib/cart'
 import { formatPrice } from '@/lib/utils'
 import { formatUzPhone, uzDigits, isUzComplete, cleanTgUser } from '@/lib/phone'
 import { useT } from '@/components/SiteText'
+import { SiteIcon } from '@/components/SiteIcon'
 
 /**
  * Панель корзины: список позиций с количеством, итог и форма заявки.
@@ -58,20 +59,20 @@ export function CartDrawer() {
     <div className="cart-overlay" onClick={e => { if (e.target === e.currentTarget) close() }}>
       <aside className="cart-panel" role="dialog" aria-modal="true" aria-label="Корзина">
         <header className="cart-head">
-          <div className="cart-title"><ShoppingBag size={20} aria-hidden="true" /> {t('cart_title')} {count > 0 && <span className="cart-title-count">{count}</span>}</div>
+          <div className="cart-title"><SiteIcon k="icon_cart" size={20} /> {t('cart_title')} {count > 0 && <span className="cart-title-count">{count}</span>}</div>
           <button type="button" className="cart-close" onClick={close} aria-label="Закрыть"><X size={18} /></button>
         </header>
 
         {step === 'done' ? (
           <div className="cart-done">
-            <CheckCircle size={56} />
+            <SiteIcon k="icon_done" size={56} />
             <h3 className="font-display">{t('cart_done_title')}</h3>
             <p>{t('cart_done_text')}</p>
             <button type="button" className="btn-primary" onClick={close}>{t('cart_done_btn')}</button>
           </div>
         ) : items.length === 0 ? (
           <div className="cart-empty">
-            <div className="cart-empty-icon"><ShoppingBag size={28} /></div>
+            <div className="cart-empty-icon"><SiteIcon k="icon_cart_empty" size={28} /></div>
             <h3 className="font-display">{t('cart_empty_title')}</h3>
             <p>{t('cart_empty_text')}</p>
             <Link href="/catalog" className="btn-primary" onClick={close}>{t('cart_empty_btn')} <ArrowRight size={16} /></Link>
@@ -128,7 +129,7 @@ export function CartDrawer() {
                 <label>{t('order_message_label')}<textarea className="input" placeholder={t('cart_wishes_placeholder')} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} /></label>
                 {status === 'error' && <div className="cart-err-box">{t('order_error')}</div>}
                 <button type="submit" className="btn-primary cart-cta" disabled={status === 'loading'}>
-                  {status === 'loading' ? <><Loader2 size={16} className="animate-spin" /> {t('order_sending')}</> : <><Send size={16} /> {t('cart_send')}</>}
+                  {status === 'loading' ? <><Loader2 size={16} className="animate-spin" /> {t('order_sending')}</> : <><SiteIcon k="icon_send" size={16} /> {t('cart_send')}</>}
                 </button>
                 <button type="button" className="cart-clear" onClick={() => setStep('list')}>{t('cart_back')}</button>
               </form>

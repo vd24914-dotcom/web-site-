@@ -47,6 +47,8 @@ export const roomFor = (items: CartItem[], productId: number, maxQty: number | n
 }
 export const unitPrice = (i: CartItem) => (i.salePrice != null && i.salePrice > 0 && i.salePrice < i.price ? i.salePrice : i.price)
 
+const x0 = (n: number) => (Number.isFinite(n) && n > 0 ? n : 0)
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
   const [open, setOpen] = useState(false)
@@ -70,7 +72,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setItems(prev => {
       const i = prev.findIndex(x => x.key === key)
       const room = roomFor(prev, item.productId, item.maxQty, key)
-      if (i >= 0) return prev.map((x, j) => j === i ? { ...x, maxQty: item.maxQty, qty: Math.min(99, room, x.qty + qty) } : x)
+      if (i >= 0) {
+        const next = Math.min(99, room, x0(prev[i].qty) + qty)
+        return next > 0 ? prev.map((x, j) => j === i ? { ...x, maxQty: item.maxQty, qty: next } : x) : prev.filter((_, j) => j !== i)
+      }
       if (room <= 0) return prev
       return [...prev, { ...item, key, qty: Math.min(qty, room) }]
     })
@@ -78,7 +83,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setTimeout(() => setLastAdded(null), 1600)
   }, [])
   const setQty = useCallback((key: string, qty: number) => {
-    setItems(prev => qty <= 0 ? prev.filter(x => x.key !== key) : prev.map(x => x.key === key ? { ...x, qty: Math.min(99, roomFor(prev, x.productId, x.maxQty, key), qty) } : x))
+    setItems(prev => {
+      if (qty <= 0) return prev.filter(x => x.key !== key)
+      return prev.map(x => x.key === key ? { ...x, qty: Math.min(99, roomFor(prev, x.productId, x.maxQty, key), qty) } : x).filter(x => x.qty > 0)
+    })
   }, [])
   const remove = useCallback((key: string) => setItems(prev => prev.filter(x => x.key !== key)), [])
   const clear = useCallback(() => setItems([]), [])

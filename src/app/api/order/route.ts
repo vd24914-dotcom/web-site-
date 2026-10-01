@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { sendTelegram, sendTelegramPhoto, sendTelegramAlbum } from '@/lib/telegram'
+import { isSaleActive } from '@/lib/sale'
 import { parseJSON } from '@/lib/utils'
 
 // Экранируем спецсимволы, чтобы Telegram (parse_mode HTML) не падал
@@ -25,9 +26,10 @@ export async function POST(req: NextRequest) {
     for (const i of rawItems) {
       const pr: any = (found as any[]).find((f) => f.id === Number(i.productId))
       if (!pr) continue
-      const sale = pr.onSale && pr.salePrice && (!pr.saleEnd || new Date(pr.saleEnd).getTime() > Date.now())
+      const sale = isSaleActive(pr)
+      if (pr.quantity != null && pr.quantity <= 0) continue
       const imgs = parseJSON(pr.images || '[]')
-      cart.push({ productId: pr.id, name: pr.name, qty: Math.min(99, pr.quantity != null ? Math.max(1, pr.quantity) : 99, Math.max(1, Number(i.qty) || 1)), price: sale ? pr.salePrice : pr.price,
+      cart.push({ productId: pr.id, name: pr.name, qty: Math.min(99, pr.quantity != null ? pr.quantity : 99, Math.max(1, Number(i.qty) || 1)), price: sale ? pr.salePrice : pr.price,
         color: String(i.color || '').slice(0, 60), size: String(i.size || '').slice(0, 60), image: typeof imgs[0] === 'string' ? imgs[0] : '' })
     }
     if (!cart.length) return NextResponse.json({ error: 'Корзина пуста' }, { status: 400 })
@@ -54,7 +56,7 @@ export async function POST(req: NextRequest) {
   const fmt = (n: number) => Number(n).toLocaleString('ru-RU') + ' сум'
   let price = ''
   if (product) {
-    if (product.onSale && product.salePrice) {
+    if (isSaleActive(product)) {
       price = `${fmt(product.salePrice)} (по скидке, было ${fmt(product.price)})`
     } else {
       price = fmt(product.price)

@@ -736,3 +736,26 @@ textarea.ad-input { resize:vertical; min-height:84px; line-height:1.5; }
 .ad-cat.on .ad-cat-top { color:var(--pink-dark); }
 .ad-cat-fields { display:grid; grid-template-columns:minmax(0,1fr) 64px; gap:8px; }
 .ad-cat-fields .ad-input.emoji { width:64px; }
+
+/* Подблоки раздела: иконка и её тексты вместе */
+.ad-sec { margin-top:14px; padding:16px 16px 18px; border:1px solid var(--border); border-radius:14px; background:var(--ad-soft, #faf8fa); }
+.ad-sec:first-child { margin-top:0; }
+.ad-sec-title { font-size:.8rem; font-weight:700; letter-spacing:.02em; text-transform:uppercase; color:var(--text-sub); margin-bottom:12px; }
+.ad-fields + .ad-sec, div + .ad-sec { margin-top:14px; }
+.ad-icon-field { display:flex; align-items:center; gap:14px; }
+.ad-icon-prev { width:56px; height:56px; flex-shrink:0; border-radius:14px; border:1px solid var(--border); background:#fff; display:flex; align-items:center; justify-content:center; color:var(--pink-dark, #c84060); }
+.ad-icon-prev.custom { border-color:var(--pink); }
+.ad-icon-prev img { width:36px; height:36px; object-fit:contain; }
+.ad-icon-side { display:flex; flex-direction:column; gap:6px; min-width:0; }
+.ad-icon-state { font-size:.78rem; color:var(--text-sub); }
+.ad-icon-btns { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.ad-btn.sm { padding:6px 12px; font-size:.8rem; min-height:32px; }
+
+/* «Снова в наличии» / «В наличии»: зелёный, читаемый в обеих темах */
+.ok-text { color:#2e7d45; }
+.ok-box { background:#e8f5eb; border:1px solid #b7e0c2; }
+html[data-theme="dark"] .ok-text { color:#7fd99a; }
+html[data-theme="dark"] .ok-box { background:rgba(80,190,120,.12); border-color:rgba(127,217,154,.35); }
+/* Текст на розовой заливке */
+:root { --on-pink:#fff; }
+html[data-theme="dark"] { --on-pink:#2a0f1c; }

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowUpRight, Zap } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { OrderModal } from '@/components/OrderModal'
 import { CardAddButton } from '@/components/CardAddButton'
 import { parseJSON } from '@/lib/utils'
@@ -7,6 +7,7 @@ import { PriceTag } from '@/components/PriceTag'
 import { SaleBadge } from '@/components/SaleBadge'
 import { RestockCountdown } from '@/components/RestockCountdown'
 import { T } from '@/components/SiteText'
+import { SiteIcon } from '@/components/SiteIcon'
 
 interface Props {
   p: any
@@ -53,7 +54,7 @@ export function ProductCard({ p, showDescription = false }: Props) {
         <div className="pcard-actions">
           <CardAddButton p={p} image={img} />
           <OrderModal productId={p.id} productName={p.name} trigger={
-            <button type="button" className="pcard-buy"><Zap size={15} aria-hidden="true" /> <T k="card_oneclick" /></button>
+            <button type="button" className="pcard-buy"><SiteIcon k="icon_oneclick" size={15} /> <T k="card_oneclick" /></button>
           } />
         </div>
       </div>

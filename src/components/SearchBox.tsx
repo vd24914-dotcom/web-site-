@@ -3,9 +3,10 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Search, X, ArrowRight, Loader2, SearchX, PackageOpen } from 'lucide-react'
+import { Search, X, ArrowRight, Loader2 } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 import { useT } from '@/components/SiteText'
+import { SiteIcon } from '@/components/SiteIcon'
 
 interface Item {
   id: number; slug: string; name: string; price: number; onSale: boolean; salePrice?: number | null
@@ -103,7 +104,7 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
         <div className="srch-body">
           {query.length < 2 ? (
             <div className="srch-empty">
-              <div className="empty-ico sm"><PackageOpen size={24} /></div>
+              <div className="empty-ico sm"><SiteIcon k="icon_search_start" size={24} /></div>
               <p>{t('search_hint')}</p>
               <div className="srch-chips">
                 {t('search_chips').split(',').map(w => w.trim()).filter(Boolean).map(w => (
@@ -113,7 +114,7 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
             </div>
           ) : items.length === 0 && !loading ? (
             <div className="srch-empty">
-              <div className="empty-ico sm"><SearchX size={24} /></div>
+              <div className="empty-ico sm"><SiteIcon k="icon_notfound" size={24} /></div>
               <p>{t('search_empty', { q: query })}</p>
               <p style={{ fontSize: '.82rem', marginTop: 6 }}>{t('search_empty_text')}</p>
               <Link href="/catalog" onClick={onClose} className="btn-outline" style={{ marginTop: 16, fontSize: '.85rem' }}>{t('search_open_catalog')} <ArrowRight size={14} /></Link>

@@ -1,7 +1,7 @@
 'use client'
-import { CheckCircle2 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useT } from '@/components/SiteText'
+import { SiteIcon } from '@/components/SiteIcon'
 
 interface Props { at?: string | null; qty?: number | null; mini?: boolean }
 
@@ -29,7 +29,7 @@ export function RestockCountdown({ at, qty, mini }: Props) {
   // ── Компактный вид (карточки) ──
   if (mini) {
     if (available) {
-      return <span style={{ fontSize: '.78rem', color: '#2e7d45', fontWeight: 700 }}>{t('card_in_stock')}{qty != null ? ` (${qty})` : ''}</span>
+      return <span className="ok-text" style={{ fontSize: '.78rem', fontWeight: 700 }}>{t('card_in_stock')}{qty != null ? ` (${qty})` : ''}</span>
     }
     const txt = d > 0 ? `${d}д ${String(h).padStart(2, '0')}ч` : `${String(h).padStart(2, '0')}ч ${String(m).padStart(2, '0')}м`
     return (
@@ -42,16 +42,16 @@ export function RestockCountdown({ at, qty, mini }: Props) {
   // ── Полный вид (страница товара) ──
   if (available) {
     return (
-      <div style={{ marginBottom: 22, padding: '13px 16px', background: '#e8f5eb', border: '1px solid #b7e0c2', borderRadius: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
-        <span style={{ display: 'inline-flex', color: '#2e7d45' }}><CheckCircle2 size={22} aria-hidden="true" /></span>
-        <span style={{ color: '#2e7d45', fontWeight: 700 }}>{t('timer_back_in_stock')}{qty != null ? ` — ${qty} шт` : ''}</span>
+      <div className="ok-box" style={{ marginBottom: 22, padding: '13px 16px', borderRadius: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <span className="ok-text" style={{ display: 'inline-flex' }}><SiteIcon k="icon_back_in_stock" size={22} /></span>
+        <span className="ok-text" style={{ fontWeight: 700 }}>{t('timer_back_in_stock')}{qty != null ? ` — ${qty} шт` : ''}</span>
       </div>
     )
   }
 
   const box = (v: number, l: string) => (
     <div style={{ textAlign: 'center' }}>
-      <span style={{ display: 'inline-block', minWidth: 38, background: 'var(--text)', color: '#fff', borderRadius: 8, padding: '6px', fontWeight: 700, fontVariantNumeric: 'tabular-nums', fontSize: '1.05rem', lineHeight: 1.1 }}>{String(v).padStart(2, '0')}</span>
+      <span style={{ display: 'inline-block', minWidth: 38, background: 'var(--text)', color: 'var(--white)', borderRadius: 8, padding: '6px', fontWeight: 700, fontVariantNumeric: 'tabular-nums', fontSize: '1.05rem', lineHeight: 1.1 }}>{String(v).padStart(2, '0')}</span>
       <span style={{ fontSize: '.62rem', color: 'var(--text-sub)', display: 'block', marginTop: 3 }}>{l}</span>
     </div>
   )

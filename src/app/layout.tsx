@@ -4,6 +4,8 @@ import { ScrollToTop } from '@/components/ScrollToTop'
 import { SiteBackground } from '@/components/SiteBackground'
 import { CartProvider } from '@/lib/cart'
 import { CartDrawer } from '@/components/CartDrawer'
+import { getSettings } from '@/lib/settings'
+import { SettingsProvider } from '@/components/SiteText'
 
 export const metadata: Metadata = {
   title: { default: 'Fimush.kin — Вязаные изделия ручной работы | Toshkent', template: '%s | Fimush.kin' },
@@ -23,13 +25,13 @@ export const viewport: Viewport = {
   userScalable: false,
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ru" data-theme="dark" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark')}catch(e){}document.addEventListener('gesturestart',function(e){e.preventDefault()},{passive:false});document.addEventListener('gesturechange',function(e){e.preventDefault()},{passive:false});var _ld=0;document.addEventListener('touchend',function(e){var n=Date.now();if(n-_ld<=320){e.preventDefault()}_ld=n},{passive:false});` }} />
       </head>
-      <body><CartProvider><SiteBackground />{children}<CartDrawer /><ScrollToTop /></CartProvider></body>
+      <body><SettingsProvider settings={await getSettings()}><CartProvider><SiteBackground />{children}<CartDrawer /><ScrollToTop /></CartProvider></SettingsProvider></body>
     </html>
   )
 }

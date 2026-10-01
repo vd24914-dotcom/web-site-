@@ -6,12 +6,14 @@ import { X, Minus, Plus, Trash2, ShoppingBag, Send, CheckCircle, Loader2, ArrowR
 import { useCart, unitPrice, roomFor } from '@/lib/cart'
 import { formatPrice } from '@/lib/utils'
 import { formatUzPhone, uzDigits, isUzComplete, cleanTgUser } from '@/lib/phone'
+import { useT } from '@/components/SiteText'
 
 /**
  * Панель корзины: список позиций с количеством, итог и форма заявки.
  * Заказ уходит одним запросом в /api/order (items[]), оттуда — в Telegram.
  */
 export function CartDrawer() {
+  const t = useT()
   const { items, count, total, open, setOpen, setQty, remove, clear } = useCart()
   const [mounted, setMounted] = useState(false)
   const [step, setStep] = useState<'list' | 'form' | 'done'>('list')
@@ -56,23 +58,23 @@ export function CartDrawer() {
     <div className="cart-overlay" onClick={e => { if (e.target === e.currentTarget) close() }}>
       <aside className="cart-panel" role="dialog" aria-modal="true" aria-label="Корзина">
         <header className="cart-head">
-          <div className="cart-title"><ShoppingBag size={20} aria-hidden="true" /> Корзина {count > 0 && <span className="cart-title-count">{count}</span>}</div>
+          <div className="cart-title"><ShoppingBag size={20} aria-hidden="true" /> {t('cart_title')} {count > 0 && <span className="cart-title-count">{count}</span>}</div>
           <button type="button" className="cart-close" onClick={close} aria-label="Закрыть"><X size={18} /></button>
         </header>
 
         {step === 'done' ? (
           <div className="cart-done">
             <CheckCircle size={56} />
-            <h3 className="font-display">Заявка отправлена!</h3>
-            <p>Свяжемся с вами в ближайшее время и подтвердим заказ. Спасибо!</p>
-            <button type="button" className="btn-primary" onClick={close}>Продолжить покупки</button>
+            <h3 className="font-display">{t('cart_done_title')}</h3>
+            <p>{t('cart_done_text')}</p>
+            <button type="button" className="btn-primary" onClick={close}>{t('cart_done_btn')}</button>
           </div>
         ) : items.length === 0 ? (
           <div className="cart-empty">
             <div className="cart-empty-icon"><ShoppingBag size={28} /></div>
-            <h3 className="font-display">Пока пусто</h3>
-            <p>Добавьте изделия из каталога — они появятся здесь, и можно будет отправить один заказ на всё сразу.</p>
-            <Link href="/catalog" className="btn-primary" onClick={close}>В каталог <ArrowRight size={16} /></Link>
+            <h3 className="font-display">{t('cart_empty_title')}</h3>
+            <p>{t('cart_empty_text')}</p>
+            <Link href="/catalog" className="btn-primary" onClick={close}>{t('cart_empty_btn')} <ArrowRight size={16} /></Link>
           </div>
         ) : (
           <>
@@ -84,8 +86,8 @@ export function CartDrawer() {
                   </Link>
                   <div className="cart-item-main">
                     <Link href={`/product/${i.slug}`} className="cart-item-name" onClick={close}>{i.name}</Link>
-                    {i.maxQty != null && roomFor(items, i.productId, i.maxQty, i.key) <= i.qty && <div className="cart-item-variant">Больше нет в наличии</div>}
-                    {(i.color || i.size) && <div className="cart-item-variant">{[i.color && `Цвет: ${i.color}`, i.size && `Размер: ${i.size}`].filter(Boolean).join(' · ')}</div>}
+                    {i.maxQty != null && roomFor(items, i.productId, i.maxQty, i.key) <= i.qty && <div className="cart-item-variant">{t('cart_no_more')}</div>}
+                    {(i.color || i.size) && <div className="cart-item-variant">{[i.color && `${t('pp_color')}: ${i.color}`, i.size && `${t('pp_size')}: ${i.size}`].filter(Boolean).join(' · ')}</div>}
                     <div className="cart-item-row">
                       <div className="qty" aria-label="Количество">
                         <button type="button" onClick={() => setQty(i.key, i.qty - 1)} aria-label="Меньше"><Minus size={14} /></button>
@@ -105,30 +107,30 @@ export function CartDrawer() {
 
             {step === 'list' ? (
               <footer className="cart-foot">
-                <div className="cart-total"><span>Итого</span><b>{formatPrice(total)}</b></div>
-                <p className="cart-note">Оплата и доставка обсуждаются после заявки — мы свяжемся с вами.</p>
-                <button type="button" className="btn-primary cart-cta" onClick={() => setStep('form')}>Оформить заказ <ArrowRight size={16} /></button>
-                <button type="button" className="cart-clear" onClick={() => { if (confirm('Очистить корзину?')) clear() }}>Очистить корзину</button>
+                <div className="cart-total"><span>{t('cart_total')}</span><b>{formatPrice(total)}</b></div>
+                <p className="cart-note">{t('cart_note')}</p>
+                <button type="button" className="btn-primary cart-cta" onClick={() => setStep('form')}>{t('cart_checkout')} <ArrowRight size={16} /></button>
+                <button type="button" className="cart-clear" onClick={() => { if (confirm(t('cart_clear') + '?')) clear() }}>{t('cart_clear')}</button>
               </footer>
             ) : (
               <form className="cart-form" onSubmit={submit}>
-                <div className="cart-total"><span>Итого</span><b>{formatPrice(total)}</b></div>
-                <label>Ваше имя *<input className="input" required placeholder="Как вас зовут?" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></label>
-                <label>Телефон *
+                <div className="cart-total"><span>{t('cart_total')}</span><b>{formatPrice(total)}</b></div>
+                <label>{t('order_name_label')} *<input className="input" required placeholder={t('order_name_placeholder')} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></label>
+                <label>{t('order_phone_label')} *
                   <input className="input" required inputMode="tel" maxLength={17} placeholder="+998 99 864 81 91" value={form.phone}
                     onChange={e => { setForm({ ...form, phone: formatUzPhone(e.target.value) }); setPhoneErr(false) }}
                     style={badPhone ? { borderColor: '#ef4444', boxShadow: '0 0 0 3px rgba(239,68,68,.12)' } : undefined} />
-                  {badPhone && <span className="cart-err">Введите номер полностью: +998 XX XXX XX XX</span>}
+                  {badPhone && <span className="cart-err">{t('order_phone_error')}</span>}
                 </label>
-                <label>Telegram <small>(по желанию)</small>
+                <label>{t('order_tg_label')} <small>{t('order_tg_hint')}</small>
                   <span className="cart-tg"><i>@</i><input className="input" placeholder="username" autoComplete="off" autoCapitalize="none" spellCheck={false} value={form.tg} onChange={e => setForm({ ...form, tg: cleanTgUser(e.target.value) })} /></span>
                 </label>
-                <label>Пожелания<textarea className="input" placeholder="Цвет, размер, сроки, доставка…" value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} /></label>
-                {status === 'error' && <div className="cart-err-box">Не удалось отправить. Попробуйте ещё раз.</div>}
+                <label>{t('order_message_label')}<textarea className="input" placeholder={t('cart_wishes_placeholder')} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} /></label>
+                {status === 'error' && <div className="cart-err-box">{t('order_error')}</div>}
                 <button type="submit" className="btn-primary cart-cta" disabled={status === 'loading'}>
-                  {status === 'loading' ? <><Loader2 size={16} className="animate-spin" /> Отправляем…</> : <><Send size={16} /> Отправить заказ</>}
+                  {status === 'loading' ? <><Loader2 size={16} className="animate-spin" /> {t('order_sending')}</> : <><Send size={16} /> {t('cart_send')}</>}
                 </button>
-                <button type="button" className="cart-clear" onClick={() => setStep('list')}>← Назад к списку</button>
+                <button type="button" className="cart-clear" onClick={() => setStep('list')}>{t('cart_back')}</button>
               </form>
             )}
           </>

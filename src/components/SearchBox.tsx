@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Search, X, ArrowRight, Loader2, SearchX, PackageOpen } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
+import { useT } from '@/components/SiteText'
 
 interface Item {
   id: number; slug: string; name: string; price: number; onSale: boolean; salePrice?: number | null
@@ -13,13 +14,14 @@ interface Item {
 
 /** Кнопка поиска в шапке + всплывающее окно с живыми подсказками */
 export function SearchBox({ compact = false }: { compact?: boolean }) {
+  const t = useT()
   const [open, setOpen] = useState(false)
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} aria-label="Поиск" className="search-btn"
         style={{ background: 'var(--cream-dark)', border: 'none', cursor: 'pointer', borderRadius: 999, height: 36, padding: compact ? 0 : '0 14px 0 12px', width: compact ? 36 : undefined, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, color: 'var(--text)', fontSize: '.85rem', fontWeight: 500, transition: 'background .2s, color .2s' }}>
         <Search size={17} />
-        {!compact && <span>Поиск</span>}
+        {!compact && <span>{t('search_btn')}</span>}
       </button>
       {open && <SearchOverlay onClose={() => setOpen(false)} />}
       <style>{`.search-btn:hover{background:var(--pink-light)!important;color:var(--pink-deep)!important}`}</style>
@@ -28,6 +30,7 @@ export function SearchBox({ compact = false }: { compact?: boolean }) {
 }
 
 function SearchOverlay({ onClose }: { onClose: () => void }) {
+  const t = useT()
   const [mounted, setMounted] = useState(false)
   const [q, setQ] = useState('')
   const [items, setItems] = useState<Item[]>([])
@@ -91,7 +94,7 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
         <div className="srch-input-wrap">
           <Search size={20} style={{ color: 'var(--pink)', flexShrink: 0 }} />
           <input ref={inputRef} value={q} onChange={e => setQ(e.target.value)} onKeyDown={onKeyDown}
-            placeholder="Что ищете? Например: шапка, плед, зайка…" className="srch-input" autoComplete="off" spellCheck={false} />
+            placeholder={t('search_placeholder')} className="srch-input" autoComplete="off" spellCheck={false} />
           {loading ? <Loader2 size={18} className="animate-spin" style={{ color: 'var(--text-sub)' }} />
             : q ? <button type="button" onClick={() => { setQ(''); inputRef.current?.focus() }} className="srch-clear" aria-label="Очистить"><X size={16} /></button> : null}
           <button type="button" onClick={onClose} className="srch-close" aria-label="Закрыть"><X size={20} /></button>
@@ -101,9 +104,9 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
           {query.length < 2 ? (
             <div className="srch-empty">
               <div className="empty-ico sm"><PackageOpen size={24} /></div>
-              <p>Начните вводить название изделия, цвет или категорию</p>
+              <p>{t('search_hint')}</p>
               <div className="srch-chips">
-                {['шапка', 'свитер', 'плед', 'игрушка', 'носки', 'подарок'].map(w => (
+                {t('search_chips').split(',').map(w => w.trim()).filter(Boolean).map(w => (
                   <button key={w} type="button" className="srch-chip" onClick={() => setQ(w)}>{w}</button>
                 ))}
               </div>
@@ -111,9 +114,9 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
           ) : items.length === 0 && !loading ? (
             <div className="srch-empty">
               <div className="empty-ico sm"><SearchX size={24} /></div>
-              <p>По запросу «{query}» ничего не нашлось</p>
-              <p style={{ fontSize: '.82rem', marginTop: 6 }}>Попробуйте другое слово или посмотрите весь каталог</p>
-              <Link href="/catalog" onClick={onClose} className="btn-outline" style={{ marginTop: 16, fontSize: '.85rem' }}>Открыть каталог <ArrowRight size={14} /></Link>
+              <p>{t('search_empty', { q: query })}</p>
+              <p style={{ fontSize: '.82rem', marginTop: 6 }}>{t('search_empty_text')}</p>
+              <Link href="/catalog" onClick={onClose} className="btn-outline" style={{ marginTop: 16, fontSize: '.85rem' }}>{t('search_open_catalog')} <ArrowRight size={14} /></Link>
             </div>
           ) : (
             <>
@@ -139,7 +142,7 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
                 <button type="button" onClick={goCatalog} className="srch-more">Показать все {total} <ArrowRight size={14} /></button>
               )}
               {total <= items.length && total > 0 && (
-                <button type="button" onClick={goCatalog} className="srch-more">Открыть в каталоге <ArrowRight size={14} /></button>
+                <button type="button" onClick={goCatalog} className="srch-more">{t('search_open_in_catalog')} <ArrowRight size={14} /></button>
               )}
             </>
           )}

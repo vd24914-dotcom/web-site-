@@ -1,433 +1,254 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { Save, RefreshCw, Eye, Plus, Trash2, ArrowUp, ArrowDown, ExternalLink } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { Search, Save, RotateCcw, ExternalLink, Plus, Trash2, ArrowUp, ArrowDown, Loader2, Check, Undo2 } from 'lucide-react'
 import { ImageUploader } from '@/components/ImageUploader'
+import { CONTENT, DEFAULTS, type ContentField } from '@/lib/content'
 import { parseHeroNav, serializeHeroNav, type HeroNavItem } from '@/lib/hero'
-import { parseReelId, parseReels, serializeReels, reelUrl, reelEmbedUrl, type Reel } from '@/lib/reels'
+import { parseReelId, parseReels, serializeReels, reelUrl, type Reel } from '@/lib/reels'
 
-const TEXT_SECTIONS = [
-  {
-    label: '🏠 Общее',
-    fields: [
-      { key: 'site_name', label: 'Название сайта', placeholder: 'Fimush.kin' },
-      { key: 'footer_text', label: 'Текст в футере', placeholder: 'Вязаные изделия с любовью...' },
-    ]
-  },
-  {
-    label: '✅ Преимущества',
-    fields: [
-      { key: 'benefit1_title', label: 'Блок 1 — заголовок', placeholder: 'С любовью' },
-      { key: 'benefit1_desc', label: 'Блок 1 — текст', placeholder: '...', textarea: true },
-      { key: 'benefit2_title', label: 'Блок 2 — заголовок', placeholder: 'Под заказ' },
-      { key: 'benefit2_desc', label: 'Блок 2 — текст', placeholder: '...', textarea: true },
-      { key: 'benefit3_title', label: 'Блок 3 — заголовок', placeholder: 'Качество' },
-      { key: 'benefit3_desc', label: 'Блок 3 — текст', placeholder: '...', textarea: true },
-      { key: 'benefit4_title', label: 'Блок 4 — заголовок', placeholder: 'Доставка' },
-      { key: 'benefit4_desc', label: 'Блок 4 — текст', placeholder: '...', textarea: true },
-    ]
-  },
-  {
-    label: '👩‍🎨 О мастере',
-    fields: [
-      { key: 'about_title', label: 'Заголовок', placeholder: 'Создаю тепло своими руками' },
-      { key: 'about_text', label: 'Текст', placeholder: 'О мастере...', textarea: true },
-    ]
-  },
-  {
-    label: '📣 Секция «Заказать»',
-    fields: [
-      { key: 'cta_title', label: 'Заголовок', placeholder: 'Хотите заказать?' },
-      { key: 'cta_text', label: 'Текст', placeholder: 'Описание...', textarea: true },
-      { key: 'cta_btn', label: 'Кнопка', placeholder: 'Оставить заявку' },
-    ]
-  },
-  {
-    label: '🏷 Акция и таймер',
-    fields: [
-      { key: 'sale_block_title', label: 'Блок «Товары на акции» — заголовок', placeholder: 'Товары на акции' },
-      { key: 'sale_block_subtitle', label: 'Блок «Товары на акции» — подзаголовок', placeholder: 'Успейте заказать по выгодной цене, пока действует скидка' },
-      { key: 'sale_block_btn', label: 'Блок «Товары на акции» — кнопка', placeholder: 'Смотреть ещё', note: 'Блок появляется на главной автоматически, когда есть хотя бы один товар с действующей акцией. Товар может быть одновременно и в «Популярных», и в «Товарах на акции».' },
-      { key: 'sale_title', label: 'Текст акции (в баннере)', placeholder: 'Скидки недели! Успейте' },
-      { key: 'sale_end', label: '🏁 Акция активна до', type: 'datetime-local', note: 'Выбери дату и время окончания акции. На сайте появится баннер с обратным отсчётом; когда время выйдет — баннер сам исчезнет. Оставь пустым, чтобы отключить.' },
-    ]
-  },
-  {
-    label: '📞 Контакты и соцсети',
-    fields: [
-      { key: 'contact_phone', label: '📱 Телефон', placeholder: '+998 90 000-00-00' },
-      { key: 'contact_telegram', label: '✈️ Telegram (@имя или ссылка)', placeholder: '@fimushkin' },
-      { key: 'social_instagram', label: '📸 Instagram (@имя или ссылка)', placeholder: '@fimushkin' },
-      { key: 'social_whatsapp', label: '💬 WhatsApp (номер с кодом страны)', placeholder: '998901234567' },
-      { key: 'social_facebook', label: '👍 Facebook (ссылка)', placeholder: 'https://facebook.com/...' },
-      { key: 'social_youtube', label: '▶️ YouTube (ссылка)', placeholder: 'https://youtube.com/@...' },
-      { key: 'contact_email', label: '✉️ Email', placeholder: 'mail@example.com' },
-      { key: 'contact_address', label: '📍 Адрес', placeholder: 'Ташкент, Узбекистан' },
-    ]
-  },
+/**
+ * «Контент сайта»: все тексты и картинки сайта.
+ * Разделы и поля берутся из реестра src/lib/content.ts, поэтому новый текст на сайте
+ * достаточно добавить туда — он сам появится здесь. Пустое поле = стандартный текст.
+ */
+type Special = 'hero-extra' | 'reels'
+const SPECIAL: { id: Special; title: string; description: string }[] = [
+  { id: 'hero-extra', title: 'Меню и карточки', description: 'Пункты меню первого экрана и карточки категорий под заголовком' },
+  { id: 'reels', title: 'Рилсы', description: 'Видео из Instagram на главной' },
 ]
 
-export default function AppearancePage() {
+export default function ContentPage() {
+  const [saved, setSaved] = useState<Record<string, string>>({})
   const [values, setValues] = useState<Record<string, string>>({})
+  const [cats, setCats] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [saved, setSaved] = useState(false)
-  const [tab, setTab] = useState<'hero' | 'images' | 'text' | 'reels'>('hero')
-  const [cats, setCats] = useState<any[]>([])
-  const [activeSection, setActiveSection] = useState(0)
-  const [reelInput, setReelInput] = useState('')
-  const [reelError, setReelError] = useState('')
-
-  // Первый блок главной: меню и выбранные категории
-  const heroNav = parseHeroNav(values.hero_nav)
-  const setHeroNav = (list: HeroNavItem[]) => setValues({ ...values, hero_nav: serializeHeroNav(list) })
-  const heroSlugs = (values.hero_categories || '').split(',').map(x => x.trim()).filter(Boolean)
-  const toggleHeroCat = (slug: string) => {
-    const next = heroSlugs.includes(slug) ? heroSlugs.filter(x => x !== slug) : [...heroSlugs, slug]
-    setValues({ ...values, hero_categories: next.join(',') })
-  }
-
-  const reels = parseReels(values.reels)
-  const setReels = (list: Reel[]) => setValues({ ...values, reels: serializeReels(list) })
-  const addReel = () => {
-    const id = parseReelId(reelInput)
-    if (!id) { setReelError('Не похоже на ссылку на рилс. Пример: https://www.instagram.com/reel/C1a2B3c4D5e/'); return }
-    if (reels.some(r => r.id === id)) { setReelError('Этот рилс уже добавлен'); return }
-    setReels([...reels, { id }]); setReelInput(''); setReelError('')
-  }
-  const setCover = (i: number, cover: string) => setReels(reels.map((r, j) => j === i ? { ...r, cover: cover || undefined } : r))
-  const moveReel = (i: number, dir: -1 | 1) => {
-    const j = i + dir
-    if (j < 0 || j >= reels.length) return
-    const next = [...reels]; [next[i], next[j]] = [next[j], next[i]]
-    setReels(next)
-  }
+  const [justSaved, setJustSaved] = useState(false)
+  const [active, setActive] = useState<string>(CONTENT[0].id)
+  const [query, setQuery] = useState('')
 
   useEffect(() => {
-    fetch('/api/admin/settings').then(r => r.json()).then(d => {
-      setValues(d.settings || {}); setLoading(false)
-    })
+    fetch('/api/admin/settings').then(r => r.json()).then(d => { setSaved(d.settings || {}); setValues(d.settings || {}) }).catch(() => {}).finally(() => setLoading(false))
     fetch('/api/admin/categories').then(r => r.json()).then(d => setCats(d.categories || [])).catch(() => {})
   }, [])
 
+  const set = (key: string, v: string) => setValues(prev => ({ ...prev, [key]: v }))
+  const changedKeys = useMemo(() => {
+    const keys = new Set([...Object.keys(values), ...Object.keys(saved)])
+    return [...keys].filter(k => (values[k] || '') !== (saved[k] || ''))
+  }, [values, saved])
+  const dirty = changedKeys.length > 0
+
+  useEffect(() => {
+    const onBeforeUnload = (e: BeforeUnloadEvent) => { if (dirty) { e.preventDefault(); e.returnValue = '' } }
+    window.addEventListener('beforeunload', onBeforeUnload)
+    return () => window.removeEventListener('beforeunload', onBeforeUnload)
+  }, [dirty])
+
   const save = async () => {
     setSaving(true)
-    await fetch('/api/admin/settings', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ settings: values })
-    })
-    setSaving(false); setSaved(true)
-    setTimeout(() => setSaved(false), 2500)
+    const payload: Record<string, string> = {}
+    for (const k of changedKeys) payload[k] = values[k] || ''
+    await fetch('/api/admin/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ settings: payload }) })
+    setSaved({ ...values })
+    setSaving(false); setJustSaved(true)
+    setTimeout(() => setJustSaved(false), 2200)
   }
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); if (dirty && !saving) save() } }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  })
 
-  const SaveBtn = () => (
-    <button onClick={save} disabled={saving} className="btn-primary" style={{ fontSize: '.85rem' }}>
-      {saving ? <><RefreshCw size={15} className="animate-spin" /> Сохраняем...</> : saved ? '✅ Сохранено!' : <><Save size={15} /> Сохранить</>}
-    </button>
-  )
+  const q = query.trim().toLowerCase()
+  const matches = (f: ContentField) => !q || [f.label, f.hint, f.def, values[f.key]].some(x => (x || '').toLowerCase().includes(q))
+  const groups = q ? CONTENT.map(g => ({ ...g, fields: g.fields.filter(matches) })).filter(g => g.fields.length) : CONTENT.filter(g => g.id === active)
+  const customized = (g: typeof CONTENT[number]) => g.fields.filter(f => saved[f.key]).length
 
-  if (loading) return <div style={{ padding: 40, textAlign: 'center' }}><RefreshCw size={32} className="animate-spin" style={{ color: 'var(--pink)', margin: '0 auto' }} /></div>
+  if (loading) return <div className="ad-loading"><Loader2 size={28} className="animate-spin" /></div>
 
   return (
-    <div style={{ padding: 32 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+    <div className="ad-page">
+      <header className="ad-head">
         <div>
-          <h1 className="font-display" style={{ fontSize: '1.8rem', color: 'var(--text)' }}>Дизайн и контент</h1>
-          <p style={{ color: 'var(--text-sub)', fontSize: '.9rem', marginTop: 4 }}>Редактируйте тексты, картинки и логотип без кода</p>
+          <h1>Контент сайта</h1>
+          <p>Все тексты и картинки. Пустое поле — показывается стандартный текст (он виден серым).</p>
         </div>
-        <div style={{ display: 'flex', gap: 12 }}>
-          <a href="/" target="_blank" className="btn-outline" style={{ padding: '.65rem 1.25rem', fontSize: '.85rem', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-            <Eye size={15} /> Смотреть сайт
-          </a>
-          <SaveBtn />
+        <div className="ad-head-actions">
+          <a href="/" target="_blank" className="ad-btn ghost"><ExternalLink size={16} /> Открыть сайт</a>
         </div>
+      </header>
+
+      <div className="ad-search">
+        <Search size={17} />
+        <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Найти текст на сайте: например «доставка» или «Заказать»" />
+        {query && <button type="button" onClick={() => setQuery('')} aria-label="Очистить">×</button>}
       </div>
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
-        {[['hero', '🦸 Первый блок'], ['images', '🖼️ Картинки и логотип'], ['text', '✏️ Тексты и контент'], ['reels', '🎬 Рилсы']].map(([key, label]) => (
-          <button key={key} onClick={() => setTab(key as any)}
-            style={{ padding: '10px 20px', borderRadius: 12, border: '1px solid', cursor: 'pointer', fontSize: '.9rem', fontWeight: 600, transition: 'all .15s',
-              background: tab === key ? 'var(--pink)' : 'white',
-              borderColor: tab === key ? 'var(--pink)' : 'var(--border)',
-              color: tab === key ? 'white' : 'var(--text-sub)',
-            }}>
-            {label}
-          </button>
-        ))}
-      </div>
-
-      {/* HERO TAB — первый блок главной */}
-      {tab === 'hero' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 20, alignItems: 'start' }}>
-
-          <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid var(--border)' }}>
-            <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Заголовок и кнопка</h3>
-            <p style={{ color: 'var(--text-sub)', fontSize: '.8rem', marginBottom: 18, lineHeight: 1.5 }}>Большой заголовок по центру первого блока и кнопка справа в шапке.</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ background: 'var(--pink-mist)', border: '1px solid var(--pink-light)', borderRadius: 12, padding: 14 }}>
-                <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 8, fontSize: '.875rem' }}>Заголовок (две строки)</label>
-                <textarea className="input" rows={3} placeholder={'Тепло, которое чувствуется\nв каждой петельке'} value={values.hero_title || ''} onChange={e => setValues({ ...values, hero_title: e.target.value })} />
-                <p style={{ color: 'var(--pink-dark)', fontSize: '.78rem', marginTop: 8, lineHeight: 1.5 }}>💡 Нажмите Enter для переноса: первая строка будет розовым градиентом, вторая — обычным тёмным цветом.</p>
-              </div>
-              <div>
-                <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 8, fontSize: '.875rem' }}>Подзаголовок</label>
-                <textarea className="input" rows={3} placeholder="Короткое описание под заголовком" value={values.hero_subtitle || ''} onChange={e => setValues({ ...values, hero_subtitle: e.target.value })} />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                <div>
-                  <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 8, fontSize: '.875rem' }}>Кнопка — текст</label>
-                  <input className="input" placeholder="Заказать" value={values.hero_cta || ''} onChange={e => setValues({ ...values, hero_cta: e.target.value })} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 8, fontSize: '.875rem' }}>Кнопка — ссылка</label>
-                  <input className="input" placeholder="/catalog" value={values.hero_cta_href || ''} onChange={e => setValues({ ...values, hero_cta_href: e.target.value })} />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid var(--border)' }}>
-            <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Меню в шапке</h3>
-            <p style={{ color: 'var(--text-sub)', fontSize: '.8rem', marginBottom: 16, lineHeight: 1.5 }}>Пункты меню первого блока. Ссылка — страница (/catalog, /sale, /news) или якорь на главной (/#about, /#contact).</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {heroNav.map((item, i) => (
-                <div key={i} style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr) auto', gap: 8, alignItems: 'center' }}>
-                  <input className="input" placeholder="Название" value={item.name} onChange={e => setHeroNav(heroNav.map((x, j) => j === i ? { ...x, name: e.target.value } : x))} />
-                  <input className="input" placeholder="/catalog" value={item.href} onChange={e => setHeroNav(heroNav.map((x, j) => j === i ? { ...x, href: e.target.value } : x))} />
-                  <div style={{ display: 'flex', gap: 2 }}>
-                    <button type="button" onClick={() => { if (i === 0) return; const n = [...heroNav]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; setHeroNav(n) }} disabled={i === 0} title="Выше" style={{ background: 'none', border: 'none', cursor: i === 0 ? 'default' : 'pointer', color: 'var(--text-sub)', opacity: i === 0 ? .3 : 1, padding: 4, display: 'flex' }}><ArrowUp size={16} /></button>
-                    <button type="button" onClick={() => { if (i === heroNav.length - 1) return; const n = [...heroNav]; [n[i + 1], n[i]] = [n[i], n[i + 1]]; setHeroNav(n) }} disabled={i === heroNav.length - 1} title="Ниже" style={{ background: 'none', border: 'none', cursor: i === heroNav.length - 1 ? 'default' : 'pointer', color: 'var(--text-sub)', opacity: i === heroNav.length - 1 ? .3 : 1, padding: 4, display: 'flex' }}><ArrowDown size={16} /></button>
-                    <button type="button" onClick={() => setHeroNav(heroNav.filter((_, j) => j !== i))} title="Удалить" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e', padding: 4, display: 'flex' }}><Trash2 size={16} /></button>
-                  </div>
-                </div>
-              ))}
-              <div>
-                <button type="button" onClick={() => setHeroNav([...heroNav, { name: '', href: '/' }])} className="btn-outline" style={{ padding: '.55rem 1rem', fontSize: '.85rem', display: 'inline-flex', alignItems: 'center', gap: 6 }}><Plus size={15} /> Добавить пункт</button>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ gridColumn: '1 / -1', background: 'white', borderRadius: 16, padding: 24, border: '1px solid var(--border)' }}>
-            <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Карточки категорий</h3>
-            <p style={{ color: 'var(--text-sub)', fontSize: '.8rem', marginBottom: 16, lineHeight: 1.5 }}>Отметьте категории, которые показываются большими карточками под заголовком (лучше 4, максимум 8). Порядок — в каком отмечали. Если ничего не отмечено — первые четыре по порядку. Картинки и эмодзи карточек берутся из раздела «Категории».</p>
-            {cats.length === 0 ? (
-              <p style={{ color: 'var(--text-sub)', fontSize: '.85rem' }}>Категорий пока нет — добавьте их в разделе «Категории».</p>
-            ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 10 }}>
-                {cats.map((c: any) => {
-                  const idx = heroSlugs.indexOf(c.slug)
-                  const on = idx >= 0
-                  return (
-                    <label key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, border: '1px solid', cursor: 'pointer', background: on ? 'var(--pink-mist)' : 'white', borderColor: on ? 'var(--pink)' : 'var(--border)' }}>
-                      <input type="checkbox" checked={on} onChange={() => toggleHeroCat(c.slug)} style={{ width: 16, height: 16 }} />
-                      {c.icon ? <img src={c.icon} alt="" style={{ width: 32, height: 32, objectFit: 'contain' }} /> : <span style={{ fontSize: 24, width: 32, textAlign: 'center' }}>{c.emoji}</span>}
-                      <span style={{ flex: 1, fontSize: '.875rem', fontWeight: 500, color: 'var(--text)' }}>{c.name}</span>
-                      {on && <span style={{ width: 22, height: 22, borderRadius: 7, background: 'var(--pink)', color: 'white', fontSize: '.7rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{idx + 1}</span>}
-                    </label>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-
-          <div style={{ gridColumn: '1 / -1' }}><SaveBtn /></div>
-        </div>
-      )}
-
-      {/* REELS TAB */}
-      {tab === 'reels' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 340px', gap: 20, alignItems: 'start' }}>
-          <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid var(--border)' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', marginBottom: 18, padding: '12px 14px', borderRadius: 12, border: '1px solid', fontSize: '.9rem', fontWeight: 600,
-              background: values.reels_enabled === '1' ? '#e8f5ec' : 'var(--pink-mist)', borderColor: values.reels_enabled === '1' ? '#bfe3c9' : 'var(--pink-light)', color: values.reels_enabled === '1' ? '#1f5f33' : 'var(--pink-deep)' }}>
-              <input type="checkbox" checked={values.reels_enabled === '1'} onChange={e => setValues({ ...values, reels_enabled: e.target.checked ? '1' : '' })} style={{ width: 18, height: 18 }} />
-              {values.reels_enabled === '1' ? 'Блок «Рилсы» показывается на сайте' : 'Блок «Рилсы» скрыт с сайта (временно отключён)'}
-            </label>
-            <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Рилсы на главной</h3>
-            <p style={{ color: 'var(--text-sub)', fontSize: '.8rem', marginBottom: 16, lineHeight: 1.5 }}>
-              Откройте рилс в Instagram, нажмите «Поделиться» → «Копировать ссылку» и вставьте её сюда. К каждому рилсу загрузите обложку (скриншот или кадр из видео, вертикальный 9:16) — она показывается на сайте с кнопкой «play», а по клику запускается сам рилс. Без обложки будет заглушка. Блок появится на главной между «Популярными изделиями» и «О мастере»; если список пуст, он скрыт. Рилс должен быть публичным.
-            </p>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
-              <input className="input" placeholder="https://www.instagram.com/reel/..." value={reelInput}
-                onChange={e => { setReelInput(e.target.value); setReelError('') }}
-                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addReel() } }} />
-              <button type="button" onClick={addReel} className="btn-primary" style={{ fontSize: '.85rem', whiteSpace: 'nowrap' }}><Plus size={15} /> Добавить</button>
-            </div>
-            {reelError && <p style={{ color: '#e53e3e', fontSize: '.78rem', marginBottom: 10 }}>{reelError}</p>}
-
-            {reels.length === 0 ? (
-              <div style={{ marginTop: 16, padding: 24, textAlign: 'center', border: '1px dashed var(--border)', borderRadius: 12, color: 'var(--text-sub)', fontSize: '.85rem' }}>
-                Пока нет ни одного рилса
-              </div>
-            ) : (
-              <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {reels.map((r, i) => (
-                  <div key={r.id} style={{ border: '1px solid var(--border)', borderRadius: 12, background: 'var(--pink-mist)', padding: '10px 12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <span style={{ width: 26, height: 26, borderRadius: 8, background: 'var(--pink)', color: 'white', fontSize: '.75rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{i + 1}</span>
-                      <a href={reelUrl(r.id)} target="_blank" rel="noopener noreferrer" style={{ flex: 1, minWidth: 0, color: 'var(--text)', fontSize: '.85rem', textDecoration: 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <ExternalLink size={13} style={{ flexShrink: 0, color: 'var(--text-sub)' }} /> instagram.com/reel/{r.id}
-                      </a>
-                      <button type="button" onClick={() => moveReel(i, -1)} disabled={i === 0} title="Выше" style={{ background: 'none', border: 'none', cursor: i === 0 ? 'default' : 'pointer', color: 'var(--text-sub)', opacity: i === 0 ? .3 : 1, padding: 4, display: 'flex' }}><ArrowUp size={16} /></button>
-                      <button type="button" onClick={() => moveReel(i, 1)} disabled={i === reels.length - 1} title="Ниже" style={{ background: 'none', border: 'none', cursor: i === reels.length - 1 ? 'default' : 'pointer', color: 'var(--text-sub)', opacity: i === reels.length - 1 ? .3 : 1, padding: 4, display: 'flex' }}><ArrowDown size={16} /></button>
-                      <button type="button" onClick={() => setReels(reels.filter((_, j) => j !== i))} title="Удалить" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e', padding: 4, display: 'flex' }}><Trash2 size={16} /></button>
-                    </div>
-                    <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px dashed var(--border)', display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-                      <div style={{ width: 72, height: 128, borderRadius: 10, overflow: 'hidden', flexShrink: 0, border: '1px solid var(--border)', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-sub)', fontSize: '.7rem', textAlign: 'center' }}>
-                        {r.cover ? <img src={r.cover} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : 'нет обложки'}
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <ImageUploader value={r.cover} onChange={url => setCover(i, url)} label="Обложка" hint="Вертикальный кадр 9:16, например 1080×1920" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div>
-                <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 8, fontSize: '.875rem' }}>Заголовок блока</label>
-                <input className="input" placeholder="Рилсы из мастерской" value={values.reels_title || ''} onChange={e => setValues({ ...values, reels_title: e.target.value })} />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 8, fontSize: '.875rem' }}>Подзаголовок</label>
-                <input className="input" placeholder="Процесс, новинки и немного уюта — подписывайтесь в Instagram" value={values.reels_subtitle || ''} onChange={e => setValues({ ...values, reels_subtitle: e.target.value })} />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 8, fontSize: '.875rem' }}>Кнопка (ведёт на ваш Instagram из раздела «Контакты»)</label>
-                <input className="input" placeholder="Смотреть в Instagram" value={values.reels_btn || ''} onChange={e => setValues({ ...values, reels_btn: e.target.value })} />
-              </div>
-              <div><SaveBtn /></div>
-            </div>
-          </div>
-
-          <div style={{ background: 'white', borderRadius: 16, padding: 20, border: '1px solid var(--border)' }}>
-            <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6, fontSize: '.95rem' }}>Предпросмотр</h3>
-            <p style={{ color: 'var(--text-sub)', fontSize: '.78rem', marginBottom: 14 }}>Первый рилс из списка — так он загрузится по клику на сайте</p>
-            {reels[0] ? (
-              <div style={{ width: 280, height: 560, borderRadius: 18, overflow: 'hidden', border: '1px solid var(--border)', margin: '0 auto' }}>
-                <iframe src={reelEmbedUrl(reels[0].id)} title="Предпросмотр рилса" style={{ width: '100%', height: '100%', border: 0 }} allow="encrypted-media" allowFullScreen />
-              </div>
-            ) : (
-              <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-sub)', fontSize: '.85rem', border: '1px dashed var(--border)', borderRadius: 12 }}>Добавьте рилс</div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* IMAGES TAB */}
-      {tab === 'images' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(300px,1fr))', gap: 20 }}>
-
-          {/* Logo image */}
-          <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid var(--border)' }}>
-            <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Логотип сайта</h3>
-            <p style={{ color: 'var(--text-sub)', fontSize: '.8rem', marginBottom: 16 }}>Отображается в шапке и футере</p>
-            <ImageUploader
-              value={values.logo_image}
-              onChange={url => setValues({ ...values, logo_image: url })}
-              hint="Рекомендуется квадратное изображение, PNG с прозрачным фоном"
-            />
-            <div style={{ marginTop: 12 }}>
-              <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 6, fontSize: '.875rem' }}>Или эмодзи (если нет логотипа)</label>
-              <input className="input" placeholder="🧶" value={values.logo_emoji || ''} onChange={e => setValues({ ...values, logo_emoji: e.target.value })} style={{ fontSize: '1.5rem', textAlign: 'center' }} />
-            </div>
-            <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--border)' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '.875rem', fontWeight: 500, color: 'var(--text)' }}>
-                <input type="checkbox" checked={values.logo_show_text !== '0'} onChange={e => setValues({ ...values, logo_show_text: e.target.checked ? '1' : '0' })} style={{ width: 16, height: 16 }} />
-                Показывать название рядом с логотипом
-              </label>
-              <p style={{ color: 'var(--text-sub)', fontSize: '.75rem', marginTop: 4 }}>Отключите, если у вас логотип-картинка (PNG) и текст не нужен.</p>
-            </div>
-          </div>
-
-          {/* About image */}
-          <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid var(--border)' }}>
-            <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Фото мастера</h3>
-            <p style={{ color: 'var(--text-sub)', fontSize: '.8rem', marginBottom: 16 }}>Отображается в секции «О мастере»</p>
-            <ImageUploader
-              value={values.about_image}
-              onChange={url => setValues({ ...values, about_image: url })}
-              hint="Ваша фотография или фото процесса работы"
-            />
-            <div style={{ marginTop: 12 }}>
-              <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 6, fontSize: '.875rem' }}>Или эмодзи</label>
-              <input className="input" placeholder="👩‍🎨" value={values.about_icon || ''} onChange={e => setValues({ ...values, about_icon: e.target.value })} style={{ fontSize: '1.5rem', textAlign: 'center' }} />
-            </div>
-          </div>
-
-          {/* OG Image */}
-          <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid var(--border)' }}>
-            <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>OG-картинка (соцсети)</h3>
-            <p style={{ color: 'var(--text-sub)', fontSize: '.8rem', marginBottom: 16 }}>Показывается при отправке ссылки в WhatsApp, Telegram, Instagram</p>
-            <ImageUploader
-              value={values.og_image}
-              onChange={url => setValues({ ...values, og_image: url })}
-              hint="Рекомендуется 1200×630px, JPG"
-            />
-          </div>
-
-          {/* Иконки преимуществ */}
-          <div style={{ gridColumn: '1 / -1', background: 'white', borderRadius: 16, padding: 24, border: '1px solid var(--border)' }}>
-            <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Иконки блока «Преимущества»</h3>
-            <p style={{ color: 'var(--text-sub)', fontSize: '.8rem', marginBottom: 16 }}>4 иконки на главной. Если не загружать — останутся эмодзи (💝 ✏️ ⭐ 🚚). Лучше квадратный PNG с прозрачным фоном.</p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 16 }}>
-              {[1, 2, 3, 4].map(n => (
-                <ImageUploader key={n} value={values['benefit' + n + '_icon']} onChange={url => setValues({ ...values, ['benefit' + n + '_icon']: url })} label={'Иконка ' + n} />
-              ))}
-            </div>
-          </div>
-
-          <div style={{ gridColumn: '1 / -1', paddingTop: 8 }}>
-            <SaveBtn />
-          </div>
-        </div>
-      )}
-
-      {/* TEXT TAB */}
-      {tab === 'text' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 24 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            {TEXT_SECTIONS.map((s, i) => (
-              <button key={i} onClick={() => setActiveSection(i)}
-                style={{ textAlign: 'left', padding: '10px 14px', borderRadius: 10, border: '1px solid', cursor: 'pointer', fontSize: '.85rem', fontWeight: 500, transition: 'all .15s',
-                  background: activeSection === i ? 'var(--pink-light)' : 'transparent',
-                  borderColor: activeSection === i ? 'var(--pink-light)' : 'transparent',
-                  color: activeSection === i ? 'var(--pink-dark)' : 'var(--text-sub)',
-                }}>
-                {s.label}
+      <div className="ad-content">
+        {!q && (
+          <nav className="ad-groups" aria-label="Разделы">
+            {CONTENT.map(g => (
+              <button key={g.id} type="button" className={active === g.id ? 'on' : ''} onClick={() => setActive(g.id)}>
+                <span>{g.title}</span>
+                {customized(g) > 0 && <em>{customized(g)}</em>}
               </button>
             ))}
-          </div>
+            <div className="ad-groups-sep">Особые</div>
+            {SPECIAL.map(g => (
+              <button key={g.id} type="button" className={active === g.id ? 'on' : ''} onClick={() => setActive(g.id)}><span>{g.title}</span></button>
+            ))}
+          </nav>
+        )}
 
-          <div style={{ background: 'white', borderRadius: 16, padding: 28, border: '1px solid var(--border)' }}>
-            <h2 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 24, fontSize: '1.1rem' }}>
-              {TEXT_SECTIONS[activeSection].label}
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              {TEXT_SECTIONS[activeSection].fields.map(field => (
-                <div key={field.key} style={(field as any).note ? { background: 'var(--pink-mist)', border: '1px solid var(--pink-light)', borderRadius: 12, padding: 14 } : undefined}>
-                  <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 8, fontSize: '.875rem' }}>{field.label}</label>
-                  {field.textarea ? (
-                    <textarea className="input" rows={3} placeholder={field.placeholder}
-                      value={values[field.key] || ''} onChange={e => setValues({ ...values, [field.key]: e.target.value })} />
-                  ) : (
-                    <input className="input" type={(field as any).type || 'text'} placeholder={field.placeholder}
-                      value={values[field.key] || ''} onChange={e => setValues({ ...values, [field.key]: e.target.value })} />
-                  )}
-                  {(field as any).note && (
-                    <p style={{ color: 'var(--pink-dark)', fontSize: '.78rem', marginTop: 8, lineHeight: 1.5 }}>💡 {(field as any).note}</p>
-                  )}
-                </div>
-              ))}
+        <div className="ad-main">
+          {q && groups.length === 0 && <div className="ad-empty">Ничего не нашлось по «{query}»</div>}
+
+          {(q || !SPECIAL.some(s => s.id === active)) && groups.map(g => (
+            <section key={g.id} className="ad-card">
+              <div className="ad-card-head">
+                <h2>{g.title}</h2>
+                {g.description && <p>{g.description}</p>}
+              </div>
+              <div className="ad-fields">
+                {g.fields.map(f => <Field key={f.key} f={f} value={values[f.key] || ''} saved={saved[f.key] || ''} onChange={v => set(f.key, v)} />)}
+              </div>
+            </section>
+          ))}
+
+          {!q && active === 'hero-extra' && <HeroExtra values={values} set={set} cats={cats} />}
+          {!q && active === 'reels' && <ReelsEditor values={values} set={set} />}
+        </div>
+      </div>
+
+      <div className={`ad-savebar${dirty || justSaved ? ' show' : ''}`}>
+        <span>{justSaved ? <><Check size={16} /> Сохранено, сайт обновится через пару секунд</> : `Несохранённых изменений: ${changedKeys.length}`}</span>
+        {dirty && <button type="button" className="ad-btn ghost" onClick={() => setValues({ ...saved })}><Undo2 size={16} /> Отменить</button>}
+        {dirty && <button type="button" className="ad-btn primary" onClick={save} disabled={saving}>{saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Сохранить</button>}
+      </div>
+    </div>
+  )
+}
+
+function Field({ f, value, saved, onChange }: { f: ContentField; value: string; saved: string; onChange: (v: string) => void }) {
+  const type = f.type || 'text'
+  const def = DEFAULTS[f.key] ?? ''
+  const changed = value !== saved
+  const wide = type === 'textarea' || type === 'image'
+  return (
+    <div className={`ad-field${wide ? ' wide' : ''}${changed ? ' changed' : ''}`}>
+      <div className="ad-label">
+        <label htmlFor={`f-${f.key}`}>{f.label}</label>
+        {value && type !== 'toggle' && type !== 'image' && (
+          <button type="button" className="ad-reset" onClick={() => onChange('')} title="Вернуть стандартный текст"><RotateCcw size={12} /> по умолчанию</button>
+        )}
+      </div>
+      {type === 'textarea' && <textarea id={`f-${f.key}`} className="ad-input" rows={3} placeholder={def} value={value} onChange={e => onChange(e.target.value)} />}
+      {(type === 'text' || type === 'url' || type === 'emoji') && <input id={`f-${f.key}`} className={`ad-input${type === 'emoji' ? ' emoji' : ''}`} placeholder={def} value={value} onChange={e => onChange(e.target.value)} />}
+      {type === 'datetime' && <input id={`f-${f.key}`} type="datetime-local" className="ad-input" value={value} onChange={e => onChange(e.target.value)} />}
+      {type === 'toggle' && (
+        <label className="ad-switch">
+          <input type="checkbox" checked={(value || def) !== '0'} onChange={e => onChange(e.target.checked ? '1' : '0')} />
+          <span /> {(value || def) !== '0' ? 'Включено' : 'Выключено'}
+        </label>
+      )}
+      {type === 'image' && <ImageUploader value={value} onChange={onChange} hint={f.hint} />}
+      {f.hint && type !== 'image' && <small className="ad-hint">{f.hint}</small>}
+    </div>
+  )
+}
+
+function HeroExtra({ values, set, cats }: { values: Record<string, string>; set: (k: string, v: string) => void; cats: any[] }) {
+  const nav = parseHeroNav(values.hero_nav)
+  const setNav = (list: HeroNavItem[]) => set('hero_nav', serializeHeroNav(list))
+  const slugs = (values.hero_categories || '').split(',').map(x => x.trim()).filter(Boolean)
+  const toggle = (slug: string) => set('hero_categories', (slugs.includes(slug) ? slugs.filter(x => x !== slug) : [...slugs, slug]).join(','))
+  const move = (i: number, d: -1 | 1) => { const j = i + d; if (j < 0 || j >= nav.length) return; const n = [...nav]; [n[i], n[j]] = [n[j], n[i]]; setNav(n) }
+  return (
+    <>
+      <section className="ad-card">
+        <div className="ad-card-head"><h2>Меню первого экрана</h2><p>Ссылка — страница (/catalog, /sale, /news) или якорь на главной (/#about, /#contact)</p></div>
+        <div className="ad-list">
+          {nav.map((item, i) => (
+            <div key={i} className="ad-row">
+              <input className="ad-input" placeholder="Название" value={item.name} onChange={e => setNav(nav.map((x, j) => j === i ? { ...x, name: e.target.value } : x))} />
+              <input className="ad-input" placeholder="/catalog" value={item.href} onChange={e => setNav(nav.map((x, j) => j === i ? { ...x, href: e.target.value } : x))} />
+              <div className="ad-row-tools">
+                <button type="button" onClick={() => move(i, -1)} disabled={i === 0} aria-label="Выше"><ArrowUp size={15} /></button>
+                <button type="button" onClick={() => move(i, 1)} disabled={i === nav.length - 1} aria-label="Ниже"><ArrowDown size={15} /></button>
+                <button type="button" className="danger" onClick={() => setNav(nav.filter((_, j) => j !== i))} aria-label="Удалить"><Trash2 size={15} /></button>
+              </div>
             </div>
-            <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid var(--border)' }}>
-              <SaveBtn />
+          ))}
+          <button type="button" className="ad-add" onClick={() => setNav([...nav, { name: '', href: '/' }])}><Plus size={15} /> Добавить пункт</button>
+        </div>
+      </section>
+      <section className="ad-card">
+        <div className="ad-card-head"><h2>Карточки категорий</h2><p>Отметьте категории под заголовком (лучше 4, до 8). Порядок — как отмечали. Картинки — в разделе «Категории»</p></div>
+        {cats.length === 0 ? <div className="ad-empty">Категорий пока нет</div> : (
+          <div className="ad-cats">
+            {cats.map((c: any) => {
+              const idx = slugs.indexOf(c.slug)
+              return (
+                <label key={c.id} className={`ad-cat${idx >= 0 ? ' on' : ''}`}>
+                  <input type="checkbox" checked={idx >= 0} onChange={() => toggle(c.slug)} />
+                  {c.icon ? <img src={c.icon} alt="" /> : <span className="ad-cat-emoji">{c.emoji}</span>}
+                  <span className="ad-cat-name">{c.name}</span>
+                  {idx >= 0 && <b>{idx + 1}</b>}
+                </label>
+              )
+            })}
+          </div>
+        )}
+      </section>
+    </>
+  )
+}
+
+function ReelsEditor({ values, set }: { values: Record<string, string>; set: (k: string, v: string) => void }) {
+  const reels = parseReels(values.reels)
+  const setReels = (list: Reel[]) => set('reels', serializeReels(list))
+  const [input, setInput] = useState('')
+  const [error, setError] = useState('')
+  const add = () => {
+    const id = parseReelId(input)
+    if (!id) { setError('Не похоже на ссылку на рилс. Пример: https://www.instagram.com/reel/C1a2B3c4D5e/'); return }
+    if (reels.some(r => r.id === id)) { setError('Этот рилс уже добавлен'); return }
+    setReels([...reels, { id }]); setInput(''); setError('')
+  }
+  const move = (i: number, d: -1 | 1) => { const j = i + d; if (j < 0 || j >= reels.length) return; const n = [...reels]; [n[i], n[j]] = [n[j], n[i]]; setReels(n) }
+  const on = values.reels_enabled === '1'
+  return (
+    <section className="ad-card">
+      <div className="ad-card-head"><h2>Рилсы на главной</h2><p>В Instagram: «Поделиться» → «Копировать ссылку». К каждому рилсу загрузите обложку 9:16</p></div>
+      <label className="ad-switch big">
+        <input type="checkbox" checked={on} onChange={e => set('reels_enabled', e.target.checked ? '1' : '')} />
+        <span /> {on ? 'Блок показывается на сайте' : 'Блок скрыт'}
+      </label>
+      <div className="ad-row" style={{ gridTemplateColumns: '1fr auto', marginTop: 16 }}>
+        <input className="ad-input" placeholder="https://www.instagram.com/reel/..." value={input} onChange={e => { setInput(e.target.value); setError('') }} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); add() } }} />
+        <button type="button" className="ad-btn primary" onClick={add}><Plus size={16} /> Добавить</button>
+      </div>
+      {error && <small className="ad-hint err">{error}</small>}
+      <div className="ad-reels">
+        {reels.length === 0 && <div className="ad-empty">Пока нет ни одного рилса</div>}
+        {reels.map((r, i) => (
+          <div key={r.id} className="ad-reel">
+            <div className="ad-reel-cover">{r.cover ? <img src={r.cover} alt="" /> : <span>нет обложки</span>}</div>
+            <div className="ad-reel-main">
+              <div className="ad-reel-top">
+                <a href={reelUrl(r.id)} target="_blank" rel="noopener noreferrer"><ExternalLink size={13} /> reel/{r.id}</a>
+                <div className="ad-row-tools">
+                  <button type="button" onClick={() => move(i, -1)} disabled={i === 0} aria-label="Выше"><ArrowUp size={15} /></button>
+                  <button type="button" onClick={() => move(i, 1)} disabled={i === reels.length - 1} aria-label="Ниже"><ArrowDown size={15} /></button>
+                  <button type="button" className="danger" onClick={() => setReels(reels.filter((_, j) => j !== i))} aria-label="Удалить"><Trash2 size={15} /></button>
+                </div>
+              </div>
+              <ImageUploader value={r.cover} onChange={url => setReels(reels.map((x, j) => j === i ? { ...x, cover: url || undefined } : x))} hint="Вертикальный кадр 9:16" />
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        ))}
+      </div>
+    </section>
   )
 }

@@ -2,6 +2,7 @@
 import { ShoppingBag, Check } from 'lucide-react'
 import { useCart, roomFor } from '@/lib/cart'
 import { isSaleActive } from '@/lib/sale'
+import { useT } from '@/components/SiteText'
 
 interface Props {
   p: { id: number; slug: string; name: string; price: number; onSale?: boolean; salePrice?: number | null; saleEnd?: string | null; quantity?: number | null; inStock?: boolean }
@@ -10,6 +11,7 @@ interface Props {
 
 /** Кнопка «В корзину» на карточке товара: без выбора цвета/размера, с учётом остатка */
 export function CardAddButton({ p, image }: Props) {
+  const t = useT()
   const { add, setOpen, lastAdded, items } = useCart()
   const stock = p.quantity != null ? Math.max(0, p.quantity) : null
   const room = roomFor(items, p.id, stock)
@@ -23,7 +25,7 @@ export function CardAddButton({ p, image }: Props) {
 
   return (
     <button type="button" className={`pcard-add${justAdded ? ' added' : ''}${full ? ' full' : ''}`} onClick={onClick}>
-      {justAdded ? <><Check size={15} aria-hidden="true" /> Добавлено</> : full ? 'Уже в корзине' : <><ShoppingBag size={15} aria-hidden="true" /> В корзину</>}
+      {justAdded ? <><Check size={15} aria-hidden="true" /> {t('card_added')}</> : full ? t('card_in_cart') : <><ShoppingBag size={15} aria-hidden="true" /> {t('card_add')}</>}
     </button>
   )
 }

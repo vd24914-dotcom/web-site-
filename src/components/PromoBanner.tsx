@@ -1,10 +1,12 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useT } from '@/components/SiteText'
 
 interface Props { end?: string; title?: string }
 
 export function PromoBanner({ end, title }: Props) {
+  const t = useT()
   const [now, setNow] = useState<number | null>(null)
 
   useEffect(() => {
@@ -35,9 +37,9 @@ export function PromoBanner({ end, title }: Props) {
     <Link href="/sale" style={{ textDecoration: 'none', display: 'block' }}>
       <div className="gradient-flow" style={{ background: 'linear-gradient(135deg,#E0527C 0%,#B28FCE 55%,#E0527C 100%)', padding: '11px 16px' }}>
         <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <span style={{ color: '#fff', fontWeight: 700, fontSize: '.95rem' }}>{title || 'Акция! Успейте'}</span>
+          <span style={{ color: '#fff', fontWeight: 700, fontSize: '.95rem' }}>{title || t('sale_title')}</span>
           <div style={{ display: 'flex', gap: 6 }}>
-            {box(d, 'дней')}{box(h, 'часов')}{box(m, 'минут')}{box(s, 'секунд')}
+            {box(d, t('timer_days'))}{box(h, t('timer_hours'))}{box(m, t('timer_minutes'))}{box(s, t('timer_seconds'))}
           </div>
         </div>
       </div>

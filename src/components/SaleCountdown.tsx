@@ -1,8 +1,10 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { parseLocalDate } from '@/lib/sale'
+import { useT } from '@/components/SiteText'
 
 export function SaleCountdown({ end, mini }: { end?: string | null; mini?: boolean }) {
+  const t = useT()
   const [now, setNow] = useState<number | null>(null)
 
   useEffect(() => {
@@ -41,9 +43,9 @@ export function SaleCountdown({ end, mini }: { end?: string | null; mini?: boole
 
   return (
     <div style={{ marginBottom: 22, padding: '13px 16px', background: 'var(--pink-mist)', border: '1px solid var(--border)', borderRadius: 14 }}>
-      <div style={{ fontSize: '.82rem', color: 'var(--pink-dark)', fontWeight: 700, marginBottom: 10 }}>До конца акции осталось:</div>
+      <div style={{ fontSize: '.82rem', color: 'var(--pink-dark)', fontWeight: 700, marginBottom: 10 }}>{t('timer_sale_title')}</div>
       <div style={{ display: 'flex', gap: 8 }}>
-        {box(d, 'дней')}{box(h, 'часов')}{box(m, 'минут')}{box(s, 'секунд')}
+        {box(d, t('timer_days'))}{box(h, t('timer_hours'))}{box(m, t('timer_minutes'))}{box(s, t('timer_seconds'))}
       </div>
     </div>
   )

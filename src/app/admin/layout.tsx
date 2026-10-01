@@ -2,16 +2,16 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { LayoutDashboard, Package, ShoppingBag, Tag, Settings, LogOut, Palette, Newspaper, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Package, ShoppingBag, Tag, Settings, LogOut, Type, Newspaper, Menu, X, ExternalLink } from 'lucide-react'
 
 const NAV = [
-  { href: '/admin',            icon: <LayoutDashboard size={17} />, label: 'Главная' },
-  { href: '/admin/orders',     icon: <ShoppingBag size={17} />,     label: 'Заявки' },
-  { href: '/admin/products',   icon: <Package size={17} />,         label: 'Товары' },
-  { href: '/admin/categories', icon: <Tag size={17} />,             label: 'Категории' },
-  { href: '/admin/news',       icon: <Newspaper size={17} />,       label: 'Новости' },
-  { href: '/admin/appearance', icon: <Palette size={17} />,         label: 'Дизайн и контент' },
-  { href: '/admin/settings',   icon: <Settings size={17} />,        label: 'Настройки' },
+  { href: '/admin',            icon: LayoutDashboard, label: 'Обзор' },
+  { href: '/admin/orders',     icon: ShoppingBag,     label: 'Заявки' },
+  { href: '/admin/products',   icon: Package,         label: 'Товары' },
+  { href: '/admin/categories', icon: Tag,             label: 'Категории' },
+  { href: '/admin/news',       icon: Newspaper,       label: 'Новости' },
+  { href: '/admin/appearance', icon: Type,            label: 'Контент сайта' },
+  { href: '/admin/settings',   icon: Settings,        label: 'Настройки' },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -19,39 +19,35 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname()
 
   // Страница входа — без меню
-  if (pathname === '/admin/login') {
-    return <div className="force-light">{children}</div>
-  }
+  if (pathname === '/admin/login') return <div className="force-light admin-shell">{children}</div>
+
+  const isActive = (href: string) => href === '/admin' ? pathname === '/admin' : pathname?.startsWith(href)
 
   return (
-    <div className="force-light" style={{ minHeight: '100vh', background: 'var(--cream)' }}>
-      {/* Верхняя панель (только на телефоне) */}
+    <div className="force-light admin-shell">
       <div className="admin-topbar">
-        <button onClick={() => setOpen(true)} aria-label="Меню" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, display: 'flex' }}>
-          <Menu size={22} color="var(--text)" />
-        </button>
-        <img src="/admin-logo.png" alt="Fimush.kin Админ" style={{ height: 36, width: 'auto' }} />
+        <button onClick={() => setOpen(true)} aria-label="Меню" className="ad-icon-btn"><Menu size={20} /></button>
+        <span className="ad-brand-text">Fimush.kin · Админка</span>
       </div>
 
       {open && <div className="admin-overlay" onClick={() => setOpen(false)} />}
 
       <aside className={`admin-sidebar${open ? ' open' : ''}`}>
-        <div style={{ padding: '4px 6px 18px', borderBottom: '1px solid var(--border)', marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-          <img src="/admin-logo.png" alt="Fimush.kin Админ" style={{ width: 150, maxWidth: '100%', display: 'block' }} />
-          <button onClick={() => setOpen(false)} className="admin-close" aria-label="Закрыть" style={{ background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}>
-            <X size={20} color="var(--text-sub)" />
-          </button>
+        <div className="ad-brand">
+          <img src="/admin-logo.png" alt="Fimush.kin" />
+          <button onClick={() => setOpen(false)} className="admin-close ad-icon-btn" aria-label="Закрыть"><X size={18} /></button>
         </div>
-        <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {NAV.map(item => (
-            <Link key={item.href} href={item.href} className="admin-link" onClick={() => setOpen(false)}>{item.icon} {item.label}</Link>
+        <nav className="ad-nav">
+          {NAV.map(({ href, icon: Icon, label }) => (
+            <Link key={href} href={href} className={`admin-link${isActive(href) ? ' active' : ''}`} onClick={() => setOpen(false)}>
+              <Icon size={17} strokeWidth={1.9} /> {label}
+            </Link>
           ))}
         </nav>
-        <div style={{ borderTop: '1px solid var(--border)', paddingTop: 14 }}>
+        <div className="ad-nav-foot">
+          <a href="/" target="_blank" className="admin-link"><ExternalLink size={17} strokeWidth={1.9} /> Открыть сайт</a>
           <form action="/api/admin/auth/logout" method="POST">
-            <button type="submit" className="admin-link" style={{ color: 'var(--pink-dark)' }}>
-              <LogOut size={17} /> Выйти
-            </button>
+            <button type="submit" className="admin-link"><LogOut size={17} strokeWidth={1.9} /> Выйти</button>
           </form>
         </div>
       </aside>

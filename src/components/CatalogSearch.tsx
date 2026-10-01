@@ -2,11 +2,13 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, X } from 'lucide-react'
+import { useT } from '@/components/SiteText'
 
 interface Props { q?: string; category?: string; filter?: string }
 
 /** Строка поиска на странице каталога: отправляет ?q= с сохранением категории */
 export function CatalogSearch({ q = '', category, filter }: Props) {
+  const t = useT()
   const [value, setValue] = useState(q)
   const router = useRouter()
 
@@ -23,7 +25,7 @@ export function CatalogSearch({ q = '', category, filter }: Props) {
     <form onSubmit={e => { e.preventDefault(); go(value) }} role="search"
       style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--white)', border: '1px solid var(--border)', borderRadius: 999, padding: '6px 6px 6px 16px', width: 'min(420px, 100%)', boxShadow: '0 6px 24px rgba(250,135,161,.12)' }}>
       <Search size={18} style={{ color: 'var(--pink)', flexShrink: 0 }} />
-      <input value={value} onChange={e => setValue(e.target.value)} placeholder="Найти изделие…" aria-label="Поиск по каталогу"
+      <input value={value} onChange={e => setValue(e.target.value)} placeholder={t('catalog_search_placeholder')} aria-label="Поиск по каталогу"
         style={{ flex: 1, minWidth: 0, border: 0, outline: 0, background: 'transparent', font: 'inherit', fontSize: '.95rem', color: 'var(--text)' }} />
       {value && (
         <button type="button" onClick={() => { setValue(''); go('') }} aria-label="Очистить"
@@ -31,7 +33,7 @@ export function CatalogSearch({ q = '', category, filter }: Props) {
           <X size={14} />
         </button>
       )}
-      <button type="submit" className="btn-primary" style={{ padding: '.5rem 1rem', fontSize: '.85rem', borderRadius: 999 }}>Найти</button>
+      <button type="submit" className="btn-primary" style={{ padding: '.5rem 1rem', fontSize: '.85rem', borderRadius: 999 }}>{t('catalog_search_btn')}</button>
     </form>
   )
 }

@@ -6,10 +6,12 @@ import { Menu, X, ChevronLeft } from 'lucide-react'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { SearchBox } from '@/components/SearchBox'
 import { CartButton } from '@/components/CartButton'
+import { useT } from '@/components/SiteText'
 
 interface Props { settings?: Record<string, string> }
 
 export function Header({ settings = {} }: Props) {
+  const t = useT()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
@@ -40,15 +42,15 @@ export function Header({ settings = {} }: Props) {
   const headerHidden = hidden && !open
 
   const logo = settings.logo_image
-  const logoEmoji = settings.logo_emoji || '🧶'
-  const siteName = settings.site_name || 'Fimush.kin'
+  const logoEmoji = t('logo_emoji')
+  const siteName = t('site_name')
   const showText = settings.logo_show_text !== '0'
   const links = [
-    { href: '/catalog', label: 'Каталог' },
-    { href: '/sale',    label: 'Скидки' },
-    { href: '/news',    label: 'Новости' },
-    { href: '/#about',  label: 'О нас'   },
-    { href: '/#contact',label: 'Контакты'},
+    { href: '/catalog', label: t('nav_catalog') },
+    { href: '/sale',    label: t('nav_sale') },
+    { href: '/news',    label: t('nav_news') },
+    { href: '/#about',  label: t('nav_about') },
+    { href: '/#contact',label: t('nav_contacts') },
   ]
 
   return (
@@ -83,7 +85,7 @@ export function Header({ settings = {} }: Props) {
           <span className="search-compact"><SearchBox compact /></span>
           <ThemeToggle />
           <CartButton />
-          <Link href="/catalog" className="btn-primary hide-mobile" style={{ padding: '.55rem 1.25rem', fontSize: '.85rem' }}>Заказать</Link>
+          <Link href="/catalog" className="btn-primary hide-mobile" style={{ padding: '.55rem 1.25rem', fontSize: '.85rem' }}>{t('header_order_btn')}</Link>
           {!isHome && (
             <button onClick={goBack} className="show-mobile" aria-label="Назад"
               style={{ background: 'var(--cream-dark)', border: 'none', cursor: 'pointer', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -104,7 +106,7 @@ export function Header({ settings = {} }: Props) {
               {l.label}
             </Link>
           ))}
-          <Link href="/catalog" className="btn-primary" style={{ marginTop: 16, width: '100%', justifyContent: 'center' }}>Заказать</Link>
+          <Link href="/catalog" className="btn-primary" style={{ marginTop: 16, width: '100%', justifyContent: 'center' }}>{t('header_order_btn')}</Link>
         </div>
       )}
 

@@ -6,11 +6,9 @@ import { parseJSON } from '@/lib/utils'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { ProductView } from '@/components/ProductView'
+import { getSettings } from '@/lib/settings'
+import { makeT } from '@/lib/content'
 
-async function getSettings(): Promise<Record<string, string>> {
-  const rows = await prisma.siteSettings.findMany().catch(() => [])
-  return Object.fromEntries((rows as any[]).map((r: any) => [r.key, r.value]))
-}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params

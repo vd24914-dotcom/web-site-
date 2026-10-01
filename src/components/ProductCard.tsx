@@ -6,6 +6,7 @@ import { parseJSON } from '@/lib/utils'
 import { PriceTag } from '@/components/PriceTag'
 import { SaleBadge } from '@/components/SaleBadge'
 import { RestockCountdown } from '@/components/RestockCountdown'
+import { T } from '@/components/SiteText'
 
 interface Props {
   p: any
@@ -33,7 +34,7 @@ export function ProductCard({ p, showDescription = false }: Props) {
         </div>
         {(p.featured || (p.onSale && p.salePrice)) && (
           <div className="pcard-badges">
-            {p.featured && <span className="pill pill-ink">Новинка</span>}
+            {p.featured && <span className="pill pill-ink"><T k="card_new" /></span>}
             <SaleBadge price={p.price} onSale={p.onSale} salePrice={p.salePrice} saleEnd={p.saleEnd} />
           </div>
         )}
@@ -47,12 +48,12 @@ export function ProductCard({ p, showDescription = false }: Props) {
           <PriceTag price={p.price} onSale={p.onSale} salePrice={p.salePrice} saleEnd={p.saleEnd} />
           {p.restockAt
             ? <RestockCountdown at={p.restockAt} qty={p.restockQty} mini />
-            : <span className={`pcard-stock ${p.inStock ? 'in' : 'out'}`}><i aria-hidden="true" />{p.inStock ? 'В наличии' : 'Под заказ'}</span>}
+            : <span className={`pcard-stock ${p.inStock ? 'in' : 'out'}`}><i aria-hidden="true" /><T k={p.inStock ? 'card_in_stock' : 'card_preorder'} /></span>}
         </div>
         <div className="pcard-actions">
           <CardAddButton p={p} image={img} />
           <OrderModal productId={p.id} productName={p.name} trigger={
-            <button type="button" className="pcard-buy"><Zap size={15} aria-hidden="true" /> В 1 клик</button>
+            <button type="button" className="pcard-buy"><Zap size={15} aria-hidden="true" /> <T k="card_oneclick" /></button>
           } />
         </div>
       </div>

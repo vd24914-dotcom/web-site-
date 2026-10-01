@@ -6,6 +6,7 @@ import { isSaleActive } from '@/lib/sale'
 import { PriceTag } from '@/components/PriceTag'
 import { SaleCountdown } from '@/components/SaleCountdown'
 import { OrderModal } from '@/components/OrderModal'
+import { useT } from '@/components/SiteText'
 
 export interface BuyProduct {
   id: number
@@ -38,6 +39,7 @@ const swatchFor = (name: string) => {
 
 /** Блок покупки на странице товара: цвет, размер, количество, цена, «В корзину» и «Купить в 1 клик» */
 export function ProductBuy({ product, settings }: { product: BuyProduct; settings: Record<string, string> }) {
+  const t = useT()
   const { add, setOpen, lastAdded, items } = useCart()
   const [color, setColor] = useState<string>(product.colors[0] || '')
   const [size, setSize] = useState<string>(product.sizes[0] || '')
@@ -52,13 +54,13 @@ export function ProductBuy({ product, settings }: { product: BuyProduct; setting
   const addToCart = () => {
     add({ productId: product.id, slug: product.slug, name: product.name, price: product.price, salePrice: saleOn ? product.salePrice : null, image: product.image, color: color || undefined, size: size || undefined, maxQty: stock }, Math.min(qty, maxPick))
   }
-  const note = [color && `Цвет: ${color}`, size && `Размер: ${size}`, qty > 1 && `Количество: ${qty}`].filter(Boolean).join(', ')
+  const note = [color && `${t('pp_color')}: ${color}`, size && `${t('pp_size')}: ${size}`, qty > 1 && `Количество: ${qty}`].filter(Boolean).join(', ')
 
   return (
     <div className="pp-buy">
       {product.colors.length > 0 && (
         <div className="pp-opt">
-          <div className="pp-opt-label">Цвет: <b>{color}</b></div>
+          <div className="pp-opt-label">{t('pp_color')}: <b>{color}</b></div>
           <div className="pp-chips">
             {product.colors.map(c => {
               const sw = swatchFor(c)
@@ -74,7 +76,7 @@ export function ProductBuy({ product, settings }: { product: BuyProduct; setting
       )}
       {product.sizes.length > 0 && (
         <div className="pp-opt">
-          <div className="pp-opt-label">Размер: <b>{size}</b></div>
+          <div className="pp-opt-label">{t('pp_size')}: <b>{size}</b></div>
           <div className="pp-chips">
             {product.sizes.map(s => (
               <button key={s} type="button" className={`chip${size === s ? ' on' : ''}`} onClick={() => setSize(s)} aria-pressed={size === s}>{s}</button>
@@ -95,14 +97,14 @@ export function ProductBuy({ product, settings }: { product: BuyProduct; setting
           <button type="button" onClick={() => setQty(q => Math.min(maxPick, q + 1))} disabled={qty >= maxPick} aria-label="Больше"><Plus size={14} /></button>
         </div>
         <button type="button" className={`btn-primary pp-add${justAdded ? ' added' : ''}`} onClick={addToCart} disabled={soldOut}>
-          {soldOut ? 'Уже в корзине' : justAdded ? <><Check size={18} /> Добавлено</> : <><ShoppingBag size={18} /> В корзину</>}
+          {soldOut ? t('card_in_cart') : justAdded ? <><Check size={18} /> {t('card_added')}</> : <><ShoppingBag size={18} /> {t('pp_add')}</>}
         </button>
         <OrderModal productId={product.id} productName={product.name} settings={settings} note={note} trigger={
-          <button type="button" className="btn-ink pp-oneclick"><Zap size={18} /> Купить в 1 клик</button>
+          <button type="button" className="btn-ink pp-oneclick"><Zap size={18} /> {t('pp_oneclick')}</button>
         } />
       </div>
-      {stock != null && stock > 0 && <p className="pp-stock-note">В наличии {stock} шт{room < stock ? `, в корзине уже ${stock - room}` : ''}</p>}
-      {justAdded && <button type="button" className="pp-go-cart" onClick={() => setOpen(true)}>Перейти в корзину →</button>}
+      {stock != null && stock > 0 && <p className="pp-stock-note">{t('pp_stock_note', { n: stock })}{room < stock ? t('pp_in_cart_note', { n: stock - room }) : ''}</p>}
+      {justAdded && <button type="button" className="pp-go-cart" onClick={() => setOpen(true)}>{t('pp_go_cart')}</button>}
     </div>
   )
 }

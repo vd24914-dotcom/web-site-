@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { X, Send, CheckCircle, Loader2 } from 'lucide-react'
+import { useT } from '@/components/SiteText'
 
 // Узбекский номер: +998 XX XXX XX XX (9 цифр после кода 998)
 function formatUzPhone(input: string): string {
@@ -28,6 +29,7 @@ interface Props {
 }
 
 export function OrderModal({ productId, productName, trigger, settings = {}, note }: Props) {
+  const t = useT()
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState({ name: '', phone: '+998 ', email: '', message: '' })
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
@@ -69,10 +71,10 @@ export function OrderModal({ productId, productName, trigger, settings = {}, not
 
   return (
     <>
-      <div onClick={() => setOpen(true)} style={{ display: 'contents' }}>{trigger || <button className="btn-primary">Оставить заявку</button>}</div>
+      <div onClick={() => setOpen(true)} style={{ display: 'contents' }}>{trigger || <button className="btn-primary">{t('order_title')}</button>}</div>
 
       {open && mounted && createPortal(
-        <div className="order-overlay" role="dialog" aria-modal="true" aria-label="Оставить заявку"
+        <div className="order-overlay" role="dialog" aria-modal="true" aria-label={t('order_title')}
           style={{ position: 'fixed', inset: 0, background: 'rgba(74, 45, 58, 0.32)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, overflowY: 'auto' }}
           onClick={e => { if (e.target === e.currentTarget) close() }}>
           <div className="order-box" style={{ background: 'var(--white)', borderRadius: 24, padding: 36, width: '100%', maxWidth: 460, position: 'relative', boxShadow: '0 30px 90px rgba(58,21,40,.28)', border: '1px solid var(--border)', margin: 'auto' }}>
@@ -83,27 +85,27 @@ export function OrderModal({ productId, productName, trigger, settings = {}, not
             {status === 'done' ? (
               <div style={{ textAlign: 'center', padding: '20px 0' }}>
                 <CheckCircle size={56} color="var(--green)" style={{ margin: '0 auto 16px' }} />
-                <h3 className="font-display" style={{ fontSize: '1.5rem', color: 'var(--text)', marginBottom: 12 }}>Заявка принята!</h3>
+                <h3 className="font-display" style={{ fontSize: '1.5rem', color: 'var(--text)', marginBottom: 12 }}>{t('order_success_title')}</h3>
                 <p style={{ color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 24 }}>
-                  Свяжемся с вами в ближайшее время. Спасибо!
+                  {t('order_success_text')}
                 </p>
-                <button className="btn-primary" onClick={close}>Закрыть</button>
+                <button className="btn-primary" onClick={close}>{t('order_close')}</button>
               </div>
             ) : (
               <>
-                <h3 className="font-display" style={{ fontSize: '1.5rem', color: 'var(--text)', marginBottom: 6 }}>Оставить заявку</h3>
+                <h3 className="font-display" style={{ fontSize: '1.5rem', color: 'var(--text)', marginBottom: 6 }}>{t('order_title')}</h3>
                 {productName
                   ? <p style={{ color: 'var(--pink)', fontSize: '.9rem', marginBottom: 20, fontWeight: 600 }}>{productName}</p>
-                  : <p style={{ color: 'var(--text-sub)', fontSize: '.9rem', marginBottom: 20 }}>Обсудим все детали вашего заказа</p>
+                  : <p style={{ color: 'var(--text-sub)', fontSize: '.9rem', marginBottom: 20 }}>{t('order_subtitle')}</p>
                 }
 
                 <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: '.85rem', fontWeight: 500, color: 'var(--text)', marginBottom: 6 }}>Ваше имя *</label>
-                    <input className="input" required placeholder="Как вас зовут?" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
+                    <label style={{ display: 'block', fontSize: '.85rem', fontWeight: 500, color: 'var(--text)', marginBottom: 6 }}>{t('order_name_label')} *</label>
+                    <input className="input" required placeholder={t('order_name_placeholder')} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: '.85rem', fontWeight: 500, color: 'var(--text)', marginBottom: 6 }}>Телефон *</label>
+                    <label style={{ display: 'block', fontSize: '.85rem', fontWeight: 500, color: 'var(--text)', marginBottom: 6 }}>{t('order_phone_label')} *</label>
                     <input
                       className="input"
                       required
@@ -115,11 +117,11 @@ export function OrderModal({ productId, productName, trigger, settings = {}, not
                       style={(phoneErr || (uzDigits(form.phone).length > 3 && !isUzComplete(form.phone))) ? { borderColor: '#ef4444', boxShadow: '0 0 0 3px rgba(239,68,68,.12)' } : undefined}
                     />
                     {(phoneErr || (uzDigits(form.phone).length > 3 && !isUzComplete(form.phone))) && (
-                      <p style={{ color: '#ef4444', fontSize: '.78rem', marginTop: 5 }}>Введите номер полностью: +998 XX XXX XX XX</p>
+                      <p style={{ color: '#ef4444', fontSize: '.78rem', marginTop: 5 }}>{t('order_phone_error')}</p>
                     )}
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: '.85rem', fontWeight: 500, color: 'var(--text)', marginBottom: 6 }}>Telegram <span style={{ color: 'var(--text-sub)', fontWeight: 400 }}>(по желанию, чтобы написать вам)</span></label>
+                    <label style={{ display: 'block', fontSize: '.85rem', fontWeight: 500, color: 'var(--text)', marginBottom: 6 }}>{t('order_tg_label')} <span style={{ color: 'var(--text-sub)', fontWeight: 400 }}>{t('order_tg_hint')}</span></label>
                     <div style={{ position: 'relative' }}>
                       <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--pink)', fontWeight: 700, pointerEvents: 'none' }}>@</span>
                       <input className="input" type="text" inputMode="text" autoComplete="off" autoCapitalize="none" spellCheck={false} placeholder="username" style={{ paddingLeft: 32 }}
@@ -128,20 +130,20 @@ export function OrderModal({ productId, productName, trigger, settings = {}, not
                     </div>
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: '.85rem', fontWeight: 500, color: 'var(--text)', marginBottom: 6 }}>Пожелания</label>
-                    <textarea className="input" placeholder="Цвет, размер, особые пожелания..." value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} />
+                    <label style={{ display: 'block', fontSize: '.85rem', fontWeight: 500, color: 'var(--text)', marginBottom: 6 }}>{t('order_message_label')}</label>
+                    <textarea className="input" placeholder={t('order_message_placeholder')} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} />
                   </div>
 
                   {status === 'error' && (
                     <div style={{ background: '#fee2e2', color: '#991b1b', padding: '10px 14px', borderRadius: 10, fontSize: '.85rem' }}>
-                      Ошибка отправки. Попробуйте ещё раз.
+                      {t('order_error')}
                     </div>
                   )}
 
                   <button type="submit" className="btn-primary" disabled={status === 'loading'} style={{ marginTop: 4 }}>
                     {status === 'loading'
-                      ? <><Loader2 size={16} className="animate-spin" /> Отправляем...</>
-                      : <><Send size={16} /> Отправить заявку</>
+                      ? <><Loader2 size={16} className="animate-spin" /> {t('order_sending')}</>
+                      : <><Send size={16} /> {t('order_btn')}</>
                     }
                   </button>
                 </form>

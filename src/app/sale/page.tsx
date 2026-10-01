@@ -11,16 +11,14 @@ import { ScrollReveal } from '@/components/ScrollReveal'
 import { ProductCard } from '@/components/ProductCard'
 import { PromoBanner } from '@/components/PromoBanner'
 import { isSaleActive } from '@/lib/sale'
+import { getSettings } from '@/lib/settings'
+import { makeT } from '@/lib/content'
 
 export const metadata: Metadata = {
   title: 'Скидки — Fimush.kin',
   description: 'Вязаные изделия ручной работы со скидкой. Успейте заказать по выгодной цене.',
 }
 
-async function getSettings(): Promise<Record<string, string>> {
-  const rows = await prisma.siteSettings.findMany().catch(() => [])
-  return Object.fromEntries((rows as any[]).map((r: any) => [r.key, r.value]))
-}
 
 export default async function SalePage() {
   const [settings, allSale] = await Promise.all([
@@ -33,6 +31,7 @@ export default async function SalePage() {
   ])
   // Только акции, срок которых ещё не вышел
   const products = (allSale as any[]).filter((p) => isSaleActive(p))
+  const t = makeT(settings)
 
   return (
     <>
@@ -41,9 +40,9 @@ export default async function SalePage() {
       <main>
         <section className="gradient-flow" style={{ background: 'linear-gradient(150deg, var(--cream) 0%, var(--pink-mist) 50%, var(--pink-light) 100%)', padding: '56px 0 36px' }}>
           <div className="container" style={{ textAlign: 'center' }}>
-            <span className="badge badge-sale" style={{ marginBottom: 14 }}>Акция</span>
-            <h1 className="font-display" style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', color: 'var(--text)', marginBottom: 10 }}>Скидки</h1>
-            <p style={{ color: 'var(--text-sub)' }}>Изделия ручной работы по выгодной цене</p>
+            <span className="badge badge-sale" style={{ marginBottom: 14 }}>{t('sale_page_badge')}</span>
+            <h1 className="font-display" style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', color: 'var(--text)', marginBottom: 10 }}>{t('sale_page_title')}</h1>
+            <p style={{ color: 'var(--text-sub)' }}>{t('sale_page_subtitle')}</p>
           </div>
         </section>
 
@@ -52,8 +51,8 @@ export default async function SalePage() {
             {(products as any[]).length === 0 ? (
               <div style={{ textAlign: 'center', padding: 60 }}>
                 <div className="empty-ico"><Tag size={30} /></div>
-                <p style={{ color: 'var(--text-sub)', marginBottom: 16 }}>Сейчас нет товаров со скидкой. Загляните позже!</p>
-                <Link href="/catalog" className="btn-primary">Перейти в каталог</Link>
+                <p style={{ color: 'var(--text-sub)', marginBottom: 16 }}>{t('sale_page_empty')}</p>
+                <Link href="/catalog" className="btn-primary">{t('sale_page_empty_btn')}</Link>
               </div>
             ) : (
               <div className="home-panel" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 24 }}>

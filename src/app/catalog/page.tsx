@@ -12,31 +12,22 @@ import { CatalogSearch } from '@/components/CatalogSearch'
 import { normalizeQuery, searchProducts } from '@/lib/search'
 import { isSaleActive } from '@/lib/sale'
 import { ArrowRight, Tag, Star, SearchX, PackageOpen } from 'lucide-react'
+import { getSettings } from '@/lib/settings'
+import { makeT } from '@/lib/content'
 
 export const metadata: Metadata = {
   title: 'Каталог вязаных изделий',
   description: 'Все вязаные изделия ручной работы: свитеры, шапки, пледы, игрушки. Доставка по всему Узбекистану.',
 }
 
-async function getSettings(): Promise<Record<string, string>> {
-  const rows = await prisma.siteSettings.findMany().catch(() => [])
-  return Object.fromEntries((rows as any[]).map((r: any) => [r.key, r.value]))
-}
 
 type PickFilter = 'picks' | 'popular' | 'sale' | ''
-const FILTERS: { key: PickFilter; label: string; title: string; sub: string }[] = [
-  { key: 'picks',   label: 'Популярные и акции', title: 'Популярные и акции', sub: 'Изделия, которые мы отметили как популярные или поставили на акцию' },
-  { key: 'popular', label: 'Только популярные',   title: 'Популярные изделия', sub: 'Самые востребованные работы' },
-  { key: 'sale',    label: 'Только акции',        title: 'Товары на акции',    sub: 'Успейте заказать по выгодной цене' },
-  { key: '',        label: 'Весь каталог',           title: 'Каталог',            sub: '' },
-]
 
 export default async function CatalogPage({ searchParams }: { searchParams: Promise<{ category?: string; q?: string; filter?: string }> }) {
   const sp = await searchParams
   const cat = sp.category
   const q = normalizeQuery(sp.q)
   const filter: PickFilter = (['picks', 'popular', 'sale'] as const).includes(sp.filter as any) ? (sp.filter as PickFilter) : ''
-  const filterMeta = FILTERS.find(f => f.key === filter)!
   const [settings, allProducts, categories] = await Promise.all([
     getSettings(),
     prisma.product.findMany({
@@ -47,6 +38,14 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
     prisma.category.findMany({ orderBy: { sortOrder: 'asc' } }).catch(() => []),
   ])
   // Фильтр «отмеченные в админке»: популярные и/или акционные (с действующим сроком)
+  const t = makeT(settings)
+  const FILTERS: { key: PickFilter; label: string; title: string; sub: string }[] = [
+    { key: 'picks',   label: t('filter_picks'),   title: t('filter_picks'),         sub: t('filter_picks_sub') },
+    { key: 'popular', label: t('filter_popular'), title: t('filter_popular_title'), sub: t('filter_popular_sub') },
+    { key: 'sale',    label: t('filter_sale'),    title: t('filter_sale_title'),    sub: t('filter_sale_sub') },
+    { key: '',        label: t('filter_all'),     title: t('catalog_title'),        sub: '' },
+  ]
+  const filterMeta = FILTERS.find(f => f.key === filter)!
   const picked = (allProducts as any[]).filter((p) =>
     filter === 'popular' ? !!p.featured
     : filter === 'sale' ? isSaleActive(p)
@@ -74,13 +73,13 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
         <div style={{ background: 'linear-gradient(135deg,var(--cream) 0%,var(--pink-mist) 100%)', padding: '52px 0 36px', borderBottom: '1px solid var(--border)' }}>
           <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 24, flexWrap: 'wrap' }}>
             <div>
-              <h1 className="font-display" style={{ fontSize: '2.4rem', color: 'var(--text)', marginBottom: 6 }}>{q ? 'Поиск' : filterMeta.title}</h1>
+              <h1 className="font-display" style={{ fontSize: '2.4rem', color: 'var(--text)', marginBottom: 6 }}>{q ? t('catalog_search_title') : filterMeta.title}</h1>
               <p style={{ color: 'var(--text-sub)' }}>
                 {q
-                  ? <>{products.length === 0 ? 'Ничего не найдено' : `${products.length} ${plural(products.length)}`} по запросу «<b style={{ color: 'var(--text)' }}>{q}</b>»{filter ? ` среди «${filterMeta.title.toLowerCase()}»` : ''}</>
+                  ? <>{products.length === 0 ? t('catalog_nothing') : `${products.length} ${plural(products.length)}`} по запросу «<b style={{ color: 'var(--text)' }}>{q}</b>»{filter ? ` среди «${filterMeta.title.toLowerCase()}»` : ''}</>
                   : filter
                     ? `${filterMeta.sub} · ${products.length} ${plural(products.length)}`
-                    : `${products.length} товаров в наличии`}
+                    : `${products.length} ${plural(products.length)} ${t('catalog_count')}`}
               </p>
             </div>
             <CatalogSearch q={q} category={cat} filter={filter} />
@@ -90,7 +89,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
         <div className="container" style={{ paddingTop: 32, paddingBottom: 88 }}>
           {/* Переключатель «что показывать»: отмеченные в админке или весь каталог */}
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 18, padding: '10px 12px', background: 'var(--pink-mist)', border: '1px solid var(--border)', borderRadius: 16 }}>
-            <span style={{ fontSize: '.8rem', color: 'var(--text-sub)', fontWeight: 600, marginRight: 4 }}>Показать:</span>
+            <span style={{ fontSize: '.8rem', color: 'var(--text-sub)', fontWeight: 600, marginRight: 4 }}>{t('catalog_show')}</span>
             {FILTERS.map(f => {
               const active = f.key === filter
               return (
@@ -104,7 +103,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
           </div>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 40 }}>
             <Link href={withQ('/catalog')} style={{ textDecoration: 'none' }}>
-              <button className={!cat ? 'btn-primary' : 'btn-outline'} style={{ padding: '.5rem 1.2rem', fontSize: '.85rem' }}>Все</button>
+              <button className={!cat ? 'btn-primary' : 'btn-outline'} style={{ padding: '.5rem 1.2rem', fontSize: '.85rem' }}>{t('catalog_all')}</button>
             </Link>
             {(categories as any[]).map(c => (
               <Link key={c.id} href={withQ(`/catalog?category=${c.slug}`)} style={{ textDecoration: 'none' }}>
@@ -118,26 +117,26 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
           {products.length === 0 && !q && filter ? (
             <div style={{ textAlign: 'center', padding: '80px 0' }}>
               <div className="empty-ico">{filter === 'sale' ? <Tag size={30} /> : <Star size={30} />}</div>
-              <h2 className="font-display" style={{ color: 'var(--text)', marginBottom: 12 }}>{filter === 'sale' ? 'Сейчас нет товаров на акции' : 'Пока ничего не отмечено'}</h2>
-              <p style={{ color: 'var(--text-sub)', marginBottom: 28 }}>Загляните в полный каталог — там всё, что есть в наличии</p>
-              <Link href={buildHref({ category: cat, q })} className="btn-primary">Весь каталог <ArrowRight size={16} /></Link>
+              <h2 className="font-display" style={{ color: 'var(--text)', marginBottom: 12 }}>{filter === 'sale' ? t('catalog_empty_sale') : t('catalog_empty_picks')}</h2>
+              <p style={{ color: 'var(--text-sub)', marginBottom: 28 }}>{t('catalog_empty_filter_text')}</p>
+              <Link href={buildHref({ category: cat, q })} className="btn-primary">{t('filter_all')} <ArrowRight size={16} /></Link>
             </div>
           ) : products.length === 0 && q ? (
             <div style={{ textAlign: 'center', padding: '80px 0' }}>
               <div className="empty-ico"><SearchX size={30} /></div>
-              <h2 className="font-display" style={{ color: 'var(--text)', marginBottom: 12 }}>По запросу «{q}» ничего не нашлось</h2>
-              <p style={{ color: 'var(--text-sub)', marginBottom: 28 }}>Попробуйте другое слово{cat ? ' или снимите фильтр по категории' : ''}. А если нужно что-то особенное — напишите нам, свяжем под заказ</p>
+              <h2 className="font-display" style={{ color: 'var(--text)', marginBottom: 12 }}>{t('catalog_notfound_title', { q })}</h2>
+              <p style={{ color: 'var(--text-sub)', marginBottom: 28 }}>{t('catalog_notfound_text')}</p>
               <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-                <Link href={cat || filter ? buildHref({ q }) : '/catalog'} className="btn-outline">{cat || filter ? 'Искать по всему каталогу' : 'Весь каталог'}</Link>
-                <OrderModal settings={settings} trigger={<button className="btn-primary">Оставить заявку</button>} />
+                <Link href={cat || filter ? buildHref({ q }) : '/catalog'} className="btn-outline">{cat || filter ? t('catalog_search_all') : t('filter_all')}</Link>
+                <OrderModal settings={settings} trigger={<button className="btn-primary">{t('catalog_order_btn')}</button>} />
               </div>
             </div>
           ) : products.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '80px 0' }}>
               <div className="empty-ico"><PackageOpen size={30} /></div>
-              <h2 className="font-display" style={{ color: 'var(--text)', marginBottom: 12 }}>Скоро здесь появятся товары</h2>
-              <p style={{ color: 'var(--text-sub)', marginBottom: 28 }}>Напишите нам, если хотите что-то заказать</p>
-              <OrderModal settings={settings} trigger={<button className="btn-primary">Оставить заявку</button>} />
+              <h2 className="font-display" style={{ color: 'var(--text)', marginBottom: 12 }}>{t('catalog_empty_title')}</h2>
+              <p style={{ color: 'var(--text-sub)', marginBottom: 28 }}>{t('catalog_empty_text')}</p>
+              <OrderModal settings={settings} trigger={<button className="btn-primary">{t('catalog_order_btn')}</button>} />
             </div>
           ) : (
             <div className="home-panel" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(278px,1fr))', gap: 24 }}>

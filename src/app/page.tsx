@@ -16,15 +16,13 @@ import { ReelCard } from '@/components/ReelCard'
 import { parseReels } from '@/lib/reels'
 import { CommerceHero } from '@/components/ui/commerce-hero'
 import { parseHeroNav, pickHeroCategories } from '@/lib/hero'
+import { getSettings } from '@/lib/settings'
+import { makeT } from '@/lib/content'
 
 // Кэшируем страницу: посетители получают её мгновенно (без обращения к базе),
 // а при изменении товаров/настроек в админке кэш обновляется автоматически.
 export const revalidate = 3600
 
-async function getSettings(): Promise<Record<string, string>> {
-  const rows = await prisma.siteSettings.findMany().catch(() => [])
-  return Object.fromEntries((rows as any[]).map((r: any) => [r.key, r.value]))
-}
 
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getSettings()
@@ -52,7 +50,7 @@ export default async function HomePage() {
     const tb = new Date(b.featuredAt || b.createdAt).getTime()
     return tb - ta
   }).slice(0, HOME_LIMIT)
-  const s = (k: keyof typeof TEXTS) => settings[k] || TEXTS[k]
+  const s = makeT(settings)
   // Блок рилсов показывается только когда включён в админке (Дизайн и контент → Рилсы)
   const reels = settings.reels_enabled === '1' ? parseReels(settings.reels) : []
   const igRaw = (settings.social_instagram || '').trim()
@@ -72,7 +70,7 @@ export default async function HomePage() {
         <CommerceHero
           brand={s('site_name')}
           logo={settings.logo_image || undefined}
-          logoEmoji={settings.logo_emoji || '🧶'}
+          logoEmoji={s('logo_emoji')}
           showBrandText={settings.logo_show_text !== '0'}
           navigation={parseHeroNav(settings.hero_nav)}
           title1={heroTitle[0] || ''}
@@ -115,10 +113,10 @@ export default async function HomePage() {
               <ScrollReveal>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 44, flexWrap: 'wrap', gap: 16 }}>
                   <div>
-                    <h2 className="font-display" style={{ fontSize: '2.1rem', color: 'var(--text)', marginBottom: 8 }}>Популярные изделия</h2>
-                    <p style={{ color: 'var(--text-sub)' }}>Самые востребованные работы</p>
+                    <h2 className="font-display" style={{ fontSize: '2.1rem', color: 'var(--text)', marginBottom: 8 }}>{s('featured_title')}</h2>
+                    <p style={{ color: 'var(--text-sub)' }}>{s('featured_subtitle')}</p>
                   </div>
-                  <Link href="/catalog?filter=picks" className="btn-outline">Смотреть ещё <ArrowRight size={16} /></Link>
+                  <Link href="/catalog?filter=picks" className="btn-outline">{s('featured_btn')} <ArrowRight size={16} /></Link>
                 </div>
               </ScrollReveal>
               <div className="home-panel" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 24 }}>
@@ -139,7 +137,7 @@ export default async function HomePage() {
               <ScrollReveal>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 44, flexWrap: 'wrap', gap: 16 }}>
                   <div>
-                    <span className="badge badge-sale" style={{ marginBottom: 12 }}>Акция</span>
+                    <span className="badge badge-sale" style={{ marginBottom: 12 }}>{s('sale_block_badge')}</span>
                     <h2 className="font-display" style={{ fontSize: '2.1rem', color: 'var(--text)', marginBottom: 8 }}>{s('sale_block_title')}</h2>
                     <p style={{ color: 'var(--text-sub)' }}>{s('sale_block_subtitle')}</p>
                   </div>
@@ -164,7 +162,7 @@ export default async function HomePage() {
               <ScrollReveal>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 36, flexWrap: 'wrap', gap: 16 }}>
                   <div>
-                    <span className="badge badge-rose" style={{ marginBottom: 12 }}>Instagram</span>
+                    <span className="badge badge-rose" style={{ marginBottom: 12 }}>{s('reels_badge')}</span>
                     <h2 className="font-display" style={{ fontSize: '2.1rem', color: 'var(--text)', marginBottom: 8 }}>{s('reels_title')}</h2>
                     <p style={{ color: 'var(--text-sub)' }}>{s('reels_subtitle')}</p>
                   </div>
@@ -211,7 +209,7 @@ export default async function HomePage() {
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 {settings.about_image ? (
                   <div className="about-art" style={{ width: 460, height: 500, borderRadius: '40% 60% 60% 40% / 50% 40% 60% 50%', overflow: 'hidden', boxShadow: '0 24px 64px rgba(250,135,161,.22)' }}>
-                    <img src={settings.about_image} alt="О мастере" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={settings.about_image} alt={s('about_badge')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                 ) : (
                   <div className="about-art gradient-flow" style={{ width: 420, height: 460, background: 'linear-gradient(135deg,var(--pink-light) 0%,var(--cream-dark) 50%,var(--pink-light) 100%)', borderRadius: '40% 60% 60% 40% / 50% 40% 60% 50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 120, boxShadow: '0 24px 64px rgba(250,135,161,.2)' }}>
@@ -221,7 +219,7 @@ export default async function HomePage() {
               </div>
             </ScrollReveal>
             <ScrollReveal direction="right">
-              <span className="badge badge-rose" style={{ marginBottom: 18 }}>О мастере</span>
+              <span className="badge badge-rose" style={{ marginBottom: 18 }}>{s('about_badge')}</span>
               <h2 className="font-display" style={{ fontSize: '2rem', color: 'var(--text)', marginBottom: 18, lineHeight: 1.25 }}>{s('about_title')}</h2>
               <p style={{ color: 'var(--text-sub)', lineHeight: 1.8, fontSize: '1rem' }}>{s('about_text')}</p>
             </ScrollReveal>

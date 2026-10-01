@@ -589,3 +589,7 @@ p.ico-text, div.ico-text { display:flex; }
 .pcard-buy:active { transform:scale(.98); }
 [data-theme="dark"] .pcard-buy { color:var(--pink); }
 [data-theme="dark"] .pcard-buy:hover { color:#211722; }
+
+.qty button:disabled { opacity:.35; cursor:not-allowed; background:none !important; color:var(--text) !important; }
+.pp-add:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+.pp-stock-note { font-size:.8rem; color:var(--text-sub); margin-top:-6px; }

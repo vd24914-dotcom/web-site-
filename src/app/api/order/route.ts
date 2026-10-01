@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       if (!pr) continue
       const sale = pr.onSale && pr.salePrice && (!pr.saleEnd || new Date(pr.saleEnd).getTime() > Date.now())
       const imgs = parseJSON(pr.images || '[]')
-      cart.push({ productId: pr.id, name: pr.name, qty: Math.min(99, Math.max(1, Number(i.qty) || 1)), price: sale ? pr.salePrice : pr.price,
+      cart.push({ productId: pr.id, name: pr.name, qty: Math.min(99, pr.quantity != null ? Math.max(1, pr.quantity) : 99, Math.max(1, Number(i.qty) || 1)), price: sale ? pr.salePrice : pr.price,
         color: String(i.color || '').slice(0, 60), size: String(i.size || '').slice(0, 60), image: typeof imgs[0] === 'string' ? imgs[0] : '' })
     }
     if (!cart.length) return NextResponse.json({ error: 'Корзина пуста' }, { status: 400 })

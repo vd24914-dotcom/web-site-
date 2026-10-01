@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createPortal } from 'react-dom'
 import { X, Minus, Plus, Trash2, ShoppingBag, Send, CheckCircle, Loader2, ArrowRight, PackageOpen } from 'lucide-react'
-import { useCart, unitPrice } from '@/lib/cart'
+import { useCart, unitPrice, roomFor } from '@/lib/cart'
 import { formatPrice } from '@/lib/utils'
 import { formatUzPhone, uzDigits, isUzComplete, cleanTgUser } from '@/lib/phone'
 
@@ -84,12 +84,13 @@ export function CartDrawer() {
                   </Link>
                   <div className="cart-item-main">
                     <Link href={`/product/${i.slug}`} className="cart-item-name" onClick={close}>{i.name}</Link>
+                    {i.maxQty != null && roomFor(items, i.productId, i.maxQty, i.key) <= i.qty && <div className="cart-item-variant">Больше нет в наличии</div>}
                     {(i.color || i.size) && <div className="cart-item-variant">{[i.color && `Цвет: ${i.color}`, i.size && `Размер: ${i.size}`].filter(Boolean).join(' · ')}</div>}
                     <div className="cart-item-row">
                       <div className="qty" aria-label="Количество">
                         <button type="button" onClick={() => setQty(i.key, i.qty - 1)} aria-label="Меньше"><Minus size={14} /></button>
                         <span>{i.qty}</span>
-                        <button type="button" onClick={() => setQty(i.key, i.qty + 1)} aria-label="Больше"><Plus size={14} /></button>
+                        <button type="button" onClick={() => setQty(i.key, i.qty + 1)} disabled={roomFor(items, i.productId, i.maxQty, i.key) <= i.qty} aria-label="Больше"><Plus size={14} /></button>
                       </div>
                       <div className="cart-item-price">
                         {unitPrice(i) < i.price && <s>{formatPrice(i.price * i.qty)}</s>}

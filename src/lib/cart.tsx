@@ -17,6 +17,8 @@ export interface CartItem {
   color?: string
   size?: string
   qty: number
+  /** Остаток на складе; null — без ограничения */
+  maxQty?: number | null
 }
 
 interface CartContextValue {
@@ -37,6 +39,12 @@ const STORAGE = 'fimushkin_cart_v1'
 const CartContext = createContext<CartContextValue | null>(null)
 
 export const itemKey = (productId: number, color?: string, size?: string) => `${productId}|${color || ''}|${size || ''}`
+/** Сколько ещё можно добавить этого товара с учётом всех его вариантов в корзине */
+export const roomFor = (items: CartItem[], productId: number, maxQty: number | null | undefined, exceptKey?: string) => {
+  if (maxQty == null) return 99
+  const used = items.filter(i => i.productId === productId && i.key !== exceptKey).reduce((n, i) => n + i.qty, 0)
+  return Math.max(0, maxQty - used)
+}
 export const unitPrice = (i: CartItem) => (i.salePrice != null && i.salePrice > 0 && i.salePrice < i.price ? i.salePrice : i.price)
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
@@ -61,14 +69,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const key = itemKey(item.productId, item.color, item.size)
     setItems(prev => {
       const i = prev.findIndex(x => x.key === key)
-      if (i >= 0) return prev.map((x, j) => j === i ? { ...x, qty: Math.min(99, x.qty + qty) } : x)
-      return [...prev, { ...item, key, qty }]
+      const room = roomFor(prev, item.productId, item.maxQty, key)
+      if (i >= 0) return prev.map((x, j) => j === i ? { ...x, maxQty: item.maxQty, qty: Math.min(99, room, x.qty + qty) } : x)
+      if (room <= 0) return prev
+      return [...prev, { ...item, key, qty: Math.min(qty, room) }]
     })
     setLastAdded(key)
     setTimeout(() => setLastAdded(null), 1600)
   }, [])
   const setQty = useCallback((key: string, qty: number) => {
-    setItems(prev => qty <= 0 ? prev.filter(x => x.key !== key) : prev.map(x => x.key === key ? { ...x, qty: Math.min(99, qty) } : x))
+    setItems(prev => qty <= 0 ? prev.filter(x => x.key !== key) : prev.map(x => x.key === key ? { ...x, qty: Math.min(99, roomFor(prev, x.productId, x.maxQty, key), qty) } : x))
   }, [])
   const remove = useCallback((key: string) => setItems(prev => prev.filter(x => x.key !== key)), [])
   const clear = useCallback(() => setItems([]), [])

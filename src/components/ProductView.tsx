@@ -55,7 +55,7 @@ export function ProductView({ p, settings }: { p: any; settings: Record<string, 
 
               <ProductBuy
                 settings={settings}
-                product={{ id: p.id, slug: p.slug, name: p.name, price: p.price, onSale: p.onSale, salePrice: p.salePrice, saleEnd: p.saleEnd, image: images[0], colors, sizes, inStock: !!p.inStock }}
+                product={{ id: p.id, slug: p.slug, name: p.name, price: p.price, onSale: p.onSale, salePrice: p.salePrice, saleEnd: p.saleEnd, image: images[0], colors, sizes, inStock: !!p.inStock, quantity: p.quantity ?? null }}
               />
 
               {p.videoUrl && (

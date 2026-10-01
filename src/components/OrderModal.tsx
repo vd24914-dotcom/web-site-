@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { X, Send, CheckCircle, Loader2 } from 'lucide-react'
+import { X, Send, CheckCircle, Loader2, ShoppingBag } from 'lucide-react'
 
 // Узбекский номер: +998 XX XXX XX XX (9 цифр после кода 998)
 function formatUzPhone(input: string): string {
@@ -85,7 +85,7 @@ export function OrderModal({ productId, productName, trigger, settings = {}, not
                 <CheckCircle size={56} color="var(--green)" style={{ margin: '0 auto 16px' }} />
                 <h3 className="font-display" style={{ fontSize: '1.5rem', color: 'var(--text)', marginBottom: 12 }}>Заявка принята!</h3>
                 <p style={{ color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 24 }}>
-                  Свяжемся с вами в ближайшее время. Спасибо! 🧶
+                  Свяжемся с вами в ближайшее время. Спасибо!
                 </p>
                 <button className="btn-primary" onClick={close}>Закрыть</button>
               </div>
@@ -93,7 +93,7 @@ export function OrderModal({ productId, productName, trigger, settings = {}, not
               <>
                 <h3 className="font-display" style={{ fontSize: '1.5rem', color: 'var(--text)', marginBottom: 6 }}>Оставить заявку</h3>
                 {productName
-                  ? <p style={{ color: 'var(--pink)', fontSize: '.9rem', marginBottom: 20 }}>🧶 {productName}</p>
+                  ? <p style={{ color: 'var(--pink)', fontSize: '.9rem', marginBottom: 20 }}><ShoppingBag size={14} aria-hidden="true" style={{ verticalAlign: '-2px', marginRight: 6 }} />{productName}</p>
                   : <p style={{ color: 'var(--text-sub)', fontSize: '.9rem', marginBottom: 20 }}>Обсудим все детали вашего заказа</p>
                 }
 

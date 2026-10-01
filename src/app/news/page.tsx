@@ -1,4 +1,5 @@
 export const revalidate = 600
+import { Newspaper } from 'lucide-react'
 import { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 import { Header } from '@/components/Header'
@@ -27,7 +28,7 @@ export default async function NewsPage() {
       <main>
         <section className="gradient-flow" style={{ background: 'linear-gradient(150deg, var(--cream) 0%, var(--pink-mist) 50%, var(--pink-light) 100%)', padding: '56px 0 36px' }}>
           <div className="container" style={{ textAlign: 'center' }}>
-            <span className="badge badge-rose" style={{ marginBottom: 14 }}>📰 Лента</span>
+            <span className="badge badge-rose" style={{ marginBottom: 14 }}><Newspaper size={13} aria-hidden="true" /> Лента</span>
             <h1 className="font-display" style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', color: 'var(--text)', marginBottom: 10 }}>Новости</h1>
             <p style={{ color: 'var(--text-sub)' }}>Новинки, акции и обновления мастерской</p>
           </div>
@@ -37,7 +38,7 @@ export default async function NewsPage() {
           <div className="container" style={{ maxWidth: 760 }}>
             {(news as any[]).length === 0 ? (
               <div style={{ textAlign: 'center', padding: 60 }}>
-                <div style={{ fontSize: 48, marginBottom: 12 }}>📰</div>
+                <div className="empty-ico"><Newspaper size={30} /></div>
                 <p style={{ color: 'var(--text-sub)' }}>Новостей пока нет. Загляните позже!</p>
               </div>
             ) : (

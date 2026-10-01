@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createPortal } from 'react-dom'
-import { X, Minus, Plus, Trash2, ShoppingBag, Send, CheckCircle, Loader2, ArrowRight } from 'lucide-react'
+import { X, Minus, Plus, Trash2, ShoppingBag, Send, CheckCircle, Loader2, ArrowRight, PackageOpen } from 'lucide-react'
 import { useCart, unitPrice } from '@/lib/cart'
 import { formatPrice } from '@/lib/utils'
 import { formatUzPhone, uzDigits, isUzComplete, cleanTgUser } from '@/lib/phone'
@@ -64,7 +64,7 @@ export function CartDrawer() {
           <div className="cart-done">
             <CheckCircle size={56} />
             <h3 className="font-display">Заявка отправлена!</h3>
-            <p>Свяжемся с вами в ближайшее время и подтвердим заказ. Спасибо! 🧶</p>
+            <p>Свяжемся с вами в ближайшее время и подтвердим заказ. Спасибо!</p>
             <button type="button" className="btn-primary" onClick={close}>Продолжить покупки</button>
           </div>
         ) : items.length === 0 ? (
@@ -80,7 +80,7 @@ export function CartDrawer() {
               {items.map(i => (
                 <div key={i.key} className="cart-item">
                   <Link href={`/product/${i.slug}`} className="cart-thumb" onClick={close} aria-label={i.name}>
-                    {i.image ? <img src={i.image} alt="" /> : <span>🧶</span>}
+                    {i.image ? <img src={i.image} alt="" /> : <PackageOpen size={24} aria-hidden="true" />}
                   </Link>
                   <div className="cart-item-main">
                     <Link href={`/product/${i.slug}`} className="cart-item-name" onClick={close}>{i.name}</Link>

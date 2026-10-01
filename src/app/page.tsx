@@ -10,7 +10,7 @@ import { ProductCard } from '@/components/ProductCard'
 import { SocialLinks } from '@/components/SocialLinks'
 import { PromoBanner } from '@/components/PromoBanner'
 import { isSaleActive } from '@/lib/sale'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Tag, HeartHandshake, PencilRuler, Award, Truck } from 'lucide-react'
 import { InstagramIcon } from '@/components/SocialLinks'
 import { ReelCard } from '@/components/ReelCard'
 import { parseReels } from '@/lib/reels'
@@ -87,16 +87,16 @@ export default async function HomePage() {
           <div className="container">
             <div className="home-panel" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 24 }}>
               {[
-                { icon: '💝', img: settings.benefit1_icon, title: s('benefit1_title'), desc: s('benefit1_desc') },
-                { icon: '✏️', img: settings.benefit2_icon, title: s('benefit2_title'), desc: s('benefit2_desc') },
-                { icon: '⭐', img: settings.benefit3_icon, title: s('benefit3_title'), desc: s('benefit3_desc') },
-                { icon: '🚚', img: settings.benefit4_icon, title: s('benefit4_title'), desc: s('benefit4_desc') },
+                { icon: <HeartHandshake size={28} aria-hidden="true" />, img: settings.benefit1_icon, title: s('benefit1_title'), desc: s('benefit1_desc') },
+                { icon: <PencilRuler size={28} aria-hidden="true" />, img: settings.benefit2_icon, title: s('benefit2_title'), desc: s('benefit2_desc') },
+                { icon: <Award size={28} aria-hidden="true" />, img: settings.benefit3_icon, title: s('benefit3_title'), desc: s('benefit3_desc') },
+                { icon: <Truck size={28} aria-hidden="true" />, img: settings.benefit4_icon, title: s('benefit4_title'), desc: s('benefit4_desc') },
               ].map((b, i) => (
                 <ScrollReveal key={b.title} delay={i * 80}>
                   <div style={{ textAlign: 'center', padding: '8px 12px' }}>
                     {b.img
                       ? <img src={b.img} alt="" className="icon-bounce" style={{ width: 58, height: 58, objectFit: 'contain', margin: '0 auto 16px', display: 'block' }} />
-                      : <span className="icon-bounce" style={{ fontSize: 42, marginBottom: 16, display: 'block' }}>{b.icon}</span>}
+                      : <span className="bene-ico icon-bounce">{b.icon}</span>}
                     <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>{b.title}</h3>
                     <p style={{ fontSize: '.85rem', color: 'var(--text-sub)', lineHeight: 1.65 }}>{b.desc}</p>
                   </div>
@@ -139,7 +139,7 @@ export default async function HomePage() {
               <ScrollReveal>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 44, flexWrap: 'wrap', gap: 16 }}>
                   <div>
-                    <span className="badge badge-sale" style={{ marginBottom: 12 }}>🏷 Акция</span>
+                    <span className="badge badge-sale" style={{ marginBottom: 12 }}><Tag size={13} aria-hidden="true" /> Акция</span>
                     <h2 className="font-display" style={{ fontSize: '2.1rem', color: 'var(--text)', marginBottom: 8 }}>{s('sale_block_title')}</h2>
                     <p style={{ color: 'var(--text-sub)' }}>{s('sale_block_subtitle')}</p>
                   </div>

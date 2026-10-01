@@ -11,7 +11,7 @@ import { ProductCard } from '@/components/ProductCard'
 import { CatalogSearch } from '@/components/CatalogSearch'
 import { normalizeQuery, searchProducts } from '@/lib/search'
 import { isSaleActive } from '@/lib/sale'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Tag, Star, SearchX, PackageOpen } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Каталог вязаных изделий',
@@ -25,9 +25,9 @@ async function getSettings(): Promise<Record<string, string>> {
 
 type PickFilter = 'picks' | 'popular' | 'sale' | ''
 const FILTERS: { key: PickFilter; label: string; title: string; sub: string }[] = [
-  { key: 'picks',   label: '⭐🏷 Популярные и акции', title: 'Популярные и акции', sub: 'Изделия, которые мы отметили как популярные или поставили на акцию' },
-  { key: 'popular', label: '⭐ Только популярные',   title: 'Популярные изделия', sub: 'Самые востребованные работы' },
-  { key: 'sale',    label: '🏷 Только акции',        title: 'Товары на акции',    sub: 'Успейте заказать по выгодной цене' },
+  { key: 'picks',   label: 'Популярные и акции', title: 'Популярные и акции', sub: 'Изделия, которые мы отметили как популярные или поставили на акцию' },
+  { key: 'popular', label: 'Только популярные',   title: 'Популярные изделия', sub: 'Самые востребованные работы' },
+  { key: 'sale',    label: 'Только акции',        title: 'Товары на акции',    sub: 'Успейте заказать по выгодной цене' },
   { key: '',        label: 'Весь каталог',           title: 'Каталог',            sub: '' },
 ]
 
@@ -117,14 +117,14 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
 
           {products.length === 0 && !q && filter ? (
             <div style={{ textAlign: 'center', padding: '80px 0' }}>
-              <div style={{ fontSize: 72, marginBottom: 18 }}>{filter === 'sale' ? '🏷' : '⭐'}</div>
+              <div className="empty-ico">{filter === 'sale' ? <Tag size={30} /> : <Star size={30} />}</div>
               <h2 className="font-display" style={{ color: 'var(--text)', marginBottom: 12 }}>{filter === 'sale' ? 'Сейчас нет товаров на акции' : 'Пока ничего не отмечено'}</h2>
               <p style={{ color: 'var(--text-sub)', marginBottom: 28 }}>Загляните в полный каталог — там всё, что есть в наличии</p>
               <Link href={buildHref({ category: cat, q })} className="btn-primary">Весь каталог <ArrowRight size={16} /></Link>
             </div>
           ) : products.length === 0 && q ? (
             <div style={{ textAlign: 'center', padding: '80px 0' }}>
-              <div style={{ fontSize: 72, marginBottom: 18 }}>🔍</div>
+              <div className="empty-ico"><SearchX size={30} /></div>
               <h2 className="font-display" style={{ color: 'var(--text)', marginBottom: 12 }}>По запросу «{q}» ничего не нашлось</h2>
               <p style={{ color: 'var(--text-sub)', marginBottom: 28 }}>Попробуйте другое слово{cat ? ' или снимите фильтр по категории' : ''}. А если нужно что-то особенное — напишите нам, свяжем под заказ</p>
               <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -134,7 +134,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
             </div>
           ) : products.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '80px 0' }}>
-              <div style={{ fontSize: 72, marginBottom: 18 }}>🧶</div>
+              <div className="empty-ico"><PackageOpen size={30} /></div>
               <h2 className="font-display" style={{ color: 'var(--text)', marginBottom: 12 }}>Скоро здесь появятся товары</h2>
               <p style={{ color: 'var(--text-sub)', marginBottom: 28 }}>Напишите нам, если хотите что-то заказать</p>
               <OrderModal settings={settings} trigger={<button className="btn-primary">Оставить заявку</button>} />

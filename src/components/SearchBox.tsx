@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Search, X, ArrowRight, Loader2 } from 'lucide-react'
+import { Search, X, ArrowRight, Loader2, SearchX, PackageOpen } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 
 interface Item {
@@ -100,7 +100,7 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
         <div className="srch-body">
           {query.length < 2 ? (
             <div className="srch-empty">
-              <div style={{ fontSize: 40, marginBottom: 10 }}>🧶</div>
+              <div className="empty-ico sm"><PackageOpen size={24} /></div>
               <p>Начните вводить название изделия, цвет или категорию</p>
               <div className="srch-chips">
                 {['шапка', 'свитер', 'плед', 'игрушка', 'носки', 'подарок'].map(w => (
@@ -110,7 +110,7 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
             </div>
           ) : items.length === 0 && !loading ? (
             <div className="srch-empty">
-              <div style={{ fontSize: 40, marginBottom: 10 }}>🔍</div>
+              <div className="empty-ico sm"><SearchX size={24} /></div>
               <p>По запросу «{query}» ничего не нашлось</p>
               <p style={{ fontSize: '.82rem', marginTop: 6 }}>Попробуйте другое слово или посмотрите весь каталог</p>
               <Link href="/catalog" onClick={onClose} className="btn-outline" style={{ marginTop: 16, fontSize: '.85rem' }}>Открыть каталог <ArrowRight size={14} /></Link>

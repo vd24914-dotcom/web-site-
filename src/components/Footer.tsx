@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Phone, Send, MapPin } from 'lucide-react'
 import { SocialLinks } from './SocialLinks'
 import { prisma } from '@/lib/prisma'
 interface Props { settings?: Record<string, string> }
@@ -34,9 +35,9 @@ export async function Footer({ settings = {} }: Props) {
           </div>
           <div>
             <h4 style={{ color: 'var(--text)', marginBottom: 16, fontWeight: 600 }}>Контакты</h4>
-            <p style={{ fontSize: '.875rem', marginBottom: 10, opacity: .85 }}>📱 {settings.contact_phone || '+998 90 000-00-00'}</p>
-            <p style={{ fontSize: '.875rem', marginBottom: 10, opacity: .85 }}>💬 Telegram: {settings.contact_telegram || '@uyutnit'}</p>
-            <p style={{ fontSize: '.875rem', opacity: .85 }}>📍 {settings.contact_address || 'Ташкент, Узбекистан'}</p>
+            <p className="ico-text" style={{ fontSize: '.875rem', marginBottom: 10, opacity: .85 }}><Phone size={15} aria-hidden="true" /> {settings.contact_phone || '+998 90 000-00-00'}</p>
+            <p className="ico-text" style={{ fontSize: '.875rem', marginBottom: 10, opacity: .85 }}><Send size={15} aria-hidden="true" /> Telegram: {settings.contact_telegram || '@uyutnit'}</p>
+            <p className="ico-text" style={{ fontSize: '.875rem', opacity: .85 }}><MapPin size={15} aria-hidden="true" /> {settings.contact_address || 'Ташкент, Узбекистан'}</p>
           </div>
         </div>
       </div>

@@ -1,4 +1,5 @@
 'use client'
+import { Check, CheckCircle2, Hourglass } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 interface Props { at?: string | null; qty?: number | null; mini?: boolean }
@@ -26,12 +27,12 @@ export function RestockCountdown({ at, qty, mini }: Props) {
   // ── Компактный вид (карточки) ──
   if (mini) {
     if (available) {
-      return <span style={{ fontSize: '.78rem', color: '#2e7d45', fontWeight: 700 }}>✓ В наличии{qty != null ? ` (${qty})` : ''}</span>
+      return <span className="ico-text" style={{ fontSize: '.78rem', color: '#2e7d45', fontWeight: 700 }}><Check size={13} aria-hidden="true" /> В наличии{qty != null ? ` (${qty})` : ''}</span>
     }
     const txt = d > 0 ? `${d}д ${String(h).padStart(2, '0')}ч` : `${String(h).padStart(2, '0')}ч ${String(m).padStart(2, '0')}м`
     return (
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: '.72rem', fontWeight: 700, color: 'var(--pink-dark)', background: 'var(--pink-mist)', border: '1px solid var(--border)', padding: '3px 8px', borderRadius: 20 }}>
-        ⏳ Скоро: {txt}
+        <Hourglass size={11} aria-hidden="true" /> Скоро: {txt}
       </span>
     )
   }
@@ -40,7 +41,7 @@ export function RestockCountdown({ at, qty, mini }: Props) {
   if (available) {
     return (
       <div style={{ marginBottom: 22, padding: '13px 16px', background: '#e8f5eb', border: '1px solid #b7e0c2', borderRadius: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
-        <span style={{ fontSize: '1.4rem' }}>✅</span>
+        <span style={{ display: 'inline-flex', color: '#2e7d45' }}><CheckCircle2 size={22} aria-hidden="true" /></span>
         <span style={{ color: '#2e7d45', fontWeight: 700 }}>Снова в наличии{qty != null ? ` — ${qty} шт` : ''}</span>
       </div>
     )
@@ -54,7 +55,7 @@ export function RestockCountdown({ at, qty, mini }: Props) {
   )
   return (
     <div style={{ marginBottom: 22, padding: '13px 16px', background: 'var(--cream-dark)', border: '1px solid var(--border)', borderRadius: 14 }}>
-      <div style={{ fontSize: '.82rem', color: 'var(--text)', fontWeight: 700, marginBottom: 10 }}>⏳ Будет в наличии через:{qty != null ? ` (поступит ${qty} шт)` : ''}</div>
+      <div className="ico-text" style={{ fontSize: '.82rem', color: 'var(--text)', fontWeight: 700, marginBottom: 10 }}><Hourglass size={14} aria-hidden="true" /> Будет в наличии через:{qty != null ? ` (поступит ${qty} шт)` : ''}</div>
       <div style={{ display: 'flex', gap: 8 }}>
         {box(d, 'дней')}{box(h, 'часов')}{box(m, 'минут')}{box(s, 'секунд')}
       </div>

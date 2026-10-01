@@ -33,6 +33,15 @@ async function sendPhoto(chatId: string | undefined, photoUrl: string, caption: 
   if (!r || r.ok === false) await send(chatId, caption)
 }
 
+// Альбом (до 10 фото за раз) с подписью к каждому. Если Telegram отклонил — по одному фото.
+async function sendAlbum(chatId: string | undefined, media: { url: string; caption: string }[]) {
+  for (let i = 0; i < media.length; i += 10) {
+    const chunk = media.slice(i, i + 10)
+    const r = await tg(chatId, 'sendMediaGroup', { media: chunk.map((m) => ({ type: 'photo', media: m.url, caption: m.caption, parse_mode: 'HTML' })) })
+    if (!r || r.ok === false) for (const m of chunk) await sendPhoto(chatId, m.url, m.caption)
+  }
+}
+
 // ── Заявки → один или несколько получателей ──
 // В TELEGRAM_CHAT_ID можно указать несколько ID через запятую: "12345,67890"
 function recipients(): string[] {
@@ -43,6 +52,9 @@ export async function sendTelegram(text: string) {
 }
 export async function sendTelegramPhoto(photoUrl: string, caption: string) {
   for (const id of recipients()) await sendPhoto(id, photoUrl, caption)
+}
+export async function sendTelegramAlbum(media: { url: string; caption: string }[]) {
+  for (const id of recipients()) await sendAlbum(id, media)
 }
 
 // ── Новости → Telegram-канал ──

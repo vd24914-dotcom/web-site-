@@ -1,5 +1,6 @@
 // Страница скидок обновляется чаще остальных, чтобы завершённые акции быстро исчезали из списка
 export const revalidate = 300
+import { Tag } from 'lucide-react'
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
@@ -40,7 +41,7 @@ export default async function SalePage() {
       <main>
         <section className="gradient-flow" style={{ background: 'linear-gradient(150deg, var(--cream) 0%, var(--pink-mist) 50%, var(--pink-light) 100%)', padding: '56px 0 36px' }}>
           <div className="container" style={{ textAlign: 'center' }}>
-            <span className="badge badge-sale" style={{ marginBottom: 14 }}>🏷 Акция</span>
+            <span className="badge badge-sale" style={{ marginBottom: 14 }}><Tag size={13} aria-hidden="true" /> Акция</span>
             <h1 className="font-display" style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', color: 'var(--text)', marginBottom: 10 }}>Скидки</h1>
             <p style={{ color: 'var(--text-sub)' }}>Изделия ручной работы по выгодной цене</p>
           </div>
@@ -50,7 +51,7 @@ export default async function SalePage() {
           <div className="container">
             {(products as any[]).length === 0 ? (
               <div style={{ textAlign: 'center', padding: 60 }}>
-                <div style={{ fontSize: 48, marginBottom: 12 }}>🏷</div>
+                <div className="empty-ico"><Tag size={30} /></div>
                 <p style={{ color: 'var(--text-sub)', marginBottom: 16 }}>Сейчас нет товаров со скидкой. Загляните позже!</p>
                 <Link href="/catalog" className="btn-primary">Перейти в каталог</Link>
               </div>

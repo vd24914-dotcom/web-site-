@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { sendTelegram, sendTelegramPhoto } from '@/lib/telegram'
+import { sendTelegram, sendTelegramPhoto, sendTelegramAlbum } from '@/lib/telegram'
 import { parseJSON } from '@/lib/utils'
 
 // Экранируем спецсимволы, чтобы Telegram (parse_mode HTML) не падал
@@ -88,7 +88,16 @@ export async function POST(req: NextRequest) {
     if (imgs[0] && typeof imgs[0] === 'string' && imgs[0].startsWith('http')) photo = imgs[0]
   }
 
-  if (photo) await sendTelegramPhoto(photo, caption)
+  if (cart.length) {
+    // Заказ из корзины: сначала полный текст заявки, затем альбом — фото каждой позиции с подписью
+    await sendTelegram(caption)
+    const media = cart.filter((i) => i.image && i.image.startsWith('http')).map((i, n) => ({
+      url: i.image,
+      caption: `${n + 1}. <b>${esc(i.name)}</b> × ${i.qty} — ${esc(fmt0(i.price * i.qty))}${i.color || i.size ? ' (' + esc([i.color && 'цвет: ' + i.color, i.size && 'размер: ' + i.size].filter(Boolean).join(', ')) + ')' : ''}`,
+    }))
+    if (media.length === 1) await sendTelegramPhoto(media[0].url, media[0].caption)
+    else if (media.length > 1) await sendTelegramAlbum(media)
+  } else if (photo) await sendTelegramPhoto(photo, caption)
   else await sendTelegram(caption)
 
   return NextResponse.json({ success: true })

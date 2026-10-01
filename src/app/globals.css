@@ -206,7 +206,7 @@ h1,h2,h3,.font-display { font-family:'Gotham Pro',-apple-system,Segoe UI,sans-se
 /* Контрастные плашки на фото товара */
 .hit-badge .badge, .sale-badge .badge { font-size:.82rem; padding:.34rem .85rem; box-shadow:0 1px 2px rgba(0,0,0,.12); }
 .badge-hit  { background:linear-gradient(135deg,#E0527C,#B28FCE); color:#fff; }
-.badge-sale { background:linear-gradient(135deg,#ff5a5f,#e0382e); color:#fff; }
+.badge-sale { background:linear-gradient(135deg,#E0527C,#C93D68); color:#fff; }
 .badge-rose  { background:var(--pink-light); color:var(--pink-deep); }
 .badge-green { background:#e8f5eb; color:#2e7d45; }
 .badge-gray  { background:var(--cream-dark); color:var(--text-sub); }
@@ -554,3 +554,13 @@ body:has(> .site-veil) footer { background: color-mix(in srgb, var(--white) 72%,
 
 /* Узкие телефоны: шапка без переключателя темы, логотип компактнее */
 @media (max-width:480px) { .hide-xs { display:none !important; } header a[href="/"] > img { max-width:112px !important; height:34px !important; } }
+
+/* ── SVG-иконки вместо эмодзи ── */
+.ico-text { display:inline-flex; align-items:center; gap:6px; }
+p.ico-text, div.ico-text { display:flex; }
+.badge svg { flex-shrink:0; }
+.empty-ico { width:76px; height:76px; margin:0 auto 18px; border-radius:50%; background:var(--pink-light); color:var(--pink-deep); display:flex; align-items:center; justify-content:center; }
+.empty-ico.sm { width:56px; height:56px; margin-bottom:10px; }
+[data-theme="dark"] .empty-ico { background:var(--pink-light); color:var(--pink); }
+.bene-ico { width:58px; height:58px; margin:0 auto 16px; border-radius:18px; background:linear-gradient(135deg,var(--pink-light),var(--lavender-light)); color:var(--pink-deep); display:flex !important; align-items:center; justify-content:center; }
+[data-theme="dark"] .bene-ico { color:var(--pink); }

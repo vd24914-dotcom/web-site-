@@ -230,7 +230,7 @@ export default async function HomePage() {
         </section>
 
         {/* CTA */}
-        <section id="contact" className="gradient-flow" style={{ background: 'linear-gradient(135deg,#FA87A1 0%,#e06080 50%,#c84060 100%)', padding: '88px 0' }}>
+        <section id="contact" data-keep-bg className="gradient-flow" style={{ background: 'linear-gradient(135deg,#FA87A1 0%,#e06080 50%,#c84060 100%)', padding: '88px 0' }}>
           <div className="container" style={{ textAlign: 'center' }}>
             <ScrollReveal>
               <h2 className="font-display" style={{ fontSize: '2.3rem', color: 'var(--white)', marginBottom: 16 }}>{s('cta_title')}</h2>

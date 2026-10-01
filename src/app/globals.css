@@ -42,7 +42,7 @@
 
 /* Никогда не допускаем горизонтальную прокрутку и вылет картинок за экран */
 html, body { max-width: 100%; overflow-x: hidden; }
-@layer base { img, svg, video { max-width: 100%; } }
+@layer base { @layer base { img, svg, video { max-width: 100%; } } }
 
 :root {
   --pink:        #FA87A1;
@@ -59,6 +59,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
   --white:       #ffffff;
   --header-bg:   rgba(255,255,255,.98);
   --header-bg-scrolled: rgba(255,243,230,.96);
+  --contour-color: rgba(58,21,40,.11);
 
   /* shadcn */
   --background: #ffffff;
@@ -98,6 +99,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
   --white:       #211722;
   --header-bg:   rgba(33,23,34,.92);
   --header-bg-scrolled: rgba(33,23,34,.96);
+  --contour-color: rgba(255,255,255,.09);
 
   /* shadcn */
   --background: #211722;
@@ -375,3 +377,14 @@ html.theme-transition *::after {
 }
 @keyframes orderSlide { from { transform:translateY(100%) } to { transform:none } }
 
+
+/* ── Фон сайта: «Floral Veil» + контурные линии (см. components/SiteBackground) ── */
+.site-veil { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+.site-veil-layer { position: absolute; inset: 0; }
+.site-veil-lines { color: var(--contour-color); }
+.veil-dim { background: transparent; transition: background .45s ease; }
+[data-theme="dark"] .veil-dim { background: rgba(22,16,22,.86); }
+/* Пока фон на странице, тело и секции прозрачные — градиент виден везде */
+body:has(> .site-veil) { background: transparent; }
+body:has(> .site-veil) main > section:not([data-keep-bg]) { background: transparent !important; }
+body:has(> .site-veil) footer { background: color-mix(in srgb, var(--white) 72%, transparent) !important; backdrop-filter: blur(8px); }

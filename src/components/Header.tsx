@@ -66,21 +66,21 @@ export function Header({ settings = {} }: Props) {
       <div className="container" style={{ height: 68, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
           {logo
-            ? <img src={logo} alt={siteName} style={{ height: showText ? 40 : 56, width: 'auto', maxWidth: showText ? 150 : 230, objectFit: 'contain', borderRadius: 8, transition: 'height .2s' }} />
+            ? <img src={logo} alt={siteName} className="site-logo" style={{ height: showText ? 40 : 56, width: 'auto', maxWidth: showText ? 150 : 230, objectFit: 'contain', borderRadius: 8, transition: 'height .2s' }} />
             : <span className="icon-bounce" style={{ fontSize: showText ? 28 : 40, cursor: 'pointer' }}>{logoEmoji}</span>
           }
           {showText && <span className="font-display" style={{ fontSize: '1.35rem', color: 'var(--text)', fontWeight: 700 }}>{siteName}</span>}
         </Link>
 
-        <nav style={{ display: 'flex', gap: 32, alignItems: 'center' }} className="hide-mobile">
+        <nav className="hide-mobile site-nav">
           {links.map(l => (
             <Link key={l.href} href={l.href} className="nav-link">{l.label}</Link>
           ))}
         </nav>
 
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          <span className="hide-mobile" style={{ display: 'inline-flex' }}><SearchBox /></span>
-          <span className="show-mobile"><SearchBox compact /></span>
+          <span className="hide-mobile search-full" style={{ display: 'inline-flex' }}><SearchBox /></span>
+          <span className="search-compact"><SearchBox compact /></span>
           <span className="hide-xs" style={{ display: 'inline-flex' }}><ThemeToggle /></span>
           <CartButton />
           <Link href="/catalog" className="btn-primary hide-mobile" style={{ padding: '.55rem 1.25rem', fontSize: '.85rem' }}>Заказать</Link>

@@ -58,16 +58,16 @@ export function CommerceHero({
 
         <div className="mt-6 rounded-[28px] relative bg-white/45 dark:bg-[#211722]/55 backdrop-blur-xl border border-white/60 dark:border-white/10 shadow-[0_24px_70px_rgba(120,50,90,.10)] overflow-hidden">
           <header className="flex items-center">
-            <div className="w-full md:w-2/3 lg:w-[63%] bg-white/85 dark:bg-[#211722]/85 backdrop-blur-md p-4 rounded-br-[24px] flex items-center gap-3">
+            <div className="w-full md:w-2/3 lg:w-auto lg:max-w-[78%] bg-white/85 dark:bg-[#211722]/85 backdrop-blur-md p-4 lg:pr-5 rounded-br-[24px] flex items-center gap-3 lg:gap-5">
               <Brand brand={brand} logo={logo} logoEmoji={logoEmoji} showBrandText={showBrandText} />
 
-              <nav className="hidden lg:flex items-center justify-between gap-1 w-full pr-1">
+              <nav className="hidden lg:flex items-center gap-1 xl:gap-2 shrink-0">
                 {navigation.map((item) => (
                   <Button
                     key={item.name + item.href}
                     asChild
                     variant="link"
-                    className="cursor-pointer relative group text-foreground hover:text-primary transition-colors"
+                    className="cursor-pointer relative group text-foreground hover:text-primary transition-colors whitespace-nowrap px-2 xl:px-3"
                   >
                     <Link href={item.href}>{item.name}</Link>
                   </Button>
@@ -123,7 +123,7 @@ export function CommerceHero({
               </Sheet>
             </div>
 
-            <div className="hidden md:flex w-1/2 justify-end items-center pr-4 gap-4 ml-auto">
+            <div className="hidden md:flex justify-end items-center pr-4 gap-4 ml-auto shrink-0">
               <Button
                 asChild
                 variant="secondary"

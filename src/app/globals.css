@@ -564,3 +564,16 @@ p.ico-text, div.ico-text { display:flex; }
 [data-theme="dark"] .empty-ico { background:var(--pink-light); color:var(--pink); }
 .bene-ico { width:58px; height:58px; margin:0 auto 16px; border-radius:18px; background:linear-gradient(135deg,var(--pink-light),var(--lavender-light)); color:var(--pink-deep); display:flex !important; align-items:center; justify-content:center; }
 [data-theme="dark"] .bene-ico { color:var(--pink); }
+
+/* ── Шапка внутренних страниц: ничего не вылезает на планшете и ноутбуке ── */
+.site-nav { display:flex; gap:32px; align-items:center; }
+.site-nav .nav-link { white-space:nowrap; }
+.search-compact { display:none; }
+@media (max-width:1180px) {
+  .site-nav { gap:18px; }
+  .search-full { display:none !important; }
+  .search-compact { display:inline-flex; }
+  .site-logo { max-width:150px !important; height:40px !important; }
+}
+@media (max-width:900px) { .site-nav { gap:14px; } .site-nav .nav-link { font-size:.85rem; } }
+@media (max-width:768px) { .search-compact { display:inline-flex; } }

@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { Save, RefreshCw, Eye, Plus, Trash2, ArrowUp, ArrowDown, ExternalLink } from 'lucide-react'
 import { ImageUploader } from '@/components/ImageUploader'
+import { parseHeroNav, serializeHeroNav, type HeroNavItem } from '@/lib/hero'
 import { parseReelId, parseReels, serializeReels, reelUrl, reelEmbedUrl, type Reel } from '@/lib/reels'
 
 const TEXT_SECTIONS = [
@@ -10,29 +11,6 @@ const TEXT_SECTIONS = [
     fields: [
       { key: 'site_name', label: 'Название сайта', placeholder: 'Fimush.kin' },
       { key: 'footer_text', label: 'Текст в футере', placeholder: 'Вязаные изделия с любовью...' },
-    ]
-  },
-  {
-    label: '🦸 Главный баннер',
-    fields: [
-      { key: 'hero_badge', label: 'Значок над заголовком', placeholder: 'Ручная работа с душой' },
-      { key: 'hero_title', label: '✨ Главный заголовок (2-я строка — анимированная)', placeholder: 'Тепло, которое чувствуется\nв каждой петельке', textarea: true, note: 'Пишите заголовок в ДВЕ строки — нажмите Enter для переноса. Первая строка обычная, а вторая (после переноса) будет печататься с анимацией, розовым курсивом — как «в каждой петельке».' },
-      { key: 'hero_subtitle', label: 'Подзаголовок', placeholder: 'Описание...', textarea: true },
-      { key: 'hero_btn', label: 'Кнопка 1', placeholder: 'Смотреть каталог' },
-      { key: 'hero_btn2', label: 'Кнопка 2', placeholder: 'О мастере' },
-      { key: 'hero_badge2', label: 'Карточка — заголовок', placeholder: 'Новинка!' },
-      { key: 'hero_badge2_sub', label: 'Карточка — подпись', placeholder: 'Зимняя коллекция' },
-    ]
-  },
-  {
-    label: '📊 Статистика',
-    fields: [
-      { key: 'stats1', label: 'Число 1', placeholder: '200+' },
-      { key: 'stats1_label', label: 'Подпись 1', placeholder: 'Изделий продано' },
-      { key: 'stats2', label: 'Число 2', placeholder: '10+' },
-      { key: 'stats2_label', label: 'Подпись 2', placeholder: 'Лет опыта' },
-      { key: 'stats3', label: 'Число 3', placeholder: '100%' },
-      { key: 'stats3_label', label: 'Подпись 3', placeholder: 'Ручная работа' },
     ]
   },
   {
@@ -93,10 +71,20 @@ export default function AppearancePage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [tab, setTab] = useState<'images' | 'text' | 'reels'>('images')
+  const [tab, setTab] = useState<'hero' | 'images' | 'text' | 'reels'>('hero')
+  const [cats, setCats] = useState<any[]>([])
   const [activeSection, setActiveSection] = useState(0)
   const [reelInput, setReelInput] = useState('')
   const [reelError, setReelError] = useState('')
+
+  // Первый блок главной: меню и выбранные категории
+  const heroNav = parseHeroNav(values.hero_nav)
+  const setHeroNav = (list: HeroNavItem[]) => setValues({ ...values, hero_nav: serializeHeroNav(list) })
+  const heroSlugs = (values.hero_categories || '').split(',').map(x => x.trim()).filter(Boolean)
+  const toggleHeroCat = (slug: string) => {
+    const next = heroSlugs.includes(slug) ? heroSlugs.filter(x => x !== slug) : [...heroSlugs, slug]
+    setValues({ ...values, hero_categories: next.join(',') })
+  }
 
   const reels = parseReels(values.reels)
   const setReels = (list: Reel[]) => setValues({ ...values, reels: serializeReels(list) })
@@ -118,6 +106,7 @@ export default function AppearancePage() {
     fetch('/api/admin/settings').then(r => r.json()).then(d => {
       setValues(d.settings || {}); setLoading(false)
     })
+    fetch('/api/admin/categories').then(r => r.json()).then(d => setCats(d.categories || [])).catch(() => {})
   }, [])
 
   const save = async () => {
@@ -155,7 +144,7 @@ export default function AppearancePage() {
 
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
-        {[['images', '🖼️ Картинки и логотип'], ['text', '✏️ Тексты и контент'], ['reels', '🎬 Рилсы']].map(([key, label]) => (
+        {[['hero', '🦸 Первый блок'], ['images', '🖼️ Картинки и логотип'], ['text', '✏️ Тексты и контент'], ['reels', '🎬 Рилсы']].map(([key, label]) => (
           <button key={key} onClick={() => setTab(key as any)}
             style={{ padding: '10px 20px', borderRadius: 12, border: '1px solid', cursor: 'pointer', fontSize: '.9rem', fontWeight: 600, transition: 'all .15s',
               background: tab === key ? 'var(--pink)' : 'white',
@@ -166,6 +155,84 @@ export default function AppearancePage() {
           </button>
         ))}
       </div>
+
+      {/* HERO TAB — первый блок главной */}
+      {tab === 'hero' && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 20, alignItems: 'start' }}>
+
+          <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid var(--border)' }}>
+            <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Заголовок и кнопка</h3>
+            <p style={{ color: 'var(--text-sub)', fontSize: '.8rem', marginBottom: 18, lineHeight: 1.5 }}>Большой заголовок по центру первого блока и кнопка справа в шапке.</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ background: 'var(--pink-mist)', border: '1px solid var(--pink-light)', borderRadius: 12, padding: 14 }}>
+                <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 8, fontSize: '.875rem' }}>Заголовок (две строки)</label>
+                <textarea className="input" rows={3} placeholder={'Тепло, которое чувствуется\nв каждой петельке'} value={values.hero_title || ''} onChange={e => setValues({ ...values, hero_title: e.target.value })} />
+                <p style={{ color: 'var(--pink-dark)', fontSize: '.78rem', marginTop: 8, lineHeight: 1.5 }}>💡 Нажмите Enter для переноса: первая строка будет розовым градиентом, вторая — обычным тёмным цветом.</p>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 8, fontSize: '.875rem' }}>Подзаголовок</label>
+                <textarea className="input" rows={3} placeholder="Короткое описание под заголовком" value={values.hero_subtitle || ''} onChange={e => setValues({ ...values, hero_subtitle: e.target.value })} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 8, fontSize: '.875rem' }}>Кнопка — текст</label>
+                  <input className="input" placeholder="Заказать" value={values.hero_cta || ''} onChange={e => setValues({ ...values, hero_cta: e.target.value })} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 8, fontSize: '.875rem' }}>Кнопка — ссылка</label>
+                  <input className="input" placeholder="/catalog" value={values.hero_cta_href || ''} onChange={e => setValues({ ...values, hero_cta_href: e.target.value })} />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid var(--border)' }}>
+            <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Меню в шапке</h3>
+            <p style={{ color: 'var(--text-sub)', fontSize: '.8rem', marginBottom: 16, lineHeight: 1.5 }}>Пункты меню первого блока. Ссылка — страница (/catalog, /sale, /news) или якорь на главной (/#about, /#contact).</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {heroNav.map((item, i) => (
+                <div key={i} style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr) auto', gap: 8, alignItems: 'center' }}>
+                  <input className="input" placeholder="Название" value={item.name} onChange={e => setHeroNav(heroNav.map((x, j) => j === i ? { ...x, name: e.target.value } : x))} />
+                  <input className="input" placeholder="/catalog" value={item.href} onChange={e => setHeroNav(heroNav.map((x, j) => j === i ? { ...x, href: e.target.value } : x))} />
+                  <div style={{ display: 'flex', gap: 2 }}>
+                    <button type="button" onClick={() => { if (i === 0) return; const n = [...heroNav]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; setHeroNav(n) }} disabled={i === 0} title="Выше" style={{ background: 'none', border: 'none', cursor: i === 0 ? 'default' : 'pointer', color: 'var(--text-sub)', opacity: i === 0 ? .3 : 1, padding: 4, display: 'flex' }}><ArrowUp size={16} /></button>
+                    <button type="button" onClick={() => { if (i === heroNav.length - 1) return; const n = [...heroNav]; [n[i + 1], n[i]] = [n[i], n[i + 1]]; setHeroNav(n) }} disabled={i === heroNav.length - 1} title="Ниже" style={{ background: 'none', border: 'none', cursor: i === heroNav.length - 1 ? 'default' : 'pointer', color: 'var(--text-sub)', opacity: i === heroNav.length - 1 ? .3 : 1, padding: 4, display: 'flex' }}><ArrowDown size={16} /></button>
+                    <button type="button" onClick={() => setHeroNav(heroNav.filter((_, j) => j !== i))} title="Удалить" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e', padding: 4, display: 'flex' }}><Trash2 size={16} /></button>
+                  </div>
+                </div>
+              ))}
+              <div>
+                <button type="button" onClick={() => setHeroNav([...heroNav, { name: '', href: '/' }])} className="btn-outline" style={{ padding: '.55rem 1rem', fontSize: '.85rem', display: 'inline-flex', alignItems: 'center', gap: 6 }}><Plus size={15} /> Добавить пункт</button>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ gridColumn: '1 / -1', background: 'white', borderRadius: 16, padding: 24, border: '1px solid var(--border)' }}>
+            <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Карточки категорий</h3>
+            <p style={{ color: 'var(--text-sub)', fontSize: '.8rem', marginBottom: 16, lineHeight: 1.5 }}>Отметьте категории, которые показываются большими карточками под заголовком (лучше 4, максимум 8). Порядок — в каком отмечали. Если ничего не отмечено — первые четыре по порядку. Картинки и эмодзи карточек берутся из раздела «Категории».</p>
+            {cats.length === 0 ? (
+              <p style={{ color: 'var(--text-sub)', fontSize: '.85rem' }}>Категорий пока нет — добавьте их в разделе «Категории».</p>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 10 }}>
+                {cats.map((c: any) => {
+                  const idx = heroSlugs.indexOf(c.slug)
+                  const on = idx >= 0
+                  return (
+                    <label key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, border: '1px solid', cursor: 'pointer', background: on ? 'var(--pink-mist)' : 'white', borderColor: on ? 'var(--pink)' : 'var(--border)' }}>
+                      <input type="checkbox" checked={on} onChange={() => toggleHeroCat(c.slug)} style={{ width: 16, height: 16 }} />
+                      {c.icon ? <img src={c.icon} alt="" style={{ width: 32, height: 32, objectFit: 'contain' }} /> : <span style={{ fontSize: 24, width: 32, textAlign: 'center' }}>{c.emoji}</span>}
+                      <span style={{ flex: 1, fontSize: '.875rem', fontWeight: 500, color: 'var(--text)' }}>{c.name}</span>
+                      {on && <span style={{ width: 22, height: 22, borderRadius: 7, background: 'var(--pink)', color: 'white', fontSize: '.7rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{idx + 1}</span>}
+                    </label>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
+          <div style={{ gridColumn: '1 / -1' }}><SaveBtn /></div>
+        </div>
+      )}
 
       {/* REELS TAB */}
       {tab === 'reels' && (
@@ -272,21 +339,6 @@ export default function AppearancePage() {
                 Показывать название рядом с логотипом
               </label>
               <p style={{ color: 'var(--text-sub)', fontSize: '.75rem', marginTop: 4 }}>Отключите, если у вас логотип-картинка (PNG) и текст не нужен.</p>
-            </div>
-          </div>
-
-          {/* Hero image */}
-          <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid var(--border)' }}>
-            <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Картинка на главном баннере</h3>
-            <p style={{ color: 'var(--text-sub)', fontSize: '.8rem', marginBottom: 16 }}>Большая картинка справа на главной странице</p>
-            <ImageUploader
-              value={values.hero_image}
-              onChange={url => setValues({ ...values, hero_image: url })}
-              hint="Рекомендуется 600×600px или квадратная"
-            />
-            <div style={{ marginTop: 12 }}>
-              <label style={{ display: 'block', fontWeight: 500, color: 'var(--text)', marginBottom: 6, fontSize: '.875rem' }}>Или эмодзи иконка</label>
-              <input className="input" placeholder="🧶" value={values.hero_icon || ''} onChange={e => setValues({ ...values, hero_icon: e.target.value })} style={{ fontSize: '1.5rem', textAlign: 'center' }} />
             </div>
           </div>
 

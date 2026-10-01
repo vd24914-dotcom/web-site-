@@ -3,12 +3,10 @@ import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { parseJSON, formatPrice } from '@/lib/utils'
 import { TEXTS } from '@/lib/texts'
-import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { OrderModal } from '@/components/OrderModal'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { ProductCard } from '@/components/ProductCard'
-import { Typewriter } from '@/components/Typewriter'
 import { SocialLinks } from '@/components/SocialLinks'
 import { PromoBanner } from '@/components/PromoBanner'
 import { isSaleActive } from '@/lib/sale'
@@ -16,6 +14,8 @@ import { ArrowRight } from 'lucide-react'
 import { InstagramIcon } from '@/components/SocialLinks'
 import { ReelCard } from '@/components/ReelCard'
 import { parseReels } from '@/lib/reels'
+import { CommerceHero } from '@/components/ui/commerce-hero'
+import { parseHeroNav, pickHeroCategories } from '@/lib/hero'
 
 // Кэшируем страницу: посетители получают её мгновенно (без обращения к базе),
 // а при изменении товаров/настроек в админке кэш обновляется автоматически.
@@ -57,68 +57,30 @@ export default async function HomePage() {
   const reels = settings.reels_enabled === '1' ? parseReels(settings.reels) : []
   const igRaw = (settings.social_instagram || '').trim()
   const igLink = igRaw ? (igRaw.startsWith('http') ? igRaw : `https://instagram.com/${igRaw.replace(/^@/, '')}`) : ''
+  // Первый блок: заголовок в две строки (первая — градиентом), карточки категорий по выбору из админки
+  const heroTitle = s('hero_title').split('\n').map((l) => l.trim()).filter(Boolean)
+  const heroCategories = pickHeroCategories(categories as any[], settings.hero_categories).map((c: any) => ({
+    title: c.name, href: `/catalog?category=${c.slug}`, image: c.icon || undefined, emoji: c.emoji,
+  }))
 
   return (
     <>
-      <Header settings={settings} />
       <PromoBanner end={settings.sale_end} title={settings.sale_title} />
       <main>
 
-        {/* HERO */}
-        <section className="gradient-flow" style={{ background: 'linear-gradient(150deg, var(--cream) 0%, var(--pink-mist) 50%, var(--pink-light) 100%)', padding: '90px 0 110px', overflow: 'hidden' }}>
-          <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
-            <div>
-              <ScrollReveal delay={80}>
-                <h1 className="font-display" style={{ fontSize: 'clamp(1.8rem,4.2vw,2.8rem)', lineHeight: 1.18, color: 'var(--text)', marginBottom: 22 }}>
-                  {s('hero_title').split('\n').map((l, i) => (
-                    <span key={i}>
-                      {i === 1
-                        ? <Typewriter text={l} style={{ color: 'var(--pink)', fontStyle: 'italic', fontSize: '.82em' }} />
-                        : l}
-                      <br />
-                    </span>
-                  ))}
-                </h1>
-              </ScrollReveal>
-              <ScrollReveal delay={160}>
-                <p style={{ fontSize: '1.05rem', color: 'var(--text-sub)', lineHeight: 1.75, marginBottom: 38, maxWidth: 430 }}>{s('hero_subtitle')}</p>
-              </ScrollReveal>
-              <ScrollReveal delay={220}>
-                <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 44 }}>
-                  <Link href="/catalog" className="btn-primary">{s('hero_btn')} <ArrowRight size={16} /></Link>
-                  <a href="#about" className="btn-outline">{s('hero_btn2')}</a>
-                </div>
-              </ScrollReveal>
-              <ScrollReveal delay={280}>
-                <div style={{ display: 'flex', gap: 36 }}>
-                  {[[s('stats1'),s('stats1_label')],[s('stats2'),s('stats2_label')],[s('stats3'),s('stats3_label')]].map(([v,l])=>(
-                    <div key={String(l)}>
-                      <div className="font-display" style={{ fontSize: '1.7rem', color: 'var(--pink)', fontWeight: 700 }}>{v}</div>
-                      <div style={{ fontSize: '.75rem', color: 'var(--text-sub)', marginTop: 2 }}>{l}</div>
-                    </div>
-                  ))}
-                </div>
-              </ScrollReveal>
-            </div>
-
-            <ScrollReveal direction="right" style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
-              {settings.hero_image ? (
-                <div className="animate-float hero-art" style={{ width: 450, height: 490, borderRadius: '60% 40% 50% 50% / 50% 50% 40% 60%', overflow: 'hidden', boxShadow: '0 24px 64px rgba(250,135,161,.28)' }}>
-                  <img src={settings.hero_image} alt={s('site_name')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-              ) : (
-                <div className="animate-float hero-art gradient-flow" style={{ width: 420, height: 460, background: 'linear-gradient(135deg, var(--pink-light) 0%, var(--cream-dark) 50%, var(--pink-light) 100%)', borderRadius: '60% 40% 50% 50% / 50% 50% 40% 60%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 140, boxShadow: '0 24px 64px rgba(250,135,161,.25)' }}>
-                  {s('hero_icon')}
-                </div>
-              )}
-              <div className="hero-badge-float" style={{ position: 'absolute', top: 24, right: 0, background: 'var(--white)', borderRadius: 16, padding: '12px 18px', boxShadow: '0 8px 28px rgba(250,135,161,.18)', border: '1px solid var(--border)', animation: 'float 3.5s ease-in-out infinite' }}>
-                <div style={{ fontWeight: 700, color: 'var(--text)', fontSize: '.85rem' }}>{s('hero_badge2')}</div>
-                <div style={{ color: 'var(--text-sub)', fontSize: '.75rem', marginTop: 2 }}>{s('hero_badge2_sub')}</div>
-              </div>
-            </ScrollReveal>
-          </div>
-          <style>{`@media(max-width:768px){section div[style*="grid-template-columns: 1fr 1fr"]{grid-template-columns:1fr!important}}`}</style>
-        </section>
+        {/* ПЕРВЫЙ БЛОК: шапка + заголовок + карточки категорий (админка → Дизайн и контент → Первый блок) */}
+        <CommerceHero
+          brand={s('site_name')}
+          logo={settings.logo_image || undefined}
+          logoEmoji={settings.logo_emoji || '🧶'}
+          showBrandText={settings.logo_show_text !== '0'}
+          navigation={parseHeroNav(settings.hero_nav)}
+          title1={heroTitle[0] || ''}
+          title2={heroTitle.slice(1).join(' ') || undefined}
+          subtitle={s('hero_subtitle')}
+          cta={{ label: s('hero_cta'), href: s('hero_cta_href') || '/catalog' }}
+          categories={heroCategories}
+        />
 
         {/* BENEFITS */}
         <section style={{ padding: '72px 0', background: 'var(--white)' }}>

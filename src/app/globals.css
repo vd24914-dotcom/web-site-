@@ -1,4 +1,33 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+/* ── Токены shadcn/ui (компоненты в src/components/ui) ──
+   Привязаны к палитре сайта ниже; в тёмной теме переопределяются. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
 
 /* ── Gotham Pro ── */
 @font-face { font-family:'Gotham Pro'; src:url('/fonts/gothampro_light.ttf') format('truetype');  font-weight:300; font-style:normal; font-display:swap; }
@@ -29,6 +58,27 @@ img, svg, video { max-width: 100%; }
   --white:       #ffffff;
   --header-bg:   rgba(255,255,255,.98);
   --header-bg-scrolled: rgba(255,243,230,.96);
+
+  /* shadcn */
+  --background: #ffffff;
+  --foreground: #3a1528;
+  --card: #ffffff;
+  --card-foreground: #3a1528;
+  --popover: #ffffff;
+  --popover-foreground: #3a1528;
+  --primary: #FA87A1;
+  --primary-foreground: #ffffff;
+  --secondary: #FFF3E6;
+  --secondary-foreground: #3a1528;
+  --muted: #FFE5CC;
+  --muted-foreground: #8a5068;
+  --accent: #ffd6e3;
+  --accent-foreground: #3a1528;
+  --destructive: #e53e3e;
+  --destructive-foreground: #ffffff;
+  --input: #f5c8d8;
+  --ring: #FA87A1;
+  --radius: 0.75rem;
 }
 
 /* ── Тёмная тема ── */
@@ -47,6 +97,24 @@ img, svg, video { max-width: 100%; }
   --white:       #211722;
   --header-bg:   rgba(33,23,34,.92);
   --header-bg-scrolled: rgba(33,23,34,.96);
+
+  /* shadcn */
+  --background: #211722;
+  --foreground: #f3e7ee;
+  --card: #241823;
+  --card-foreground: #f3e7ee;
+  --popover: #241823;
+  --popover-foreground: #f3e7ee;
+  --primary: #ff95ad;
+  --primary-foreground: #211722;
+  --secondary: #2e1d29;
+  --secondary-foreground: #f3e7ee;
+  --muted: #241823;
+  --muted-foreground: #c5a6b6;
+  --accent: #4a2733;
+  --accent-foreground: #f3e7ee;
+  --input: #3a2531;
+  --ring: #ff95ad;
 }
 
 /* Принудительно светлая тема (для админки) */

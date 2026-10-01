@@ -16,6 +16,8 @@ export const TEXTS = {
   hero_icon: '🧶',
   hero_badge2: 'Новинка!',
   hero_badge2_sub: 'Зимняя коллекция',
+  hero_cta: 'Заказать',
+  hero_cta_href: '/catalog',
 
   // Статистика
   stats1: '200+', stats1_label: 'Изделий продано',

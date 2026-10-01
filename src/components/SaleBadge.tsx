@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { Tag } from 'lucide-react'
 import { isSaleActive, saleEndTime } from '@/lib/sale'
 import { SaleCountdown } from '@/components/SaleCountdown'
 
@@ -10,7 +11,7 @@ interface Props {
   saleEnd?: string | null
 }
 
-/** Бейдж «Скидка» + мини-таймер. Исчезает сам в момент окончания акции. */
+/** Пилюля скидки «−N%» (или «Скидка», если процент не посчитать) + мини-таймер. Исчезает сама в момент окончания акции. */
 export function SaleBadge({ price, onSale, salePrice, saleEnd }: Props) {
   const p = { price, onSale, salePrice, saleEnd }
   const [active, setActive] = useState(() => isSaleActive(p))
@@ -25,9 +26,10 @@ export function SaleBadge({ price, onSale, salePrice, saleEnd }: Props) {
   }, [price, onSale, salePrice, saleEnd])
 
   if (!active) return null
+  const pct = price > 0 && salePrice != null && salePrice < price ? Math.round((1 - salePrice / price) * 100) : 0
   return (
     <>
-      <span className="badge badge-sale">🏷 Скидка</span>
+      <span className="pill pill-sale"><Tag size={12} aria-hidden="true" /> {pct > 0 ? `−${pct}%` : 'Скидка'}</span>
       {saleEnd && <SaleCountdown end={saleEnd} mini />}
     </>
   )

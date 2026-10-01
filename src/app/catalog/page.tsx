@@ -7,9 +7,7 @@ import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { OrderModal } from '@/components/OrderModal'
 import { ScrollReveal } from '@/components/ScrollReveal'
-import { PriceTag } from '@/components/PriceTag'
-import { SaleBadge } from '@/components/SaleBadge'
-import { RestockCountdown } from '@/components/RestockCountdown'
+import { ProductCard } from '@/components/ProductCard'
 import { CatalogSearch } from '@/components/CatalogSearch'
 import { normalizeQuery, searchProducts } from '@/lib/search'
 import { isSaleActive } from '@/lib/sale'
@@ -144,35 +142,9 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(278px,1fr))', gap: 24 }}>
               {(products as any[]).map((p, i) => {
-                const imgs = parseJSON(p.images || '[]'); const img = imgs[0]
                 return (
                   <ScrollReveal key={p.id} delay={(i % 3) * 80}>
-                    <Link href={`/product/${p.slug}`} style={{ textDecoration: 'none' }}>
-                      <div className="card">
-                        <div style={{ aspectRatio: '1', background: img ? 'transparent' : 'linear-gradient(135deg,var(--pink-light),var(--cream-dark))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 72, overflow: 'hidden', position: 'relative' }}>
-                          {img
-                            ? <img src={img} alt={p.name} loading="lazy" decoding="async" className="img-zoom" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            : p.category?.emoji || '🧶'
-                          }
-                        </div>
-                        <div style={{ padding: '16px 18px 20px' }}>
-                          {(p.featured || (p.onSale && p.salePrice) || p.restockAt) && (
-                            <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
-                              {p.featured && <span className="badge badge-hit">✨ Новинка</span>}
-                              <SaleBadge price={p.price} onSale={p.onSale} salePrice={p.salePrice} saleEnd={p.saleEnd} />
-                              {p.restockAt && <RestockCountdown at={p.restockAt} qty={p.restockQty} mini />}
-                            </div>
-                          )}
-                          <div style={{ fontSize: '.75rem', color: 'var(--text-sub)', marginBottom: 5 }}>{p.category?.name}</div>
-                          <h3 style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8, fontSize: '1rem', lineHeight: 1.4 }}>{p.name}</h3>
-                          <p style={{ fontSize: '.84rem', color: 'var(--text-sub)', marginBottom: 14, lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.description}</p>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <PriceTag price={p.price} onSale={p.onSale} salePrice={p.salePrice} saleEnd={p.saleEnd} />
-                            <span style={{ fontSize: '.78rem', padding: '.25rem .7rem', background: 'var(--pink-light)', color: 'var(--pink-deep)', borderRadius: 20, fontWeight: 600 }}>Заказать</span>
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
+                    <ProductCard p={p} showDescription />
                   </ScrollReveal>
                 )
               })}

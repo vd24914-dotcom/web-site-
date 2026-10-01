@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@custom-variant dark ([data-theme="dark"] &);
 
 /* ── Токены shadcn/ui (компоненты в src/components/ui) ──
    Привязаны к палитре сайта ниже; в тёмной теме переопределяются. */
@@ -45,11 +46,14 @@ html, body { max-width: 100%; overflow-x: hidden; }
 @layer base { @layer base { img, svg, video { max-width: 100%; } } }
 
 :root {
-  --pink:        #FA87A1;
-  --pink-dark:   #e06080;
-  --pink-deep:   #c84060;
-  --pink-light:  #ffd6e3;
-  --pink-mist:   #fff0f5;
+  --pink:        #E0527C;
+  --pink-dark:   #C93D68;
+  --pink-deep:   #A52A52;
+  --pink-light:  #F8D3DE;
+  --pink-mist:   #FDF0F4;
+  --lavender:    #8B63C7;
+  --lavender-light: #EAE0F5;
+  --ice:         #EAF4FC;
   --cream:       #FFF3E6;
   --cream-dark:  #FFE5CC;
   --cream-mid:   #FFD6B0;
@@ -68,18 +72,18 @@ html, body { max-width: 100%; overflow-x: hidden; }
   --card-foreground: #3a1528;
   --popover: #ffffff;
   --popover-foreground: #3a1528;
-  --primary: #FA87A1;
+  --primary: #E0527C;
   --primary-foreground: #ffffff;
-  --secondary: #FFF3E6;
+  --secondary: #EAF4FC;
   --secondary-foreground: #3a1528;
-  --muted: #FFE5CC;
+  --muted: #EAE0F5;
   --muted-foreground: #8a5068;
-  --accent: #ffd6e3;
+  --accent: #F4B3C2;
   --accent-foreground: #3a1528;
   --destructive: #e53e3e;
   --destructive-foreground: #ffffff;
   --input: #f5c8d8;
-  --ring: #FA87A1;
+  --ring: #E0527C;
   --radius: 0.75rem;
 }
 
@@ -97,6 +101,9 @@ html, body { max-width: 100%; overflow-x: hidden; }
   --text-sub:    #c5a6b6;
   --border:      #3a2531;
   --white:       #211722;
+  --lavender:    #B9A0E0;
+  --lavender-light: #33243f;
+  --ice:         #263040;
   --header-bg:   rgba(33,23,34,.92);
   --header-bg-scrolled: rgba(33,23,34,.96);
   --contour-color: rgba(255,255,255,.09);
@@ -160,14 +167,14 @@ h1,h2,h3,.font-display { font-family:'Gotham Pro',-apple-system,Segoe UI,sans-se
 /* ── Buttons ── */
 .btn-primary {
   display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
-  background:linear-gradient(135deg,#FA87A1 0%,#e06080 50%,#FA87A1 100%);
+  background:linear-gradient(135deg,#E0527C 0%,#B28FCE 55%,#E0527C 100%);
   background-size:200% 200%; animation:gradient-flow 6s ease infinite;
   color:var(--white); font-weight:600; font-size:.9rem; padding:.75rem 1.75rem;
   border-radius:50px; border:none; cursor:pointer; text-decoration:none;
   transition:transform .2s, box-shadow .2s, filter .2s;
-  box-shadow:0 4px 18px rgba(250,135,161,.38);
+  box-shadow:0 4px 18px rgba(224,82,124,.32);
 }
-.btn-primary:hover { transform:translateY(-2px) scale(1.02); box-shadow:0 8px 28px rgba(250,135,161,.5); filter:brightness(1.04); }
+.btn-primary:hover { transform:translateY(-2px) scale(1.02); box-shadow:0 8px 28px rgba(224,82,124,.42); filter:brightness(1.04); }
 .btn-primary:active { transform:scale(.97); }
 .btn-primary:disabled { opacity:.55; cursor:not-allowed; transform:none; box-shadow:none; }
 
@@ -178,7 +185,7 @@ h1,h2,h3,.font-display { font-family:'Gotham Pro',-apple-system,Segoe UI,sans-se
   cursor:pointer; text-decoration:none;
   transition:background .2s, color .2s, border-color .2s, box-shadow .2s, transform .2s;
 }
-.btn-outline:hover { background:linear-gradient(135deg,#FA87A1,#e06080); color:var(--white); border-color:transparent; box-shadow:0 4px 18px rgba(250,135,161,.38); transform:translateY(-1px); }
+.btn-outline:hover { background:linear-gradient(135deg,#E0527C,#B28FCE); color:var(--white); border-color:transparent; box-shadow:0 4px 18px rgba(250,135,161,.38); transform:translateY(-1px); }
 
 /* ── Cards ── */
 .card {
@@ -198,7 +205,7 @@ h1,h2,h3,.font-display { font-family:'Gotham Pro',-apple-system,Segoe UI,sans-se
 
 /* Контрастные плашки на фото товара */
 .hit-badge .badge, .sale-badge .badge { font-size:.82rem; padding:.34rem .85rem; box-shadow:0 1px 2px rgba(0,0,0,.12); }
-.badge-hit  { background:linear-gradient(135deg,#FA87A1,#e06080); color:#fff; }
+.badge-hit  { background:linear-gradient(135deg,#E0527C,#B28FCE); color:#fff; }
 .badge-sale { background:linear-gradient(135deg,#ff5a5f,#e0382e); color:#fff; }
 .badge-rose  { background:var(--pink-light); color:var(--pink-deep); }
 .badge-green { background:#e8f5eb; color:#2e7d45; }
@@ -388,3 +395,56 @@ html.theme-transition *::after {
 body:has(> .site-veil) { background: transparent; }
 body:has(> .site-veil) main > section:not([data-keep-bg]) { background: transparent !important; }
 body:has(> .site-veil) footer { background: color-mix(in srgb, var(--white) 72%, transparent) !important; backdrop-filter: blur(8px); }
+
+/* ── Карточка товара (.pcard) ───────────────────────────────── */
+.pill { display:inline-flex; align-items:center; gap:.3rem; height:26px; padding:0 .7rem; border-radius:999px; font-size:.74rem; font-weight:600; line-height:1; white-space:nowrap; letter-spacing:.01em; backdrop-filter:blur(8px); }
+.pill-ink  { background:rgba(58,21,40,.72); color:#fff; }
+.pill-sale { background:var(--pink); color:#fff; box-shadow:0 4px 14px rgba(224,82,124,.35); }
+[data-theme="dark"] .pill-ink { background:rgba(255,255,255,.85); color:#211722; }
+
+.pcard {
+  display:flex; flex-direction:column; height:100%; text-decoration:none; color:var(--text);
+  background:rgba(255,255,255,.66); border:1px solid rgba(255,255,255,.75); border-radius:24px;
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 10px 34px rgba(120,50,90,.08);
+  transition:transform .35s cubic-bezier(.22,.68,0,1.1), box-shadow .35s, background-color .35s;
+}
+[data-theme="dark"] .pcard { background:rgba(33,23,34,.66); border-color:rgba(255,255,255,.08); box-shadow:0 10px 34px rgba(0,0,0,.35); }
+.pcard-media { position:relative; padding:10px 10px 0; }
+.pcard-img { position:relative; aspect-ratio:4/5; border-radius:16px; overflow:hidden; background:linear-gradient(135deg,var(--pink-light),var(--lavender-light)); display:flex; align-items:center; justify-content:center; }
+.pcard-photo { width:100%; height:100%; object-fit:cover; display:block; transition:transform .7s cubic-bezier(.22,.68,0,1); }
+.pcard-emoji { font-size:72px; line-height:1; }
+.pcard-badges { position:absolute; top:20px; left:20px; right:20px; display:flex; gap:6px; flex-wrap:wrap; z-index:2; }
+.pcard-go {
+  position:absolute; right:20px; bottom:10px; z-index:2; width:44px; height:44px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; color:var(--text);
+  background:rgba(255,255,255,.9); box-shadow:0 6px 18px rgba(58,21,40,.14);
+  opacity:0; transform:translateY(8px) scale(.9);
+  transition:opacity .3s, transform .35s cubic-bezier(.22,.68,0,1.2), background-color .25s, color .25s;
+}
+[data-theme="dark"] .pcard-go { background:rgba(33,23,34,.9); color:#fff; }
+.pcard-body { padding:16px 18px 20px; display:flex; flex-direction:column; flex:1; }
+.pcard-cat { font-size:.7rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--lavender); margin-bottom:6px; }
+.pcard-name { font-size:1.02rem; font-weight:600; line-height:1.35; color:var(--text); margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.pcard-desc { font-size:.84rem; color:var(--text-sub); line-height:1.5; margin-bottom:12px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.pcard-foot { margin-top:auto; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+.pcard-stock { display:inline-flex; align-items:center; gap:6px; font-size:.76rem; font-weight:600; color:var(--text-sub); white-space:nowrap; }
+.pcard-stock i { width:7px; height:7px; border-radius:50%; background:#8a5068; }
+.pcard-stock.in { color:#2e7d45; } .pcard-stock.in i { background:#3ec36b; box-shadow:0 0 0 3px rgba(62,195,107,.18); }
+.pcard-stock.out { color:var(--text-sub); } .pcard-stock.out i { background:#c8a0b4; }
+[data-theme="dark"] .pcard-stock.in { color:#7fe0a0; }
+
+@media (hover:hover) {
+  .pcard:hover { transform:translateY(-6px); box-shadow:0 22px 50px rgba(120,50,90,.16); background:rgba(255,255,255,.8); }
+  [data-theme="dark"] .pcard:hover { background:rgba(33,23,34,.82); box-shadow:0 22px 50px rgba(0,0,0,.5); }
+  .pcard:hover .pcard-photo { transform:scale(1.05); }
+  .pcard:hover .pcard-go { opacity:1; transform:none; }
+  .pcard-go:hover { background:var(--pink); color:#fff; }
+}
+@media (hover:none) { .pcard-go { opacity:1; transform:none; } }
+.pcard:focus-visible { outline:3px solid var(--pink); outline-offset:3px; }
+.pcard:focus-visible .pcard-go { opacity:1; transform:none; }
+@media (prefers-reduced-motion:reduce) {
+  .pcard, .pcard-photo, .pcard-go { transition:none !important; }
+  .pcard:hover { transform:none; } .pcard:hover .pcard-photo { transform:none; }
+}

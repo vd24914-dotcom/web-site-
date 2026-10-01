@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ArrowUpRight, Zap } from 'lucide-react'
 import { OrderModal } from '@/components/OrderModal'
+import { CardAddButton } from '@/components/CardAddButton'
 import { parseJSON } from '@/lib/utils'
 import { PriceTag } from '@/components/PriceTag'
 import { SaleBadge } from '@/components/SaleBadge'
@@ -48,9 +49,12 @@ export function ProductCard({ p, showDescription = false }: Props) {
             ? <RestockCountdown at={p.restockAt} qty={p.restockQty} mini />
             : <span className={`pcard-stock ${p.inStock ? 'in' : 'out'}`}><i aria-hidden="true" />{p.inStock ? 'В наличии' : 'Под заказ'}</span>}
         </div>
-        <OrderModal productId={p.id} productName={p.name} trigger={
-          <button type="button" className="pcard-buy"><Zap size={15} aria-hidden="true" /> Купить в 1 клик</button>
-        } />
+        <div className="pcard-actions">
+          <CardAddButton p={p} image={img} />
+          <OrderModal productId={p.id} productName={p.name} trigger={
+            <button type="button" className="pcard-buy"><Zap size={15} aria-hidden="true" /> В 1 клик</button>
+          } />
+        </div>
       </div>
     </div>
   )

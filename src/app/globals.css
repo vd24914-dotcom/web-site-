@@ -42,7 +42,7 @@
 
 /* Никогда не допускаем горизонтальную прокрутку и вылет картинок за экран */
 html, body { max-width: 100%; overflow-x: hidden; }
-img, svg, video { max-width: 100%; }
+@layer base { img, svg, video { max-width: 100%; } }
 
 :root {
   --pink:        #FA87A1;

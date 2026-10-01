@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { Menu, X, ChevronLeft } from 'lucide-react'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { SearchBox } from '@/components/SearchBox'
+import { CartButton } from '@/components/CartButton'
 
 interface Props { settings?: Record<string, string> }
 
@@ -81,6 +82,7 @@ export function Header({ settings = {} }: Props) {
           <span className="hide-mobile" style={{ display: 'inline-flex' }}><SearchBox /></span>
           <span className="show-mobile"><SearchBox compact /></span>
           <ThemeToggle />
+          <CartButton />
           <Link href="/catalog" className="btn-primary hide-mobile" style={{ padding: '.55rem 1.25rem', fontSize: '.85rem' }}>Заказать</Link>
           {!isHome && (
             <button onClick={goBack} className="show-mobile" aria-label="Назад"

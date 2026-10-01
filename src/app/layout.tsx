@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { ScrollToTop } from '@/components/ScrollToTop'
 import { SiteBackground } from '@/components/SiteBackground'
+import { CartProvider } from '@/lib/cart'
+import { CartDrawer } from '@/components/CartDrawer'
 
 export const metadata: Metadata = {
   title: { default: 'Fimush.kin — Вязаные изделия ручной работы | Toshkent', template: '%s | Fimush.kin' },
@@ -27,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem('theme');if(t==='dark'){document.documentElement.setAttribute('data-theme','dark')}}catch(e){}document.addEventListener('gesturestart',function(e){e.preventDefault()},{passive:false});document.addEventListener('gesturechange',function(e){e.preventDefault()},{passive:false});var _ld=0;document.addEventListener('touchend',function(e){var n=Date.now();if(n-_ld<=320){e.preventDefault()}_ld=n},{passive:false});` }} />
       </head>
-      <body><SiteBackground />{children}<ScrollToTop /></body>
+      <body><CartProvider><SiteBackground />{children}<CartDrawer /><ScrollToTop /></CartProvider></body>
     </html>
   )
 }

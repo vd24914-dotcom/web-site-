@@ -8,17 +8,41 @@ const esc = (s: any) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&l
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
-  const { name, phone, message, productId } = body
+  const { name, phone, message } = body
+  let productId = body.productId
+  // Заказ из корзины: список позиций; проверяем товары по базе, цены берём оттуда
+  const rawItems: any[] = Array.isArray(body.items) ? body.items.slice(0, 50) : []
   if (!name || !phone) return NextResponse.json({ error: 'Заполните имя и телефон' }, { status: 400 })
   // В поле email теперь хранится Telegram-ник клиента, нормализуем к виду @username
   const tg = String(body.email || '').trim().replace(/^(https?:\/\/)?(t\.me|telegram\.me)\//i, '').replace(/^@/, '').replace(/[^A-Za-z0-9_]/g, '').slice(0, 32)
   const email = tg ? `@${tg}` : ''
 
   let product: any = null
-  if (productId) product = await prisma.product.findUnique({ where: { id: productId } }).catch(() => null)
+  let cart: { productId: number; name: string; qty: number; price: number; color: string; size: string; image: string }[] = []
+  if (rawItems.length) {
+    const ids = [...new Set(rawItems.map((i) => Number(i.productId)).filter(Boolean))]
+    const found = await prisma.product.findMany({ where: { id: { in: ids } } }).catch(() => [])
+    for (const i of rawItems) {
+      const pr: any = (found as any[]).find((f) => f.id === Number(i.productId))
+      if (!pr) continue
+      const sale = pr.onSale && pr.salePrice && (!pr.saleEnd || new Date(pr.saleEnd).getTime() > Date.now())
+      const imgs = parseJSON(pr.images || '[]')
+      cart.push({ productId: pr.id, name: pr.name, qty: Math.min(99, Math.max(1, Number(i.qty) || 1)), price: sale ? pr.salePrice : pr.price,
+        color: String(i.color || '').slice(0, 60), size: String(i.size || '').slice(0, 60), image: typeof imgs[0] === 'string' ? imgs[0] : '' })
+    }
+    if (!cart.length) return NextResponse.json({ error: 'Корзина пуста' }, { status: 400 })
+    productId = cart[0].productId
+  }
+  if (productId && !cart.length) product = await prisma.product.findUnique({ where: { id: productId } }).catch(() => null)
 
+  const fmt0 = (n: number) => Number(n).toLocaleString('ru-RU') + ' сум'
+  const cartTotal = cart.reduce((s, i) => s + i.price * i.qty, 0)
+  const cartSummary = cart.length
+    ? 'Состав заказа:\n' + cart.map((i, n) => `${n + 1}. ${i.name} × ${i.qty} — ${fmt0(i.price * i.qty)}${[i.color && 'цвет: ' + i.color, i.size && 'размер: ' + i.size].filter(Boolean).length ? ' (' + [i.color && 'цвет: ' + i.color, i.size && 'размер: ' + i.size].filter(Boolean).join(', ') + ')' : ''}`).join('\n') + `\nИтого: ${fmt0(cartTotal)}`
+    : ''
+  const adminMessage = [cartSummary, message ? (cart.length ? 'Пожелания: ' + message : message) : ''].filter(Boolean).join('\n\n')
   const order = await prisma.order.create({
-    data: { name, phone, email: email || null, message: message || '', productId: productId || null },
+    data: { name, phone, email: email || null, message: adminMessage, productId: productId || null, items: cart.length ? JSON.stringify(cart) : null } as any,
   }).catch(() => null)
   if (!order) return NextResponse.json({ error: 'Ошибка сохранения' }, { status: 500 })
 
@@ -37,11 +61,17 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  const cartLines = cart.length
+    ? [`🛒 <b>Заказ из корзины — ${cart.length} ${cart.length === 1 ? 'позиция' : cart.length < 5 ? 'позиции' : 'позиций'}:</b>`,
+       ...cart.map((i, n) => `${n + 1}. ${esc(i.name)} × ${i.qty} — <b>${esc(fmt0(i.price * i.qty))}</b>${i.color || i.size ? ' <i>(' + esc([i.color && 'цвет: ' + i.color, i.size && 'размер: ' + i.size].filter(Boolean).join(', ')) + ')</i>' : ''}`),
+       `💰 <b>Итого:</b> ${esc(fmt0(cartTotal))}`]
+    : []
   const caption = [
     '🧶 <b>Новая заявка — Fimush.kin!</b>', '',
-    product ? `🛍 <b>Товар:</b> ${esc(product.name)}` : '🛍 <b>Заявка:</b> Общая',
-    product && desc ? `📝 ${esc(desc)}` : '',
-    price ? `💰 <b>Цена:</b> ${esc(price)}` : '',
+    ...cartLines,
+    !cart.length ? (product ? `🛍 <b>Товар:</b> ${esc(product.name)}` : '🛍 <b>Заявка:</b> Общая') : '',
+    !cart.length && product && desc ? `📝 ${esc(desc)}` : '',
+    !cart.length && price ? `💰 <b>Цена:</b> ${esc(price)}` : '',
     '',
     `👤 <b>Имя:</b> ${esc(name)}`,
     `📱 <b>Телефон:</b> ${esc(phone)}`,
@@ -52,6 +82,7 @@ export async function POST(req: NextRequest) {
 
   // Фото товара — только публичная ссылка (http). Старые base64-фото Telegram не примет.
   let photo: string | null = null
+  if (cart.length && cart[0].image && cart[0].image.startsWith('http')) photo = cart[0].image
   if (product) {
     const imgs = parseJSON(product.images || '[]')
     if (imgs[0] && typeof imgs[0] === 'string' && imgs[0].startsWith('http')) photo = imgs[0]

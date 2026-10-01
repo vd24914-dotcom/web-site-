@@ -1,0 +1,90 @@
+'use client'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+
+/**
+ * Корзина живёт в браузере (localStorage), сервер её не хранит: заказ
+ * отправляется одним запросом в /api/order со списком позиций.
+ */
+export interface CartItem {
+  key: string
+  productId: number
+  slug: string
+  name: string
+  price: number
+  /** Цена со скидкой, если акция активна в момент добавления */
+  salePrice?: number | null
+  image?: string
+  color?: string
+  size?: string
+  qty: number
+}
+
+interface CartContextValue {
+  items: CartItem[]
+  count: number
+  total: number
+  open: boolean
+  setOpen: (v: boolean) => void
+  add: (item: Omit<CartItem, 'key' | 'qty'>, qty?: number) => void
+  setQty: (key: string, qty: number) => void
+  remove: (key: string) => void
+  clear: () => void
+  /** Товар только что добавлен — для короткой подсветки кнопки */
+  lastAdded: string | null
+}
+
+const STORAGE = 'fimushkin_cart_v1'
+const CartContext = createContext<CartContextValue | null>(null)
+
+export const itemKey = (productId: number, color?: string, size?: string) => `${productId}|${color || ''}|${size || ''}`
+export const unitPrice = (i: CartItem) => (i.salePrice != null && i.salePrice > 0 && i.salePrice < i.price ? i.salePrice : i.price)
+
+export function CartProvider({ children }: { children: React.ReactNode }) {
+  const [items, setItems] = useState<CartItem[]>([])
+  const [open, setOpen] = useState(false)
+  const [lastAdded, setLastAdded] = useState<string | null>(null)
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE)
+      if (raw) { const parsed = JSON.parse(raw); if (Array.isArray(parsed)) setItems(parsed) }
+    } catch {}
+    setReady(true)
+  }, [])
+  useEffect(() => {
+    if (!ready) return
+    try { localStorage.setItem(STORAGE, JSON.stringify(items)) } catch {}
+  }, [items, ready])
+
+  const add = useCallback<CartContextValue['add']>((item, qty = 1) => {
+    const key = itemKey(item.productId, item.color, item.size)
+    setItems(prev => {
+      const i = prev.findIndex(x => x.key === key)
+      if (i >= 0) return prev.map((x, j) => j === i ? { ...x, qty: Math.min(99, x.qty + qty) } : x)
+      return [...prev, { ...item, key, qty }]
+    })
+    setLastAdded(key)
+    setTimeout(() => setLastAdded(null), 1600)
+  }, [])
+  const setQty = useCallback((key: string, qty: number) => {
+    setItems(prev => qty <= 0 ? prev.filter(x => x.key !== key) : prev.map(x => x.key === key ? { ...x, qty: Math.min(99, qty) } : x))
+  }, [])
+  const remove = useCallback((key: string) => setItems(prev => prev.filter(x => x.key !== key)), [])
+  const clear = useCallback(() => setItems([]), [])
+
+  const value = useMemo<CartContextValue>(() => ({
+    items,
+    count: items.reduce((n, i) => n + i.qty, 0),
+    total: items.reduce((n, i) => n + unitPrice(i) * i.qty, 0),
+    open, setOpen, add, setQty, remove, clear, lastAdded,
+  }), [items, open, add, setQty, remove, clear, lastAdded])
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>
+}
+
+export function useCart(): CartContextValue {
+  const ctx = useContext(CartContext)
+  if (!ctx) throw new Error('useCart вне CartProvider')
+  return ctx
+}

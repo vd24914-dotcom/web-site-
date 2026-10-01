@@ -23,9 +23,11 @@ interface Props {
   productName?: string
   trigger?: React.ReactNode
   settings?: Record<string, string>
+  /** Добавляется к пожеланиям: выбранный цвет, размер, количество */
+  note?: string
 }
 
-export function OrderModal({ productId, productName, trigger, settings = {} }: Props) {
+export function OrderModal({ productId, productName, trigger, settings = {}, note }: Props) {
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState({ name: '', phone: '+998 ', email: '', message: '' })
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
@@ -39,7 +41,7 @@ export function OrderModal({ productId, productName, trigger, settings = {} }: P
       const res = await fetch('/api/order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, productId }),
+        body: JSON.stringify({ ...form, message: [note, form.message].filter(Boolean).join('\n'), productId }),
       })
       if (!res.ok) throw new Error()
       setStatus('done')

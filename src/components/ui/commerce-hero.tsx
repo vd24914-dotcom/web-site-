@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
 import { SearchBox } from "@/components/SearchBox";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { CartButton } from "@/components/CartButton";
 
 export interface HeroNavItem { name: string; href: string }
 export interface HeroCategory { title: string; href: string; image?: string; emoji?: string }
@@ -73,14 +74,15 @@ export function CommerceHero({
                 ))}
                 <SearchBox compact />
                 <ThemeToggle />
+                <CartButton />
               </nav>
 
               <Sheet>
-                <SheetTrigger asChild className="lg:hidden ml-auto">
+                <div className="lg:hidden ml-auto flex items-center gap-1"><CartButton /><SheetTrigger asChild>
                   <Button variant="ghost" size="icon" className="hover:text-primary transition-colors" aria-label="Меню">
                     <Menu className="w-5 h-5" />
                   </Button>
-                </SheetTrigger>
+                </SheetTrigger></div>
                 <SheetContent
                   side="left"
                   className="w-[300px] sm:w-[400px] p-0 bg-background/95 backdrop-blur-md border-r border-border/50"
@@ -106,6 +108,7 @@ export function CommerceHero({
                   <div className="p-6 flex items-center gap-3">
                     <SearchBox />
                     <ThemeToggle />
+                    <CartButton label />
                   </div>
                   <Separator className="mx-6" />
                   <div className="p-6">
